@@ -41,7 +41,7 @@ val mode = null
 const val TEXT_VIEW_BACKGROUND_COLOR = "#A9A9A9"
 const val IMAGE_VIEW_BACKGROUND_COLOR = "#D5D5D5"
 const val CONTAINER_BACKGROUND_COLOR = "#D5FFD5"
-const val IMAGE_REMOTE_URL = "https://i.pinimg.com/originals/42/b9/d2/42b9d209f4008c07c30848ae98ed7845.jpg"
+const val IMAGE_REMOTE_URL = "https://i.pinimg.com/564x/8a/2d/80/8a2d80b70dfd531befe563db81017331.jpg"
 
 //NOTICE
 //All remote images have a local image rendered just below then got from the front view to validate
@@ -74,13 +74,13 @@ object ImageIssueScreenBuilder {
                 ),
                 imagePathRemote(
                     title= "with ONLY HEIGHT set and height is smaller than image size",
-                    Size(width = 150.unitReal()),
+                    Size(height = 150.unitReal()),
                     mode = mode
                 ),
 
                 imagePathRemote(
                     title= "with ONLY HEIGHT set and height is bigger than image size",
-                    Size(width = 600.unitReal()),
+                    Size(height = 600.unitReal()),
                     mode = mode
                 ),
                 imagePathRemote(
