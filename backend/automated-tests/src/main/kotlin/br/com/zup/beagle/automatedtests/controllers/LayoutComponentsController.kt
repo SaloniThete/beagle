@@ -17,7 +17,6 @@
 package br.com.zup.beagle.automatedtests.controllers
 
 import br.com.zup.beagle.automatedtests.constants.ACTION_ENDPOINT
-import br.com.zup.beagle.automatedtests.constants.IMAGE_REMOTE_ENDPOINT
 import br.com.zup.beagle.automatedtests.constants.LAZY_COMPONENT_ENDPOINT
 import br.com.zup.beagle.automatedtests.constants.PAGEVIEW_TWO_ENDPOINT
 import br.com.zup.beagle.automatedtests.constants.SIMPLE_FORM_ENDPOINT
@@ -29,7 +28,6 @@ import br.com.zup.beagle.automatedtests.builders.TextInputScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.TabBarScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.WebViewScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.LazyComponentScreenBuilder
-import br.com.zup.beagle.automatedtests.builders.ImageRemoteScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.ActionScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.LazyFailureScreenBuilder
 import br.com.zup.beagle.automatedtests.builders.LazySuccessScreenBuilder
@@ -63,9 +61,6 @@ class LayoutComponentsController {
 
     @GetMapping(LAZY_FAILURE_ENDPOINT)
     fun getLazyFailureScreen() = LazyFailureScreenBuilder.build()
-
-    @GetMapping(IMAGE_REMOTE_ENDPOINT)
-    fun getImageRemoteScreen() = ImageRemoteScreenBuilder.build()
 
     @GetMapping(ACTION_ENDPOINT)
     fun getActionScreen() = ActionScreenBuilder.build()

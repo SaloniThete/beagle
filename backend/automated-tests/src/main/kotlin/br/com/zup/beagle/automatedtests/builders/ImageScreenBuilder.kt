@@ -18,15 +18,12 @@ package br.com.zup.beagle.automatedtests.builders
 
 import br.com.zup.beagle.core.Style
 import br.com.zup.beagle.ext.applyStyle
+import br.com.zup.beagle.ext.unitPercent
 import br.com.zup.beagle.ext.unitReal
-import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.core.AlignSelf
-import br.com.zup.beagle.widget.core.Flex
+import br.com.zup.beagle.widget.core.EdgeValue
 import br.com.zup.beagle.widget.core.ImageContentMode
 import br.com.zup.beagle.widget.core.ScrollAxis
 import br.com.zup.beagle.widget.core.Size
-import br.com.zup.beagle.widget.core.UnitType
-import br.com.zup.beagle.widget.core.UnitValue
 import br.com.zup.beagle.widget.layout.Container
 import br.com.zup.beagle.widget.layout.Screen
 import br.com.zup.beagle.widget.layout.ScrollView
@@ -35,75 +32,99 @@ import br.com.zup.beagle.widget.ui.ImagePath
 import br.com.zup.beagle.widget.ui.ImagePath.Local
 import br.com.zup.beagle.widget.ui.Text
 
-const val LOGO_BEAGLE = "imageBeagle"
-const val LOGO_BEAGLE_URL = "/public/logo.png"
-const val IMAGE1 = "/image-web/1"
-const val IMAGE2 = "/image-web/2"
+val FIT_CENTER = ImageContentMode.FIT_CENTER
+val CENTER_CROP = ImageContentMode.CENTER_CROP
+val CENTER = ImageContentMode.CENTER
+val FIT_XY = ImageContentMode.FIT_XY
 
+const val TEXT_VIEW_BACKGROUND_COLOR = "#A9A9A9"
+const val IMAGE_VIEW_BACKGROUND_COLOR = "#D5D5D5"
+const val CONTAINER_BACKGROUND_COLOR = "#D5FFD5"
+const val IMAGE_REMOTE_URL = "https://i.pinimg.com/564x/8a/2d/80/8a2d80b70dfd531befe563db81017331.jpg"
 
-data class ImageContextClass(val mobileImageId: String, val webImageUrl: String)
+//NOTICE
+//All remote images have a local image rendered just below then got from the front view to validate
+// the image behaviour with styles and rule any style issue out of image issues
 
 object ImageScreenBuilder {
     fun build() = Screen(
         child = ScrollView(
             scrollDirection = ScrollAxis.VERTICAL,
             children = listOf(
-                Text(text = "Image Screen", styleId = "Image Screen"),
-                buildImage("RemoteImage"),
-                imagePathLocal(),
-                imagePathRemote()
+                Text(text = "Image Issue Screen"),
+                createImageWithMode(FIT_CENTER),
+                createImageWithMode(CENTER_CROP),
+                createImageWithMode(CENTER),
+                createImageWithMode(FIT_XY)
             )
         )
     )
-    private fun buildImage(title: String, mode: ImageContentMode? = null) = Container(
-        children = listOf(
-           Text("Old Build"),
-            Image(ImagePath.Remote("https://i.pinimg.com/564x/8a/2d/80/8a2d80b70dfd531befe563db81017331.jpg"), mode).applyStyle(Style(
-                flex = Flex(
-                    alignSelf = AlignSelf.CENTER
-                ),
-                size = Size(
-                    width = 100.unitReal(),
-                    height = 130.unitReal()
-                ))
-            )
-        )
-    )
-    private fun imagePathLocal(): Container = Container(
-        context = ContextData(
-            id = "imageContextLocal",
-            value = ImageContextClass(
-                mobileImageId = "imageBeagle",
-                webImageUrl = IMAGE1
-            )),
-        children = listOf(
-            Text(text = "ImagePathSetByContext"),
-            Image(Local.both(
-                mobileId = "@{imageContextLocal.mobileImageId}",
-                webUrl = "@{imageContextLocal.webImageUrl}")
+
+    private fun createImageWithMode(mode: ImageContentMode): Container = Container(
+        listOf(
+            imagePathRemote(
+                title= "with HEIGHT and WIDTH set",
+                Size(width = 100.unitReal(),height = 100.unitReal()),
+                mode = mode
             ),
-            Text(text = "ImagePathSetHardcoded"),
-            Image(Local.both(
-                mobileId = "@{imageContextLocal.mobileImageId}",
-                webUrl = "@{imageContextLocal.webImageUrl}")
+            imagePathRemote(
+                title= "with NO SIZE set",
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with ONLY WIDTH set and width is smaller than image size",
+                Size(width = 100.unitReal()),
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with ONLY WIDTH set and width is bigger than image size",
+                Size(width = 300.unitReal()),
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with ONLY HEIGHT set and height is smaller than image size",
+                Size(height = 150.unitReal()),
+                mode = mode
+            ),
+
+            imagePathRemote(
+                title= "with ONLY HEIGHT set and height is bigger than image size",
+                Size(height = 600.unitReal()),
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with WIDTH BIGGER than parent view",
+                Size(width = 500.unitReal()),
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with WIDTH set as UnitPercent = 30%",
+                Size(width = 30.unitPercent()),
+                mode = mode
+            ),
+            imagePathRemote(
+                title= "with WIDTH set as UnitPercent = 100%",
+                Size(width = 100.unitPercent()),
+                mode = mode
             )
-        ))
+        )
+    )
 
-    private fun imagePathRemote(): Container = Container(
-        context = ContextData(
-            id = "imageContextRemote",
-            value = ImageContextClass(
-                mobileImageId = "beagle",
-                webImageUrl = "http://localhost:8080/image-web/1"
-            )),
+    private fun imagePathRemote(title: String, size:Size? = null, mode:ImageContentMode? = null) = Container(
         children = listOf(
-            Image(
-                path = ImagePath.Remote(
-                    remoteUrl = "https://mcdn.wallpapersafari.com/medium/8/37/zlwnoM.jpg"
-                )).applyStyle(style = Style(
-                size = Size(
-                    height = 130.unitReal(),
-                    width = 150.unitReal())))
-        ))
-
+            Text("Remote Image $title").applyStyle(Style(padding = EdgeValue(vertical = 5.unitReal()), backgroundColor = TEXT_VIEW_BACKGROUND_COLOR)),
+            Image(mode = mode, path = ImagePath.Remote(IMAGE_REMOTE_URL)
+            ).applyStyle(Style(
+                backgroundColor = IMAGE_VIEW_BACKGROUND_COLOR,
+                size = size)
+            ),
+            Text("Local Image $title as reference with the same styles to rule any faulty styles out"),
+            Image(mode = mode, path = Local.justMobile("imageBeagle")
+            ).applyStyle(Style(
+                backgroundColor = IMAGE_VIEW_BACKGROUND_COLOR,
+                size = size,
+                margin = EdgeValue(bottom = 30.0.unitReal()))
+            )
+        )
+    ).applyStyle(Style(backgroundColor = CONTAINER_BACKGROUND_COLOR))
 }
