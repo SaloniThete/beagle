@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.string
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+import java.util.*
+
+internal class CapitalizeOperation : Operation {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        val operationType = params[0]?.value
+        return OperationType.TypeString(operationType.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+    }
+
+}

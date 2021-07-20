@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.context
 
-rootProject.name = "Beagle"
+/**
+ * Context is a variable of any type, including a map that defines a set of key/value pairs.
+ * Through bindings, the value of a context can be accessed by any component or action on your scope.
+ *
+ * @param id a string that later has to be identified.
+ * @param value is a parameter (data) of any kind.
+ */
+//@BeagleJson
+data class ContextData(
+    val id: String,
+//    @ContextDataValue
+    val value: Any,
+)

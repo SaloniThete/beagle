@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.array
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+
+internal class RemoveIndexOperation : Operation {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        val array = (params[0] as OperationType.TypeJsonArray).value
+        val index = (params[1] as OperationType.TypeNumber).value as Int
+
+        array.remove(index)
+        return OperationType.TypeJsonArray(array)
+    }
+
+}

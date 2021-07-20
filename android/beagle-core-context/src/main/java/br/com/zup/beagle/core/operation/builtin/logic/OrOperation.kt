@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.logic
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+
+
+internal class OrOperation : Operation {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        params.forEach {
+            if (it is OperationType.TypeBoolean && it.value) {
+                return OperationType.TypeBoolean(true)
+            }
+        }
+
+        return OperationType.TypeBoolean(false)
+    }
+}

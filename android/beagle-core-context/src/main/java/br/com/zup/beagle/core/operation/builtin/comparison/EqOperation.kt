@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.comparison
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+
+internal class EqOperation : Operation {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        val result = params[0].toString() == params[1].toString()
+
+        return OperationType.TypeBoolean(result)
+    }
+}

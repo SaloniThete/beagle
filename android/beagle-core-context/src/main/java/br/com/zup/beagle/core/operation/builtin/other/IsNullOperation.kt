@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.other
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+import br.com.zup.beagle.core.operation.builtin.SafeGetHelper
+
+internal class IsNullOperation : Operation, SafeGetHelper {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        val operation = safeGet(params, 0)
+        return OperationType.TypeBoolean(operation == OperationType.Null)
+    }
+
+}

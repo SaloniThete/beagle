@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.context
 
-rootProject.name = "Beagle"
+/**
+ *  Interface has context attribute, the components that inherit from that interface have access to create a context.
+ */
+interface ContextComponent {
+    /**
+     * Creates a context.
+     */
+    val context: ContextData?
+}

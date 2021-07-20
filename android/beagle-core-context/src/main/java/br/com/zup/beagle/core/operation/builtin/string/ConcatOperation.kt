@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.string
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
+
+internal class ConcatOperation : Operation {
+
+    override fun execute(vararg params: OperationType?): OperationType {
+        val value = StringBuilder()
+
+        params.forEach {
+            if (it != null && it is OperationType.TypeString && it.value.isNotEmpty()) {
+                value.append(it.value)
+            }
+        }
+        return OperationType.TypeString(value.toString())
+    }
+
+}

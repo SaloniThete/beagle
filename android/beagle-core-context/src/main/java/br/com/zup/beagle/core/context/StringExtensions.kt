@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.context
 
-rootProject.name = "Beagle"
+fun String.getExpressions(): List<String> {
+    val expressions = mutableListOf<String>()
+    val expressionContentRegex = "(\\\\*)@\\{(([^'\\}]|('([^'\\\\]|\\\\.)*'))*)\\}"
+    expressionContentRegex.toRegex().findAll(this).iterator().forEach {
+        val expressionContent = it.groupValues[2]
+        expressions.add(expressionContent)
+    }
+    return expressions
+}
+
+
+internal fun String.getContextId() = this.split(".", "[")[0]

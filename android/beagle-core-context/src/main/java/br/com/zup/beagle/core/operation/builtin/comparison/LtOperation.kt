@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-}
+package br.com.zup.beagle.core.operation.builtin.comparison
 
-repositories {
-    mavenCentral()
-    google()
-}
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
 
-dependencies {
-    implementation(gradleApi())
-}
+internal class LtOperation : Operation, ComparisonValidationParameterOperation {
 
-gradlePlugin {
-    plugins {
-        register("dependencies") {
-            id = "br.com.zup.beagle.dependencies"
-            implementationClass = "br.com.zup.beagle.Dependencies"
-        }
+    override fun execute(vararg params: OperationType?): OperationType {
+        if (parametersIsNull(params)) return OperationType.Null
+
+        val value1 = (params[0] as OperationType.TypeNumber).value.toDouble()
+        val value2 = (params[1] as OperationType.TypeNumber).value.toDouble()
+
+        val result = value1 < value2
+        return OperationType.TypeBoolean(result)
     }
 }

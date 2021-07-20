@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.OperationType
+
+internal interface SafeGetHelper {
+
+    fun safeGet(params: Array<out OperationType?>, position: Int): OperationType {
+        val parameter = params.getOrNull(position)
+        return parameter ?: OperationType.Null
+    }
+}

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-include ":sample"
-include ":beagle"
-include ":processor"
-include ":internal-processor"
-include ":android-annotation"
-include ":preview"
-include ":processor-shared-code"
-include ":beagle-core"
-include ":beagle-core-context"
-include ':test'
+package br.com.zup.beagle.core.operation.builtin.comparison
 
-rootProject.name = "Beagle"
+import br.com.zup.beagle.core.operation.OperationType
+
+internal interface ComparisonValidationParameterOperation {
+
+    fun parametersIsNull(params: Array<out OperationType?>): Boolean =
+        params.isNullOrEmpty() || checkItemsInParameterIsNull(params)
+
+    private fun checkItemsInParameterIsNull(params: Array<out OperationType?>): Boolean =
+        params[0] is OperationType.Null || params[1] is OperationType.Null
+}

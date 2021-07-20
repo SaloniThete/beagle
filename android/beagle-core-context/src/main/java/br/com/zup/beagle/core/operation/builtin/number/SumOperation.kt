@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-}
+package br.com.zup.beagle.core.operation.builtin.number
 
-repositories {
-    mavenCentral()
-    google()
-}
+import br.com.zup.beagle.core.operation.Operation
+import br.com.zup.beagle.core.operation.OperationType
 
-dependencies {
-    implementation(gradleApi())
-}
+internal class SumOperation : Operation {
 
-gradlePlugin {
-    plugins {
-        register("dependencies") {
-            id = "br.com.zup.beagle.dependencies"
-            implementationClass = "br.com.zup.beagle.Dependencies"
+    override fun execute(vararg params: OperationType?): OperationType {
+        val result = params.sumOf {
+            val number = (it as? OperationType.TypeNumber)?.value ?: 0
+            number.toDouble()
+        }
+        return if ((params[0] as OperationType.TypeNumber).value is Int) {
+            OperationType.TypeNumber(result.toInt())
+        } else {
+            OperationType.TypeNumber(result)
         }
     }
 }
