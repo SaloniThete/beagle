@@ -16,9 +16,9 @@
 
 package br.com.zup.beagle.widget.ui
 
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.valueOf
 import br.com.zup.beagle.widget.Widget
-import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.valueOf
 
 /**
  * A WebView widget will define a WebView natively using the server driven information received through Beagle.

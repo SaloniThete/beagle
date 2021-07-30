@@ -16,6 +16,7 @@
 
 package br.com.zup.beagle.sample.builder
 
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.core.Style
 import br.com.zup.beagle.ext.applyStyle
 import br.com.zup.beagle.ext.setId
@@ -24,7 +25,6 @@ import br.com.zup.beagle.ext.unitReal
 import br.com.zup.beagle.widget.action.Alert
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.ListDirection
 import br.com.zup.beagle.widget.core.Size
 import br.com.zup.beagle.widget.layout.Container

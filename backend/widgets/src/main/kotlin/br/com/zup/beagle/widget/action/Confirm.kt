@@ -16,10 +16,10 @@
 
 package br.com.zup.beagle.widget.action
 
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.valueOf
+import br.com.zup.beagle.context.valueOfNullable
 import br.com.zup.beagle.newanalytics.ActionAnalyticsConfig
-import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.valueOf
-import br.com.zup.beagle.widget.context.valueOfNullable
 
 /**
  * will show dialogues natively, such as an error alert indicating alternative flows, business system errors and others.

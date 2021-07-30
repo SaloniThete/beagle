@@ -17,9 +17,9 @@
 package br.com.zup.beagle.action
 
 import br.com.zup.beagle.builder.BeagleBuilder
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.action.Alert
-import br.com.zup.beagle.widget.context.Bind
 import kotlin.properties.Delegates
 
 

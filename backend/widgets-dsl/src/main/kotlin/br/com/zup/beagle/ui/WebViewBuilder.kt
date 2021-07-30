@@ -17,7 +17,7 @@
 package br.com.zup.beagle.ui
 
 import br.com.zup.beagle.builder.BeagleBuilder
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.ui.WebView
 import kotlin.properties.Delegates
 

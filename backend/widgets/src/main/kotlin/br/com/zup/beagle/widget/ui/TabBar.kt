@@ -16,9 +16,9 @@
 
 package br.com.zup.beagle.widget.ui
 
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
 
 /**
  * TabBar is a component responsible to display a tab layout.

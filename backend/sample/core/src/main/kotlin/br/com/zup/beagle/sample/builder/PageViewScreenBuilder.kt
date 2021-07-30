@@ -16,13 +16,13 @@
 
 package br.com.zup.beagle.sample.builder
 
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.ext.setFlex
 import br.com.zup.beagle.sample.constants.BLACK
 import br.com.zup.beagle.sample.constants.LIGHT_GREY
 import br.com.zup.beagle.widget.action.Alert
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.AlignSelf
 import br.com.zup.beagle.widget.core.TextAlignment
 import br.com.zup.beagle.widget.layout.Container

@@ -16,7 +16,11 @@
 
 package br.com.zup.beagle.core
 
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.core.Display.FLEX
+import br.com.zup.beagle.core.Display.NONE
+import br.com.zup.beagle.core.PositionType.ABSOLUTE
+import br.com.zup.beagle.core.PositionType.RELATIVE
 import br.com.zup.beagle.widget.core.EdgeValue
 import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.Size

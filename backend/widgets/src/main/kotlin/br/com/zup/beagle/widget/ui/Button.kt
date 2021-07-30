@@ -18,11 +18,11 @@ package br.com.zup.beagle.widget.ui
 
 import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.analytics.TouchableAnalytics
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.valueOf
+import br.com.zup.beagle.context.valueOfNullable
 import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.valueOf
-import br.com.zup.beagle.widget.context.valueOfNullable
 
 /**
  * Define a button natively using the server driven information received through Beagle

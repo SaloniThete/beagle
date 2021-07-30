@@ -16,9 +16,9 @@
 
 package br.com.zup.beagle.widget.action
 
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.valueOf
 import br.com.zup.beagle.newanalytics.ActionAnalyticsConfig
-import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.valueOf
 
 /**
  * Action to resolve condition and call onTrue if return true and onFalse if return is false.

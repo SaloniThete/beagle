@@ -17,7 +17,7 @@
 package br.com.zup.beagle.pager
 
 import br.com.zup.beagle.builder.BeagleBuilder
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.pager.PageIndicator
 import kotlin.properties.Delegates
 

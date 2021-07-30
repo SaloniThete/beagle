@@ -18,10 +18,10 @@ package br.com.zup.beagle.action
 
 import br.com.zup.beagle.builder.BeagleBuilder
 import br.com.zup.beagle.builder.BeagleListBuilder
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.action.RequestActionMethod
 import br.com.zup.beagle.widget.action.SendRequest
-import br.com.zup.beagle.widget.context.Bind
 import kotlin.properties.Delegates
 
 @Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version." +
