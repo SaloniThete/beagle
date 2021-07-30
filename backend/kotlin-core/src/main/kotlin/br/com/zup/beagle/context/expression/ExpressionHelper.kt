@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.expression
+package br.com.zup.beagle.context.expression
 
 sealed class ExpressionHelper<T>(private val intermediate: String) {
     companion object {

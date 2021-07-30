@@ -16,7 +16,8 @@
 
 package br.com.zup.beagle.widget.expression
 
-import br.com.zup.beagle.widget.expression.ExpressionHelper.Companion.access
+import br.com.zup.beagle.context.expression.ExpressionHelper
+import br.com.zup.beagle.context.expression.ExpressionHelper.Companion.access
 
 class BeagleIterableSubExpression<T, out N>(
     private val expression: ExpressionHelper<out Iterable<T>>,

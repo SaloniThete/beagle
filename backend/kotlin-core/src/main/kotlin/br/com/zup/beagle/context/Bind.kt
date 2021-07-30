@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.context
+package br.com.zup.beagle.context
 
-import br.com.zup.beagle.widget.expression.ExpressionHelper
+import br.com.zup.beagle.context.expression.ExpressionHelper
 import java.io.Serializable
 
 /**
