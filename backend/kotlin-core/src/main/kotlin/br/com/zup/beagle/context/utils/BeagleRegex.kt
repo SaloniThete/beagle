@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.utils
+package br.com.zup.beagle.context.utils
 
-object BeagleConstants {
-    const val DEPRECATED_PAGE_VIEW =
-        "This constructor will be removed in a future version, use the constructor with Bind"
-    const val DEPRECATED_TAB_VIEW ="This component will be removed in a future version, use TabBar instead."
-    const val DEPRECATED_LIST_VIEW = "This component was deprecated in version 1.4 " +
-        "and will be removed in a future version"
-    const val DEPRECATED_VALUE_OF = "This component was deprecated and will be removed in a future version"
+internal object BeagleRegex {
+    val EXPRESSION_REGEX = "(\\\\*)\"?@\\{(([^'\\}]|('([^'\\\\]|\\\\.)*'))*)\\}\"?".toRegex()
 }

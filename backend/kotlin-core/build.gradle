@@ -25,6 +25,7 @@ test {
 }
 
 dependencies {
+    api project(Dependencies.Modules.widgets)
     testImplementation Dependencies.TestLibraries.mockk
     testImplementation Dependencies.TestLibraries.kotlinTest
     testImplementation Dependencies.TestLibraries.junit5Api

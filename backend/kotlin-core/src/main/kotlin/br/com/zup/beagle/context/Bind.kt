@@ -17,6 +17,7 @@
 package br.com.zup.beagle.context
 
 import br.com.zup.beagle.context.expression.ExpressionHelper
+import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_VALUE_OF
 import java.io.Serializable
 
 /**
@@ -63,9 +64,15 @@ fun <T> expressionOf(expression: String) = Bind.Expression<T>(expression)
 /**
  * Transform Type value to Bind<Type>.
  */
+@Deprecated(DEPRECATED_VALUE_OF, ReplaceWith("constant(value)"))
 fun <T : Any> valueOf(value: T) = Bind.Value(value)
 
 /**
  * Checks if the value is null. Returns if the value is not null.
  */
 fun <T : Any> valueOfNullable(value: T?) = value?.let { valueOf(it) }
+
+/**
+ * Transform Type value to Bind<Type>.
+ */
+fun <T : Any> constant(value: T) = Bind.Value(value)
