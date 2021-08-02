@@ -68,6 +68,7 @@ class Dependencies : Plugin<Project> {
         const val springBoot = "2.3.5.RELEASE"
         const val micronaut = "2.1.3"
         const val incap = "0.3"
+        const val ksp = "1.5.21-1.0.0-beta05"
     }
 
     object BackendLibraries {
@@ -79,6 +80,7 @@ class Dependencies : Plugin<Project> {
         const val autoService = "com.google.auto.service:auto-service:${Versions.googleAutoService}"
         const val incap = "net.ltgt.gradle.incap:incap:${Versions.incap}"
         const val incapPrcessor = "net.ltgt.gradle.incap:incap-processor:${Versions.incap}"
+        const val ksp = "com.google.devtools.ksp:symbol-processing-api:${Versions.ksp}"
     }
 
     object GeneralLibraries {

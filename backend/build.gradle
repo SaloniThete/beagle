@@ -28,15 +28,18 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.4.10" apply false
     id "io.gitlab.arturbosch.detekt" version "1.14.2" apply false
     id "br.com.zup.beagle.dependencies" apply false
+    id "com.google.devtools.ksp" version "1.5.21-1.0.0-beta05" apply false
 }
 
 allprojects {
     apply plugin: "io.gitlab.arturbosch.detekt"
     apply plugin: "kotlin"
     apply plugin: "br.com.zup.beagle.dependencies"
+    apply plugin: "com.google.devtools.ksp"
 
     repositories {
         jcenter()
+        google()
     }
 
     detekt {
