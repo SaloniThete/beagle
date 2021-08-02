@@ -16,6 +16,4 @@
 
 package br.com.zup.beagle.annotation
 
-@Target(AnnotationTarget.PROPERTY)
-@Retention(AnnotationRetention.RUNTIME)
 annotation class ContextObject

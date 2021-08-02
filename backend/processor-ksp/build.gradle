@@ -16,11 +16,15 @@
 
 import br.com.zup.beagle.Dependencies
 
-apply from: rootProject.file('../jacoco.gradle')
+//apply from: rootProject.file('../jacoco.gradle')
 
 dependencies {
     implementation project(Dependencies.Modules.commonAnnotation)
     implementation Dependencies.ProcessorLibraries.ksp
 }
 
-apply from: rootProject.file('../maven-publish.gradle')
+sourceSets.main {
+    java.srcDirs("src/main/kotlin")
+}
+
+//apply from: rootProject.file('../maven-publish.gradle')

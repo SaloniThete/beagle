@@ -29,7 +29,7 @@ class ContextObjectVisitor(private val codeGenerator: CodeGenerator) : KSVisitor
         classDeclaration.primaryConstructor!!.accept(this, data)
     }
 
-    //TODO: refac this function
+    //TODO: refac this function to generate code with kotlin poet
     override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {
         val parent = function.parentDeclaration as KSClassDeclaration
         val packageName = parent.containingFile!!.packageName.asString()
@@ -38,7 +38,7 @@ class ContextObjectVisitor(private val codeGenerator: CodeGenerator) : KSVisitor
         val file = codeGenerator.createNewFile(Dependencies(true, function.containingFile!!), packageName , fileName)
         val contextObjects = getContextObjects(function.parameters)
 
-        file.appendText("package com.example\n\n")
+        file.appendText("package $packageName\n\n")
         file.appendText("fun $className.normalize(contextId: String): $className {\n")
 
         if (contextObjects.isNotEmpty()) {

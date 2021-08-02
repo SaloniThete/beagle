@@ -36,6 +36,7 @@ class Dependencies : Plugin<Project> {
     object Modules {
         const val widgets = ":widgets"
         const val processor = ":processor"
+        const val processorKsp = ":processor-ksp"
         const val framework = ":framework"
         const val widgetsDsl = ":widgets-dsl"
 
@@ -68,7 +69,7 @@ class Dependencies : Plugin<Project> {
         const val springBoot = "2.3.5.RELEASE"
         const val micronaut = "2.1.3"
         const val incap = "0.3"
-        const val ksp = "1.5.21-1.0.0-beta05"
+        const val ksp = "1.4.30-1.0.0-alpha02"
     }
 
     object BackendLibraries {
