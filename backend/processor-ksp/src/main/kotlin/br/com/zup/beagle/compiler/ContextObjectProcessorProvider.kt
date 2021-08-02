@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+package br.com.zup.beagle.compiler
+
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-
 
 class ContextObjectProcessorProvider: SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): com.google.devtools.ksp.processing.SymbolProcessor {

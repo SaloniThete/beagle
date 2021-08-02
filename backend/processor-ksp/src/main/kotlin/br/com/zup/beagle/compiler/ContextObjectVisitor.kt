@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package br.com.zup.beagle.compiler
+
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.symbol.KSClassDeclaration
