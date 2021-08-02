@@ -29,10 +29,11 @@ class ContextObjectVisitor(private val codeGenerator: CodeGenerator) : KSVisitor
         classDeclaration.primaryConstructor!!.accept(this, data)
     }
 
+    //TODO: refac this function
     override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {
         val parent = function.parentDeclaration as KSClassDeclaration
         val packageName = parent.containingFile!!.packageName.asString()
-        val className = "${parent.simpleName.asString()}"
+        val className = parent.simpleName.asString()
         val fileName = "${className}Normalizer"
         val file = codeGenerator.createNewFile(Dependencies(true, function.containingFile!!), packageName , fileName)
         val contextObjects = getContextObjects(function.parameters)
@@ -41,7 +42,7 @@ class ContextObjectVisitor(private val codeGenerator: CodeGenerator) : KSVisitor
         file.appendText("fun $className.normalize(contextId: String): $className {\n")
 
         if (contextObjects.isNotEmpty()) {
-            var str = contextObjects.fold("") { acc, name ->
+            val str = contextObjects.fold("") { acc, name ->
                 "$acc, $name = $name.normalize(contextId = \"\${contextId}.$name\")"
             }
             file.appendText("    return this.copy(contextId = contextId$str)")
