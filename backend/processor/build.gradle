@@ -40,4 +40,8 @@ dependencies {
     testImplementation Dependencies.TestLibraries.mockk
 }
 
+sourceSets.main {
+    java.srcDirs("src/main/kotlin")
+}
+
 apply from: rootProject.file('../maven-publish.gradle')

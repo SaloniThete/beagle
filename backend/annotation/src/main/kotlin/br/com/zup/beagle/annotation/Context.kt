@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-import br.com.zup.beagle.Dependencies
+package br.com.zup.beagle.annotation
 
-apply plugin: 'kotlin-kapt'
-
-dependencies {
-    api project(Dependencies.Modules.framework)
-    kapt project(':processor')
-    implementation project(':annotation')
-}
-
-sourceSets.main {
-    java.srcDirs("src/main/kotlin")
-}
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+annotation class Context
