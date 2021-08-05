@@ -150,7 +150,7 @@ class AnnotationProcessor : AbstractProcessor() {
         return PropertySpec.builder("${propertyName}Expression", buildBindTypeFor(elementType), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return expressionOf<$elementType>(\"@{\$contextId}.$propertyName\")")
+                    .addStatement("return expressionOf<$elementType>(\"@{\$contextId.$propertyName}\")")
                     .build()
             )
             .receiver(classTypeName)

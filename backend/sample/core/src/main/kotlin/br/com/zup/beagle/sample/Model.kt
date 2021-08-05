@@ -17,17 +17,26 @@
 package br.com.zup.beagle.sample
 
 import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.widget.action.Mode
 
 @Context
 data class Model(
     val contextId: String,
     val counter: Int,
     val post : String,
-    val child: Model2
+    val child: Model2,
+    val child2: Model3
     )
 
 @Context
 data class Model2(
     val contextId: String,
-    val title: String
+    val title: String,
+    val child: Model3
+)
+
+@Context
+data class Model3(
+    val contextId: String,
+    val name: String
 )

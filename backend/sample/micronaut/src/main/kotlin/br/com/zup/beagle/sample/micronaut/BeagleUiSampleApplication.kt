@@ -16,11 +16,43 @@
 
 package br.com.zup.beagle.sample.micronaut
 
+import br.com.zup.beagle.sample.Model
+import br.com.zup.beagle.sample.Model2
+import br.com.zup.beagle.sample.Model3
+import br.com.zup.beagle.sample.change
+import br.com.zup.beagle.sample.changeChild
+import br.com.zup.beagle.sample.changeTitle
+import br.com.zup.beagle.sample.childExpression
+import br.com.zup.beagle.sample.counterExpression
+import br.com.zup.beagle.sample.expression
+import br.com.zup.beagle.sample.nameExpression
+import br.com.zup.beagle.sample.normalize
+import br.com.zup.beagle.sample.postExpression
+import br.com.zup.beagle.sample.titleExpression
 import io.micronaut.runtime.Micronaut
 
 object BeagleUiSampleApplication {
     @JvmStatic
     fun main(args: Array<String>) {
-        Micronaut.run(BeagleUiSampleApplication::class.java)
+//        Micronaut.run(BeagleUiSampleApplication::class.java)
+        var a = Model(
+            contextId = "",
+            counter = 12,
+            post = "as",
+            child = Model2(
+                contextId = "",
+                title = "title",
+                child = Model3("",name = "name")
+            ),
+            child2 = Model3("",name = "name")
+        )
+        a = a.normalize("contextId")
+
+        println(a.expression)
+        println(a.counterExpression)
+        println(a.postExpression)
+        println(a.childExpression)
+        println(a.child.expression)
+        println(a.child.child.nameExpression)
     }
 }
