@@ -19,5 +19,15 @@ package br.com.zup.beagle.sample
 import br.com.zup.beagle.annotation.Context
 
 @Context
-data class Model(val counter: Int,
-                 val post : String)
+data class Model(
+    val contextId: String,
+    val counter: Int,
+    val post : String,
+    val child: Model2
+    )
+
+@Context
+data class Model2(
+    val contextId: String,
+    val title: String
+)

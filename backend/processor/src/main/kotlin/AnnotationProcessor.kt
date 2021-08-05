@@ -1,26 +1,3 @@
-import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.compiler.elementType
-import br.com.zup.beagle.widget.context.Bind
-import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
-import java.io.File
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.Processor
-import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.TypeElement
-import javax.tools.Diagnostic
-
 /*
  * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
  *
@@ -37,6 +14,27 @@ import javax.tools.Diagnostic
  * limitations under the License.
  */
 
+import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.widget.action.SetContext
+import br.com.zup.beagle.widget.context.Bind
+import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asTypeName
+import java.io.File
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.Processor
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.SourceVersion
+import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.TypeElement
+import javax.tools.Diagnostic
+
 @AutoService(Processor::class)
 class AnnotationProcessor : AbstractProcessor() {
     companion object {
@@ -50,7 +48,9 @@ class AnnotationProcessor : AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        roundEnv.getElementsAnnotatedWith(Context::class.java)
+        val elements = roundEnv.getElementsAnnotatedWith(Context::class.java)
+
+        elements
             .forEach {
                 if (it.kind != ElementKind.CLASS) {
                     processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated")
@@ -64,51 +64,120 @@ class AnnotationProcessor : AbstractProcessor() {
     private fun processAnnotation(element: Element) {
         val className = element.simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(element).toString()
-
         val fileName = "${className}Normalizer"
         val fileBuilder= FileSpec.builder(pack, fileName)
+        val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
+        val classTypeName = element.asType().asTypeName()
+
         fileBuilder.addImport("br.com.zup.beagle.widget.context","Bind","expressionOf")
-        val classBuilder = TypeSpec.classBuilder(fileName)
 
-        fileBuilder.addProperty(
-            PropertySpec.builder("test", Bind::class.asTypeName().parameterizedBy(listOf(String::class.asTypeName())), KModifier.PUBLIC)
-                .getter(
-                    FunSpec.getterBuilder()
-                        .addStatement("return expressionOf<String>(\"@{\$contextId}\")\n")
-                        .build()
-                )
-                .receiver(element.asType().asTypeName())
-                .build()
-        )
+        fileBuilder.addFunction(buildNormalizerFun(classTypeName, fields))
 
-        for (enclosed in element.enclosedElements) {
-            if (enclosed.kind == ElementKind.FIELD) {
-                val parameterTypeClassAnnotations = enclosed.kind.declaringClass.annotations
-                if (parameterTypeClassAnnotations.isNotEmpty() && parameterTypeClassAnnotations.any { c -> c.toString() == "Context" }) {
+        fileBuilder.addProperty(buildRootExpression(classTypeName))
+        fileBuilder.addFunction(buildRootChangeFun(element, true))
+        fileBuilder.addFunction(buildRootChangeFun(element, false))
 
-                }
+        fields.forEach { enclosed ->
+            if (enclosed.simpleName.toString() != "contextId") {
                 val propertyName = enclosed.simpleName.toString()
-                fileBuilder.addProperty(
-                    PropertySpec.builder(propertyName, enclosed.asType().asTypeName(), KModifier.PUBLIC)
-                        .initializer("null")
-                        .build()
-                )
+
+                fileBuilder.addProperty(buildExpressionPropertyFor(enclosed, classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, enclosed.asType().asTypeName(), classTypeName))
                 fileBuilder.addFunction(
-                    FunSpec.builder("get${enclosed.simpleName}")
-                        .returns(enclosed.asType().asTypeName())
-                        .addStatement("return ${enclosed.simpleName}")
-                        .build()
-                )
-                fileBuilder.addFunction(
-                    FunSpec.builder("set${enclosed.simpleName}")
-                        .addParameter(ParameterSpec.builder("${enclosed.simpleName}", enclosed.asType().asTypeName()).build())
-                        .addStatement("this.${enclosed.simpleName} = ${enclosed.simpleName}")
-                        .build()
+                    buildChangeFunFor(
+                        propertyName,
+                        buildBindTypeFor(enclosed.asType().asTypeName()),
+                        classTypeName
+                    )
                 )
             }
         }
+
         val file = fileBuilder.build()
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
         file.writeTo(File(kaptKotlinGeneratedDir))
     }
+
+    private fun buildNormalizerFun(classTypeName: TypeName, classFields: List<Element>): FunSpec {
+        val contextObjects = getContextObjectsFields(classFields)
+        val statement = buildNormalizeFuncStatementWith(contextObjects)
+
+        return FunSpec.builder("normalize")
+                    .receiver(classTypeName)
+                    .addParameter("contextId", String::class)
+                    .addStatement(statement)
+                    .returns(classTypeName)
+                    .build()
+    }
+
+    private fun buildNormalizeFuncStatementWith(contextObjectsFields: List<Element>): String {
+        if (contextObjectsFields.isNotEmpty()) {
+            val contextObjectsNames = contextObjectsFields.map { it.simpleName.toString() }
+            val str = contextObjectsNames.fold("") { acc, name ->
+                "$acc, $name = $name.normalize(contextId = \"\${contextId}.$name\")"
+            }
+
+            return "return this.copy(contextId = contextId$str)"
+        }
+        return "return this.copy(contextId = contextId)"
+    }
+
+    private fun getContextObjectsFields(parameters: List<Element>): List<Element> {
+        fun isElementContextAnnotated(element: Element): Boolean {
+            val typeElement = processingEnv.elementUtils.getTypeElement(element.asType().toString())
+            return typeElement?.getAnnotation(Context::class.java) != null
+        }
+
+        return parameters.filter { isElementContextAnnotated(it) }
+    }
+
+    private fun buildRootExpression(classTypeName: TypeName): PropertySpec {
+        return PropertySpec.builder("expression", buildBindTypeFor(classTypeName), KModifier.PUBLIC)
+            .getter(
+                FunSpec.getterBuilder()
+                    .addStatement("return expressionOf<$classTypeName>(\"@{\$contextId}\")")
+                    .build()
+            )
+            .receiver(classTypeName)
+            .build()
+    }
+
+
+    private fun buildExpressionPropertyFor(element: Element, classTypeName: TypeName): PropertySpec {
+        val propertyName = element.simpleName.toString()
+        val elementType = element.asType().asTypeName()
+
+        return PropertySpec.builder("${propertyName}Expression", buildBindTypeFor(elementType), KModifier.PUBLIC)
+            .getter(
+                FunSpec.getterBuilder()
+                    .addStatement("return expressionOf<$elementType>(\"@{\$contextId}.$propertyName\")")
+                    .build()
+            )
+            .receiver(classTypeName)
+            .build()
+    }
+
+    private fun buildRootChangeFun(element: Element, isBind: Boolean): FunSpec {
+        val type = element.asType().asTypeName()
+        val parameterName = element.simpleName.toString().decapitalize()
+        val parameterType = if (isBind) buildBindTypeFor(type) else type
+
+        return FunSpec.builder("change")
+            .receiver(type)
+            .addParameter(parameterName, parameterType)
+            .addStatement("return SetContext(contextId = contextId, value = $parameterName)")
+            .returns(SetContext::class)
+            .build()
+    }
+
+    private fun buildChangeFunFor(parameterName: String, parameterType: TypeName, receiver: TypeName): FunSpec {
+        return FunSpec.builder("change${parameterName.capitalize()}")
+            .receiver(receiver)
+            .addParameter(parameterName, parameterType)
+            .addStatement("return SetContext(contextId = contextId, path = \"$parameterName\", value = $parameterName)")
+            .returns(SetContext::class)
+            .build()
+    }
+
+    private fun buildBindTypeFor(type: TypeName) = Bind::class.asTypeName().parameterizedBy(listOf(type))
 }
