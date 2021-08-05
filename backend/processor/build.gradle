@@ -40,6 +40,10 @@ dependencies {
     testImplementation Dependencies.TestLibraries.mockk
 }
 
+test {
+    useJUnitPlatform()
+}
+
 sourceSets.main {
     java.srcDirs("src/main/kotlin")
 }

@@ -36,7 +36,7 @@ import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
 @AutoService(Processor::class)
-class AnnotationProcessor : AbstractProcessor() {
+class AnnotationProcessor: AbstractProcessor() {
     companion object {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
     }
