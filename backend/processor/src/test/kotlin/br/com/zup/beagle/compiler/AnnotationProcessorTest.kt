@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 @Context
-data class ContextObject(val contextId: String, val title: String)
+data class ContextObject(override val contextId: String, val title: String): br.com.zup.beagle.widget.context.ContextObject
 
 internal class AnnotationProcessorTest {
     @Test

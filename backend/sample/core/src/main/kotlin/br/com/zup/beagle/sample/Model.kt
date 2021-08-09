@@ -26,7 +26,7 @@ data class Model(
     val post : String,
     val child: Model2,
     val child2: Model3
-    ): ContextObject
+): ContextObject
 
 @Context
 data class Model2(
@@ -37,6 +37,12 @@ data class Model2(
 
 @Context
 data class Model3(
+    override val contextId: String,
+    val name: String
+): ContextObject
+
+@Context
+data class Model4(
     override val contextId: String,
     val name: String
 ): ContextObject
