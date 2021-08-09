@@ -14,29 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.sample
+package br.com.zup.beagle.widget.context
 
-import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.widget.context.ContextObject
-
-@Context
-data class Model(
-    override val contextId: String,
-    val counter: Int,
-    val post : String,
-    val child: Model2,
-    val child2: Model3
-    ): ContextObject
-
-@Context
-data class Model2(
-    override val contextId: String,
-    val title: String,
-    val child: Model3
-): ContextObject
-
-@Context
-data class Model3(
-    override val contextId: String,
-    val name: String
-): ContextObject
+interface ContextObject {
+    val contextId: String
+}

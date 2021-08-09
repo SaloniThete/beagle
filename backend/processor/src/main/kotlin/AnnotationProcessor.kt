@@ -17,6 +17,7 @@
 import br.com.zup.beagle.annotation.Context
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.widget.context.ContextObject
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -52,13 +53,32 @@ class AnnotationProcessor: AbstractProcessor() {
 
         elements
             .forEach {
-                if (it.kind != ElementKind.CLASS) {
-                    processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated")
+                if (!isAnnotationValid(it)) {
                     return true
                 }
+
                 processAnnotation(it)
             }
         return false
+    }
+
+    private fun isAnnotationValid(element: Element): Boolean {
+        if (element.kind != ElementKind.CLASS) {
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated with @Context")
+            return false
+        }
+
+        val typeElement = processingEnv.elementUtils.getTypeElement(element.asType().toString())
+        val inheritFromContextObject = typeElement.interfaces.any { int ->
+            int.asTypeName().toString() == ContextObject::class.java.name
+        }
+
+        if (!inheritFromContextObject) {
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes that inherit from ContextObject can be annotated with @Context")
+            return false
+        }
+
+        return true
     }
 
     private fun processAnnotation(element: Element) {
@@ -69,7 +89,7 @@ class AnnotationProcessor: AbstractProcessor() {
         val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
         val classTypeName = element.asType().asTypeName()
 
-        fileBuilder.addImport("br.com.zup.beagle.widget.context","Bind","expressionOf")
+        fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf")
 
         fileBuilder.addFunction(buildNormalizerFun(classTypeName, fields))
 
