@@ -74,7 +74,7 @@ class AnnotationProcessor: AbstractProcessor() {
         }
 
         if (!inheritFromContextObject) {
-            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes that inherit from ContextObject can be annotated with @Context")
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes that inherit from ContextObject can be annotated with @Context", element)
             return false
         }
 
