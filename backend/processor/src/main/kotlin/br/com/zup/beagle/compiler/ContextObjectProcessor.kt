@@ -37,7 +37,7 @@ import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
 @AutoService(Processor::class)
-class AnnotationProcessor: AbstractProcessor() {
+class ContextObjectProcessor: AbstractProcessor() {
     companion object {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
     }
@@ -100,16 +100,11 @@ class AnnotationProcessor: AbstractProcessor() {
         fields.forEach { enclosed ->
             if (enclosed.simpleName.toString() != "contextId") {
                 val propertyName = enclosed.simpleName.toString()
+                val propertyType = enclosed.asType().asTypeName().convertToKotlinStringIfNeeded()
 
                 fileBuilder.addProperty(buildExpressionPropertyFor(enclosed, classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, enclosed.asType().asTypeName(), classTypeName))
-                fileBuilder.addFunction(
-                    buildChangeFunFor(
-                        propertyName,
-                        buildBindTypeFor(enclosed.asType().asTypeName()),
-                        classTypeName
-                    )
-                )
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
             }
         }
 
@@ -152,7 +147,7 @@ class AnnotationProcessor: AbstractProcessor() {
     }
 
     private fun buildRootExpression(classTypeName: TypeName): PropertySpec {
-        return PropertySpec.builder("expression", buildBindTypeFor(classTypeName), KModifier.PUBLIC)
+        return PropertySpec.builder("expression", classTypeName.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
                     .addStatement("return expressionOf<$classTypeName>(\"@{\$contextId}\")")
@@ -165,9 +160,9 @@ class AnnotationProcessor: AbstractProcessor() {
 
     private fun buildExpressionPropertyFor(element: Element, classTypeName: TypeName): PropertySpec {
         val propertyName = element.simpleName.toString()
-        val elementType = element.asType().asTypeName()
+        val elementType = element.asType().asTypeName().convertToKotlinStringIfNeeded()
 
-        return PropertySpec.builder("${propertyName}Expression", buildBindTypeFor(elementType), KModifier.PUBLIC)
+        return PropertySpec.builder("${propertyName}Expression", elementType.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
                     .addStatement("return expressionOf<$elementType>(\"@{\$contextId.$propertyName}\")")
@@ -180,7 +175,7 @@ class AnnotationProcessor: AbstractProcessor() {
     private fun buildRootChangeFun(element: Element, isBind: Boolean): FunSpec {
         val type = element.asType().asTypeName()
         val parameterName = element.simpleName.toString().decapitalize()
-        val parameterType = if (isBind) buildBindTypeFor(type) else type
+        val parameterType = if (isBind) type.asBindType() else type
 
         return FunSpec.builder("change")
             .receiver(type)
@@ -199,5 +194,12 @@ class AnnotationProcessor: AbstractProcessor() {
             .build()
     }
 
-    private fun buildBindTypeFor(type: TypeName) = Bind::class.asTypeName().parameterizedBy(listOf(type))
+    private fun TypeName.asBindType() = Bind::class.asTypeName().parameterizedBy(listOf(this))
+
+    private fun TypeName.convertToKotlinStringIfNeeded(): TypeName {
+        if (this == java.lang.String::class.java.asTypeName()) {
+            return String::class.asTypeName()
+        }
+        return this
+    }
 }
