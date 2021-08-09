@@ -22,12 +22,15 @@ import br.com.zup.beagle.ext.applyFlex
 import br.com.zup.beagle.ext.applyStyle
 import br.com.zup.beagle.ext.unitPercent
 import br.com.zup.beagle.ext.unitReal
+import br.com.zup.beagle.sample.widget.SampleTextField
+import br.com.zup.beagle.sample.widget.valueExpression
 import br.com.zup.beagle.widget.action.Alert
 import br.com.zup.beagle.widget.action.Confirm
 import br.com.zup.beagle.widget.action.RequestActionMethod
 import br.com.zup.beagle.widget.action.SendRequest
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.AlignSelf
 import br.com.zup.beagle.widget.core.EdgeValue
 import br.com.zup.beagle.widget.core.Flex
@@ -64,6 +67,7 @@ object ScreenContextBuilder : ScreenBuilder {
     )
 
     override fun build() = Screen(
+        context = ContextData("test", ""),
         navigationBar = NavigationBar(
             title = "Beagle Context",
             showBackButton = true
@@ -82,6 +86,18 @@ object ScreenContextBuilder : ScreenBuilder {
                                     alignSelf = AlignSelf.CENTER
                                 )
                             )
+                        ),
+                        Text(text = expressionOf("@{test}")),
+                        SampleTextField(
+                            placeholder = "test",
+                            onChange = {
+                                listOf(
+                                    SetContext(
+                                        contextId = "test",
+                                        value = it.valueExpression
+                                    )
+                                )
+                            }
                         ),
                         createZip(),
                         createTextInput(),
