@@ -40,9 +40,3 @@ data class Model3(
     override val contextId: String,
     val name: String
 ): ContextObject
-
-@Context
-data class Model4(
-    override val contextId: String,
-    val name: String
-): ContextObject

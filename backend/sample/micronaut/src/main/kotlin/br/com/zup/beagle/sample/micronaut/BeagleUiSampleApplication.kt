@@ -20,7 +20,7 @@ import br.com.zup.beagle.sample.Model
 import br.com.zup.beagle.sample.Model2
 import br.com.zup.beagle.sample.Model3
 import br.com.zup.beagle.sample.change
-import br.com.zup.beagle.sample.changeChild
+import br.com.zup.beagle.sample.changeCounter
 import br.com.zup.beagle.sample.changeTitle
 import br.com.zup.beagle.sample.childExpression
 import br.com.zup.beagle.sample.counterExpression
@@ -28,7 +28,7 @@ import br.com.zup.beagle.sample.expression
 import br.com.zup.beagle.sample.nameExpression
 import br.com.zup.beagle.sample.normalize
 import br.com.zup.beagle.sample.postExpression
-import br.com.zup.beagle.sample.titleExpression
+import br.com.zup.beagle.widget.context.expressionOf
 import io.micronaut.runtime.Micronaut
 
 object BeagleUiSampleApplication {
@@ -54,5 +54,9 @@ object BeagleUiSampleApplication {
         println(a.childExpression)
         println(a.child.expression)
         println(a.child.child.nameExpression)
+
+        println(a.child.changeTitle("a"))
+        println(a.changeCounter(1))
+        println(a.changeCounter(a.counterExpression))
     }
 }
