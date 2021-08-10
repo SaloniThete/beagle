@@ -19,9 +19,10 @@ package br.com.zup.beagle.serialization.jackson
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.widget.Widget
-import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.ContextObject
+import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializerProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -29,6 +30,9 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import java.io.StringWriter
+import java.io.Writer
+
 
 internal class BeagleImplicitContextSerializerTest {
 
@@ -36,7 +40,7 @@ internal class BeagleImplicitContextSerializerTest {
 
     @DisplayName("When call serialization with implicit context")
     @Test
-    fun serialize_beagle_implicit_context_should_call_serializeImplicitContexts() = testSerialize(implicitContextTest) {
+    fun serialize_beagle_implicit_context_should_call_serializeImplicitContexts() = mockSerialize(implicitContextTest) {
         verify(exactly = 1) { serializeImplicitContexts(findImplicitContexts(implicitContextTest), it) }
     }
 
@@ -52,7 +56,7 @@ internal class BeagleImplicitContextSerializerTest {
         Assertions.assertEquals(result.isEmpty(), true)
     }
 
-    private fun testSerialize(bean: Any, verify: (JsonGenerator) -> Unit) {
+    private fun mockSerialize(bean: Any, verify: (JsonGenerator) -> Unit) {
         val generator = mockk<JsonGenerator>(relaxUnitFun = true)
         val provider = mockk<SerializerProvider>()
 
@@ -63,10 +67,29 @@ internal class BeagleImplicitContextSerializerTest {
         verify(generator)
     }
 
+    @Test
+    fun serialize_beagle_implicit_context_should_json_output() = serialize(implicitContextTest) {
+        Assertions.assertEquals(
+            it.toString(),
+            "{\"${COMPONENT_TYPE}\":\"custom:implicitContextTest\",\"implicitContext\":[]}")
+    }
+
+    private fun serialize(bean: Any, verify: (Writer) -> Unit) {
+        val jsonWriter: Writer = StringWriter()
+        val generator: JsonGenerator = JsonFactory().createGenerator(jsonWriter)
+        val provider = ObjectMapper().serializerProvider
+        generator.codec = ObjectMapper()
+
+        BeagleTypeSerializer(mockk(relaxed = true), arrayOf(), arrayOf()).serialize(bean, generator, provider)
+
+        generator.flush()
+        verify(jsonWriter)
+    }
+
     @RegisterWidget
     private class ImplicitContextTest(
         @ImplicitContext
-        val implicitContext: ((ContextObjectTest) -> List<Action>)? = null)
+        val implicitContext: ((ContextObjectTest) -> List<Any>)? = null)
         : Widget()
 
     private data class ContextObjectTest(
