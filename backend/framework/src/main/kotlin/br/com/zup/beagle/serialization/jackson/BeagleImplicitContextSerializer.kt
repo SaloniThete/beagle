@@ -27,19 +27,7 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
-internal fun serializeImplicitContexts(bean: Any, generator: JsonGenerator) {
-    val implicitContexts = findImplicitContexts(bean)
-    for (implicitContext in implicitContexts) {
-        serializeAsImplicitContext(implicitContext, generator)
-    }
-}
-
-private fun serializeAsImplicitContext(implicitContext: MutableMap.MutableEntry<String, Any?>, generator: JsonGenerator) {
-    generator.writeFieldName(implicitContext.key)
-    generator.writeObject(implicitContext.value)
-}
-
-private fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
+internal fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
     val implicitContexts = HashMap<String, Any?>()
     bean?.let {
         for (property in bean::class.memberProperties) {
@@ -51,6 +39,17 @@ private fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
     }
 
     return implicitContexts
+}
+
+internal fun serializeImplicitContexts(implicitContexts: HashMap<String, Any?>, generator: JsonGenerator) {
+    for (implicitContext in implicitContexts) {
+        serializeAsImplicitContext(implicitContext, generator)
+    }
+}
+
+private fun serializeAsImplicitContext(implicitContext: MutableMap.MutableEntry<String, Any?>, generator: JsonGenerator) {
+    generator.writeFieldName(implicitContext.key)
+    generator.writeObject(implicitContext.value)
 }
 
 private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
@@ -69,6 +68,7 @@ private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
         ?.associate { it to (if (it.name == "contextId") id else null) }
         ?: error("parameters not found")
 
+    inputClass.kotlin.primaryConstructor?.isAccessible = true
     val inputParam = inputClass.kotlin.primaryConstructor?.callBy(values)
     return myMethod?.invoke(fieldValue, inputParam)
 }
