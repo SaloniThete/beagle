@@ -15,6 +15,7 @@
  */
 
 import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.compiler.elementType
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
@@ -127,9 +128,14 @@ class ContextObjectProcessor: AbstractProcessor() {
 
     private fun buildNormalizeFuncStatementWith(contextObjectsFields: List<Element>): String {
         if (contextObjectsFields.isNotEmpty()) {
-            val contextObjectsNames = contextObjectsFields.map { it.simpleName.toString() }
-            val str = contextObjectsNames.fold("") { acc, name ->
-                "$acc, $name = $name.normalize(contextId = \"\${contextId}.$name\")"
+            val str = contextObjectsFields.fold("") { acc, contextObject ->
+                val name = contextObject.simpleName.toString()
+
+                if (findListRegexMatch(contextObject.asType().toString()) != null) {
+                    "$acc, $name = $name.mapIndexed { index, contextObject -> contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")}"
+                } else {
+                    "$acc, $name = $name.normalize(contextId = \"\${contextId}.$name\")"
+                }
             }
 
             return "return this.copy(contextId = contextId$str)"
@@ -139,11 +145,21 @@ class ContextObjectProcessor: AbstractProcessor() {
 
     private fun getContextObjectsFields(parameters: List<Element>): List<Element> {
         fun isElementContextAnnotated(element: Element): Boolean {
-            val typeElement = processingEnv.elementUtils.getTypeElement(element.asType().toString())
+            val elementTypeName = element.asType().toString()
+            val match = findListRegexMatch(elementTypeName)
+
+            val typeElement = processingEnv.elementUtils.getTypeElement(match ?: elementTypeName)
             return typeElement?.getAnnotation(Context::class.java) != null
         }
 
         return parameters.filter { isElementContextAnnotated(it) }
+    }
+
+    private fun findListRegexMatch(input: String): String? {
+        val listRegularExpression = "(?<=java.util.List\\<).+?(?=\\>)".toRegex()
+        val match = listRegularExpression.find(input)
+
+        return match?.value
     }
 
     private fun buildRootExpression(classTypeName: TypeName): PropertySpec {
