@@ -41,3 +41,18 @@ fun <T : Any> valueOf(value: T) = Bind.Value(value)
  * Checks if the value is null. Returns if the value is not null.
  */
 fun <T : Any> valueOfNullable(value: T?) = value?.let { valueOf(it) }
+
+/**
+ * Access elements of a list type expression with a given index
+ */
+operator fun <T> Bind.Expression<List<T>>.get(index: Int): Bind<List<T>> {
+    val regularExpression = "(\\@\\{([\\s\\S])+\\})".toRegex()
+    val expressionValue = this.value
+
+    regularExpression.find(expressionValue)?.let {
+        val newExpressionValue = "${expressionValue.dropLast(1)}[$index]}"
+        return expressionOf(newExpressionValue)
+    }
+
+    return this
+}
