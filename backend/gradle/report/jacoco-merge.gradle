@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.automatedtests.constants
+jacoco {
+    toolVersion = "0.8.7"
+}
 
-const val CYAN_BLUE = "#0f4c81"
-const val BLACK = "#000000"
-const val LIGHT_GREY = "#888888"
+task generateMergedReport(type: JacocoReport) {
+    dependsOn = subprojects.test
+
+    additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories.setFrom files(subprojects.sourceSets.main.output)
+
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
