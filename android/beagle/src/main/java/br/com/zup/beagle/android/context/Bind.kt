@@ -21,6 +21,7 @@ package br.com.zup.beagle.android.context
 import br.com.zup.beagle.android.context.tokenizer.ExpressionToken
 import br.com.zup.beagle.android.context.tokenizer.TokenParser
 import br.com.zup.beagle.android.utils.BeagleRegex
+import br.com.zup.beagle.android.utils.Constants.DEPRECATED_VALUE_OF
 import br.com.zup.beagle.android.utils.getExpressions
 import br.com.zup.beagle.core.BeagleJson
 import java.lang.reflect.Type
@@ -50,7 +51,7 @@ sealed class Bind<T> {
 }
 
 internal inline fun <reified T : Any> expressionOrValueOf(text: String): Bind<T> =
-    if (text.hasExpression()) expressionOf(text) else valueOf(text) as Bind<T>
+    if (text.hasExpression()) expressionOf(text) else constant(text) as Bind<T>
 
 internal fun expressionOrValueOfNullable(text: String?): Bind<String>? =
     if (text?.hasExpression() == true) expressionOf(text) else valueOfNullable(text)
@@ -63,7 +64,11 @@ inline fun <reified T> expressionOf(expressionText: String): Bind.Expression<T> 
     return Bind.Expression(expressionTokens, expressionText, T::class.java)
 }
 
+@Deprecated(DEPRECATED_VALUE_OF, ReplaceWith("constant(value)"))
 inline fun <reified T : Any> valueOf(value: T) = Bind.Value(value)
-inline fun <reified T : Any> valueOfNullable(value: T?): Bind<T>? = value?.let { valueOf(it) }
+
+inline fun <reified T : Any> constant(value: T) = Bind.Value(value)
+
+inline fun <reified T : Any> valueOfNullable(value: T?): Bind<T>? = value?.let { constant(it) }
 
 internal fun Any.hasExpression() = this.toString().contains(BeagleRegex.EXPRESSION_REGEX)

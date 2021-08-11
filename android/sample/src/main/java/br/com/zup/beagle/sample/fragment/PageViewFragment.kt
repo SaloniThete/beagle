@@ -23,14 +23,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import br.com.zup.beagle.android.components.Text
 import br.com.zup.beagle.android.components.page.PageIndicator
-import br.com.zup.beagle.android.utils.toView
-import br.com.zup.beagle.widget.core.AlignSelf
-import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.android.components.page.PageView
 import br.com.zup.beagle.android.context.ContextData
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.context.expressionOf
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.utils.toView
 import br.com.zup.beagle.ext.applyFlex
+import br.com.zup.beagle.widget.core.AlignSelf
+import br.com.zup.beagle.widget.core.Flex
 import br.com.zup.beagle.widget.core.TextAlignment
 
 class PageViewFragment : Fragment() {
@@ -53,19 +53,19 @@ class PageViewFragment : Fragment() {
                 unselectedColor = "#888888"
             ),
             children = listOf(
-                Text(text = expressionOf("@{pages[0]}"), alignment = valueOf(TextAlignment.CENTER)).applyFlex(
+                Text(text = expressionOf("@{pages[0]}"), alignment = constant(TextAlignment.CENTER)).applyFlex(
                     Flex(
                         alignSelf = AlignSelf.CENTER,
                         grow = 1.0
                     )
                 ),
-                Text(text = expressionOf("@{pages[1]}"), alignment = valueOf(TextAlignment.CENTER)).applyFlex(
+                Text(text = expressionOf("@{pages[1]}"), alignment = constant(TextAlignment.CENTER)).applyFlex(
                     Flex(
                         alignSelf = AlignSelf.CENTER,
                         grow = 1.0
                     )
                 ),
-                Text(text = expressionOf("@{pages[2]}"), alignment = valueOf(TextAlignment.CENTER)).applyFlex(
+                Text(text = expressionOf("@{pages[2]}"), alignment = constant(TextAlignment.CENTER)).applyFlex(
                     Flex(
                         alignSelf = AlignSelf.CENTER,
                         grow = 1.0

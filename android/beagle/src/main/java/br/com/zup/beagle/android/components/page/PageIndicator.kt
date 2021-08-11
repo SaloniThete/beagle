@@ -17,7 +17,7 @@
 package br.com.zup.beagle.android.components.page
 
 import br.com.zup.beagle.android.context.Bind
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.utils.observeBindChanges
 import br.com.zup.beagle.android.utils.toAndroidColor
 import br.com.zup.beagle.android.view.ViewFactory
@@ -46,7 +46,7 @@ class PageIndicator(
         unselectedColor: String,
         numberOfPages: Int? = null,
         currentPage: Int,
-    ) : this(selectedColor, unselectedColor, numberOfPages, valueOf(currentPage))
+    ) : this(selectedColor, unselectedColor, numberOfPages, constant(currentPage))
 
     @Transient
     private lateinit var pageIndicator: BeaglePageIndicatorView

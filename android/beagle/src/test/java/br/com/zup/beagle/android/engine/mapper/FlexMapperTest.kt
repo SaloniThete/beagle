@@ -17,7 +17,7 @@
 package br.com.zup.beagle.android.engine.mapper
 
 import android.view.View
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.utils.Observer
 import br.com.zup.beagle.android.utils.dp
@@ -54,9 +54,8 @@ import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
 import io.mockk.verifyOrder
-import io.mockk.verifySequence
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -233,7 +232,7 @@ class FlexMapperTest {
     fun `GIVEN display NONE WHEN call observe bind changes THEN it should set in yoga node correct display`() {
         // Given
         val style = Style(
-            display = valueOf(Display.NONE)
+            display = constant(Display.NONE)
         )
 
         // When
@@ -251,7 +250,7 @@ class FlexMapperTest {
     fun `GIVEN display FLEX WHEN call observe bind changes THEN it should set in yoga node correct display`() {
         // Given
         val style = Style(
-            display = valueOf(Display.FLEX)
+            display = constant(Display.FLEX)
         )
 
         // When

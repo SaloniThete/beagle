@@ -19,8 +19,11 @@ package br.com.zup.beagle.android.action
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import br.com.zup.beagle.android.action.Mode.APPEND
+import br.com.zup.beagle.android.action.Mode.PREPEND
+import br.com.zup.beagle.android.action.Mode.REPLACE
 import br.com.zup.beagle.android.context.Bind
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.data.serializer.BeagleMoshi
 import br.com.zup.beagle.android.logger.BeagleMessageLogs
 import br.com.zup.beagle.android.utils.evaluateExpression
@@ -83,7 +86,7 @@ data class AddChildren(
         analytics: ActionAnalyticsConfig? = null,
     ) : this(
         componentId = componentId,
-        value = valueOf(value),
+        value = constant(value),
         mode = mode,
         analytics = analytics
     )

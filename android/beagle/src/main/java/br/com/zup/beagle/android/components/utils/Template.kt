@@ -17,8 +17,8 @@
 package br.com.zup.beagle.android.components.utils
 
 import br.com.zup.beagle.android.context.Bind
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.context.expressionOrValueOf
-import br.com.zup.beagle.android.context.valueOf
 import br.com.zup.beagle.core.BeagleJson
 import br.com.zup.beagle.core.ServerDrivenComponent
 
@@ -36,5 +36,5 @@ data class Template(
 ) {
     constructor(case: String, view: ServerDrivenComponent) : this(expressionOrValueOf(case), view)
 
-    constructor(case: Boolean, view: ServerDrivenComponent) : this(valueOf(case), view)
+    constructor(case: Boolean, view: ServerDrivenComponent) : this(constant(case), view)
 }

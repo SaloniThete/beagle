@@ -25,7 +25,7 @@ import androidx.core.widget.TextViewCompat
 import br.com.zup.beagle.android.action.SetContext
 import br.com.zup.beagle.android.components.utils.styleManagerFactory
 import br.com.zup.beagle.android.context.ContextData
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.testutil.setPrivateField
@@ -160,7 +160,7 @@ internal class TextInputTest : BaseComponentTest() {
         @DisplayName("Then should show edit text enabled")
         fun testFieldEnabledTrue() {
             // Given
-            textInput = callTextInput().copy(enabled = valueOf(true), disabled = null, readOnly = null)
+            textInput = callTextInput().copy(enabled = constant(true), disabled = null, readOnly = null)
 
             // When
             val view = textInput.buildView(rootView)
@@ -176,7 +176,7 @@ internal class TextInputTest : BaseComponentTest() {
         @DisplayName("Then should show edit text disabled")
         fun testFieldEnabledFalse() {
             // Given
-            textInput = callTextInput().copy(enabled = valueOf(false), disabled = null, readOnly = null)
+            textInput = callTextInput().copy(enabled = constant(false), disabled = null, readOnly = null)
 
             // When
             val view = textInput.buildView(rootView)

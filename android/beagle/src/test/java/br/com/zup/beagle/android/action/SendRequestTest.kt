@@ -20,7 +20,7 @@ import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import br.com.zup.beagle.android.context.ContextData
-import br.com.zup.beagle.android.context.valueOf
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.utils.evaluateExpression
 import br.com.zup.beagle.android.utils.handleEvent
@@ -240,7 +240,7 @@ class SendRequestTest : BaseAsyncActionTest() {
         data: Any? = null,
     ): SendRequest {
         return SendRequest(
-            url = valueOf(""),
+            url = constant(""),
             onSuccess = onSuccess,
             onError = onError,
             onFinish = onFinish,

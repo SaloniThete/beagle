@@ -20,8 +20,8 @@ import android.view.View
 import android.widget.ImageView
 import br.com.zup.beagle.android.components.utils.RoundedImageView
 import br.com.zup.beagle.android.context.Bind
+import br.com.zup.beagle.android.context.constant
 import br.com.zup.beagle.android.context.expressionOrValueOf
-import br.com.zup.beagle.android.context.valueOf
 import br.com.zup.beagle.android.engine.mapper.ViewMapper
 import br.com.zup.beagle.android.imagedownloader.DefaultImageDownloader
 import br.com.zup.beagle.android.logger.BeagleMessageLogs
@@ -47,7 +47,7 @@ data class Image constructor(
     val mode: ImageContentMode? = null,
 ) : WidgetView() {
 
-    constructor(path: ImagePath, mode: ImageContentMode? = null) : this(valueOf(path), mode)
+    constructor(path: ImagePath, mode: ImageContentMode? = null) : this(constant(path), mode)
 
     @Transient
     private val viewMapper: ViewMapper = ViewMapper()
