@@ -17,7 +17,7 @@
 package br.com.zup.beagle.context
 
 import br.com.zup.beagle.context.expression.ExpressionHelper
-import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_VALUE_OF
+import br.com.zup.beagle.context.utils.BeagleConstants.DEPRECATED_VALUE_OF
 import java.io.Serializable
 
 /**
@@ -47,7 +47,7 @@ sealed class Bind<T> : Serializable {
         /**
          * Transform Type value to Bind<Type>.
          */
-        fun <T : Any> value(value: T) = valueOf(value)
+        fun <T : Any> value(value: T) = constant(value)
 
         /**
          * Checks if the value is null. Returns if the value is not null.
@@ -70,7 +70,7 @@ fun <T : Any> valueOf(value: T) = Bind.Value(value)
 /**
  * Checks if the value is null. Returns if the value is not null.
  */
-fun <T : Any> valueOfNullable(value: T?) = value?.let { valueOf(it) }
+fun <T : Any> valueOfNullable(value: T?) = value?.let { constant(it) }
 
 /**
  * Transform Type value to Bind<Type>.

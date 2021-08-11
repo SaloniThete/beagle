@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.context.utils
+package br.com.zup.beagle.sample.spring.service
 
-internal object BeagleRegex {
-    val EXPRESSION_REGEX = "(\\\\*)\"?@\\{(([^'\\}]|('([^'\\\\]|\\\\.)*'))*)\\}\"?".toRegex()
+import br.com.zup.beagle.sample.builder.OperationScreenBuilder
+import org.springframework.stereotype.Service
+
+@Service
+class SampleOperationsService {
+    fun createOperations() = OperationScreenBuilder
 }
