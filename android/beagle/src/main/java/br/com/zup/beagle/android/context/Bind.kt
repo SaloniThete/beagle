@@ -18,10 +18,10 @@
 
 package br.com.zup.beagle.android.context
 
+import BeagleConstants.DEPRECATED_VALUE_OF
 import br.com.zup.beagle.android.context.tokenizer.ExpressionToken
 import br.com.zup.beagle.android.context.tokenizer.TokenParser
 import br.com.zup.beagle.android.utils.BeagleRegex
-import br.com.zup.beagle.android.utils.Constants.DEPRECATED_VALUE_OF
 import br.com.zup.beagle.android.utils.getExpressions
 import br.com.zup.beagle.core.BeagleJson
 import java.lang.reflect.Type
