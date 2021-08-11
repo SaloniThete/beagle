@@ -28,16 +28,19 @@ fun multiply(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOpera
 /** String **/
 fun capitalize(input: Bind<String>): Bind.Expression<String> = createOperation("capitalize", input)
 fun concat(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("concat", *inputs)
+
 fun lowercase(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("lowercase", *inputs)
+fun Bind<String>.toLowerCase(): Bind.Expression<String> = createOperation("lowercase", this)
+
 fun uppercase(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("uppercase", *inputs)
 fun <I> substring(vararg inputs: Bind<I>): Bind.Expression<String> = createOperation("substr", *inputs)
 
 /** comparison **/
-fun eq(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("eq", *inputs)
-fun gt(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("gt", *inputs)
-fun gte(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("gte", *inputs)
-fun lt(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("lt", *inputs)
-fun lte(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("lte", *inputs)
+fun eq(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("eq", *inputs)
+fun gt(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("gt", *inputs)
+fun gte(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("gte", *inputs)
+fun lt(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("lt", *inputs)
+fun lte(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("lte", *inputs)
 
 /** logic **/
 fun and(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("and", *inputs)
@@ -55,7 +58,7 @@ fun union(vararg inputs: Bind.Expression<Array<*>>): Bind.Expression<Array<*>> =
 /** other **/
 fun isEmpty(vararg inputs: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", *inputs)
 fun isNull(vararg inputs: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isNull", *inputs)
-fun length(vararg inputs: Bind<Array<Number>>): Bind.Expression<Number> = createOperation("length", *inputs)
+fun length(vararg inputs: Bind<Array<*>>): Bind.Expression<Number> = createOperation("length", *inputs)
 
 private fun <I, O> createOperation(operationType: String, vararg inputs: Bind<I>): Bind.Expression<O> {
     val values = inputs.map {

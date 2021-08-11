@@ -43,6 +43,7 @@ import br.com.zup.beagle.context.operations.builtin.removeIndex
 import br.com.zup.beagle.context.operations.builtin.substring
 import br.com.zup.beagle.context.operations.builtin.subtract
 import br.com.zup.beagle.context.operations.builtin.sum
+import br.com.zup.beagle.context.operations.builtin.toLowerCase
 import br.com.zup.beagle.context.operations.builtin.union
 import br.com.zup.beagle.context.operations.builtin.uppercase
 import br.com.zup.beagle.ext.setStyle
@@ -56,6 +57,7 @@ import br.com.zup.beagle.widget.layout.ScreenBuilder
 import br.com.zup.beagle.widget.ui.Text
 
 data class ArrayTest(val array1: Any, val array2: Any)
+data class ArrayTest2(val array1: Any, val array2: Any, val array3: Any, val array4: Any, val array5: Any, val array6: Any)
 
 object OperationScreenBuilder : ScreenBuilder {
     override fun build() = Screen(
@@ -66,19 +68,18 @@ object OperationScreenBuilder : ScreenBuilder {
         child = Container(
             context = ContextData("text", "tEsT"),
             children = listOf(
-
-                /** String **/
+                Text("String", textColor = "#00c91b"),
                 Text(capitalize(expressionOf("@{text}")).convertToString()),
                 Text(concat(constant("aaa"), constant("bbb"), expressionOf("@{text}")).convertToString()),
                 Text(lowercase(expressionOf("@{text}")).convertToString()),
+                Text((constant("TeStINg".substring(3)).toLowerCase()).convertToString()),
                 Text(uppercase(expressionOf("@{text}")).convertToString()),
                 Text(substring(constant("testing"), constant(3)).convertToString()),
 
                 Container(
                     context = ContextData("number", 4),
                     children = listOf(
-
-                        /** Number **/
+                        Text("Number", textColor = "#00c91b"),
                         Text(sum(constant(1), constant(2), expressionOf("@{number}")).convertToString()),
                         Text(sum(expressionOf("@{number}"), expressionOf("@{number}")).convertToString()),
                         Text(sum(constant(1), constant(2)).convertToString()),
@@ -88,12 +89,11 @@ object OperationScreenBuilder : ScreenBuilder {
                         Text(multiply(constant(1), constant(2), expressionOf("@{number}")).convertToString()),
                         Text(divide(constant(10.0), constant(2.0), expressionOf("@{number}")).convertToString())
                     )
-                ),
+                ).setStyle { margin = EdgeValue(top = UnitValue.Companion.real(10), bottom = UnitValue.Companion.real(10)) },
                 Container(
                     context = ContextData("comparison", 3),
                     children = listOf(
-
-                        /** Comparison **/
+                        Text("comparison", textColor = "#00c91b"),
                         Text(eq(constant(3), expressionOf("@{comparison}")).convertToString()),
 
                         Text(gt(expressionOf("@{comparison}"), constant(3.2)).convertToString()),
@@ -106,42 +106,48 @@ object OperationScreenBuilder : ScreenBuilder {
                         Text(lte(constant(2), expressionOf("@{comparison}")).convertToString()),
                         Text(lte(expressionOf("@{comparison}"), expressionOf("@{comparison}")).convertToString()),
                     )
-                ),
+                ).setStyle { margin = EdgeValue(bottom = UnitValue.Companion.real(10)) },
                 Container(
                     context = ContextData("logic", false),
                     children = listOf(
-
-                        /** logic **/
+                        Text("logic", textColor = "#00c91b"),
                         Text(and(constant(true), expressionOf("@{logic}")).convertToString()),
                         Text(condition(constant(true), expressionOf("@{logic}")).convertToString()),
                         Text(not(expressionOf("@{logic}"), constant(true)).convertToString()),
                         Text(or(constant(true), expressionOf("@{logic}")).convertToString())
                     )
-                ),
+                ).setStyle { margin = EdgeValue(bottom = UnitValue.Companion.real(10)) },
                 Container(
                     context = ContextData(id = "numbersArray", ArrayTest(array1 = arrayOf(1, 2, 3), array2 = arrayOf(4, 5, 6))),
                     children = listOf(
-
-                        /** Aray **/
+                        Text("Array Test 1", textColor = "#00c91b"),
                         Text(contains(expressionOf("@{numbersArray.array1}"), constant(0)).convertToString()),
                         Text(remove(expressionOf("@{numbersArray.array2}"), constant(4)).convertToString()),
-                        Text(removeIndex(expressionOf("@{numbersArray.array1}"), constant(1)).convertToString()),
+                        Text(removeIndex(expressionOf("@{numbersArray.array1}"), constant(0)).convertToString()),
                         Text(insert(expressionOf("@{numbersArray.array2}"), constant(7)).convertToString()),
-                        Text(union(expressionOf("@{numbersArray.array1}"), expressionOf("@{numbersArray.array2}")).convertToString())
+                        Text(insert(expressionOf("@{numbersArray.array2}"), constant(8)).convertToString()),
+                        Text(union(expressionOf("@{numbersArray.array1}"), expressionOf("@{numbersArray.array2}")).convertToString()),
+
+                        Text(union(expressionOf("@{numbersArray.array1}")).convertToString()),
                     )
                 ),
                 Container(
-                    context = ContextData("stringArray", arrayOf("a,b,c,d")),
+                    context = ContextData(id = "array",
+                        ArrayTest2(array1 = arrayOf(1, 2, 3), array2 = arrayOf(4, 5, 6), array3 = arrayOf(7, 8, 9),
+                            array4 = arrayOf(10, 11, 12), array5 = arrayOf(13, 14, 15), array6 = arrayOf(16, 17, 18))),
                     children = listOf(
-                        Text(contains(expressionOf("@{stringArray}"), constant("a,b,c,d")).convertToString()),
-                        Text(insert(expressionOf("@{stringArray}"), constant("e")).convertToString())
+                        Text("Array Test 2", textColor = "#00c91b"),
+                        Text(contains(expressionOf("@{array.array1}"), constant(0)).convertToString()),
+                        Text(remove(expressionOf("@{array.array2}"), constant(4)).convertToString()),
+                        Text(removeIndex(expressionOf("@{array.array3}"), constant(1)).convertToString()),
+                        Text(insert(expressionOf("@{array.array4}"), constant(13)).convertToString()),
+                        Text(union(expressionOf("@{array.array5}"), expressionOf("@{numbersArray.array6}")).convertToString()),
                     )
                 ),
                 Container(
                     context = ContextData("other", arrayOf(0, 1, 2, 3, 4)),
                     children = listOf(
-
-                        /** other **/
+                        Text("other", textColor = "#00c91b"),
                         Text(isEmpty(expressionOf("@{other}")).convertToString()),
                         Text(isNull(expressionOf("@{other}")).convertToString()),
                         Text(length(expressionOf("@{other}")).convertToString())
