@@ -27,6 +27,11 @@ import org.junit.jupiter.api.Test
 @DisplayName("Given a String Operations")
 internal class StringOperationsTest {
 
+    companion object {
+        private const val STRING_TEST = "test"
+        private const val EMPTY_STRING_TEST = ""
+    }
+
     @DisplayName("When use capitalize operation")
     @Nested
     inner class CapitalizeTest {
@@ -34,10 +39,17 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of string with capitalize operation")
         @Test
         fun test_capitalize_operation() = run {
-            val input = constant("capitalize")
-            val expected = Bind.expression<String>("@{capitalize(\'${input.value}\')}")
+            val result = capitalize(constant(Companion.STRING_TEST))
+            val expected = Bind.expression<String>("@{capitalize(\'${Companion.STRING_TEST}\')}")
 
-            val result = capitalize(input)
+            Assertions.assertEquals(result, expected)
+        }
+
+        @DisplayName("Then should return the bind of empty string with capitalize operation")
+        @Test
+        fun test_empty_capitalize_operation() = run {
+            val result = capitalize(constant(Companion.EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{capitalize(\'${Companion.EMPTY_STRING_TEST}\')}")
 
             Assertions.assertEquals(result, expected)
         }
