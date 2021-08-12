@@ -181,7 +181,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return PropertySpec.builder("${propertyName}Expression", elementType.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return expressionOf<$elementType>(\"@{\$contextId.$propertyName}\")")
+                    .addStatement("return expressionOf(\"@{\$contextId.$propertyName}\")")
                     .build()
             )
             .receiver(classTypeName)
@@ -210,7 +210,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             .build()
     }
 
-    private fun TypeName.asBindType() = Bind::class.asTypeName().parameterizedBy(listOf(this))
+    private fun TypeName.asBindType() = Bind.Expression::class.asTypeName().parameterizedBy(listOf(this.convertToKotlinStringIfNeeded()))
 
     private fun TypeName.convertToKotlinStringIfNeeded(): TypeName {
         if (this == java.lang.String::class.java.asTypeName()) {
