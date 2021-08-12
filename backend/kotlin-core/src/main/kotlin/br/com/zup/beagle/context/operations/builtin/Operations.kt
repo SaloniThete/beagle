@@ -27,7 +27,8 @@ fun multiply(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOpera
 
 /** String **/
 fun capitalize(input: Bind<String>): Bind.Expression<String> = createOperation("capitalize", input)
-fun Bind<String>.capitalize2(): Bind.Expression<String> = createOperation("capitalize", this)
+@JvmName("BindCapitalize")
+fun Bind<String>.capitalize(): Bind.Expression<String> = createOperation("capitalize", this)
 
 fun concat(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("concat", *inputs)
 
@@ -80,4 +81,4 @@ private fun <I, O> createOperation(operationType: String, vararg inputs: Bind<I>
     return expressionOf("@{${operationType}(${values.joinToString(",")})}")
 }
 
-fun <T> Bind.Expression<T>.convertToString(): Bind<String> = expressionOf(this.value)
+fun <T> Bind.Expression<T>.toBindString(): Bind<String> = expressionOf(this.value)
