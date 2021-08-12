@@ -19,6 +19,7 @@ package br.com.zup.beagle.core
 import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.operations.builtin.capitalize
+import br.com.zup.beagle.context.operations.builtin.concat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -34,7 +35,7 @@ internal class StringOperationsTest {
 
     @DisplayName("When use capitalize operation")
     @Nested
-    inner class CapitalizeTest {
+    inner class CapitalizeOperationTest {
 
         @DisplayName("Then should return the bind of string with capitalize operation")
         @Test
@@ -50,6 +51,29 @@ internal class StringOperationsTest {
         fun test_empty_capitalize_operation() = run {
             val result = capitalize(constant(Companion.EMPTY_STRING_TEST))
             val expected = Bind.expression<String>("@{capitalize(\'${Companion.EMPTY_STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+    }
+
+    @DisplayName("When use concat operation")
+    @Nested
+    inner class ConcatOperationTest {
+
+        @DisplayName("Then should return the bind of one string with concat operation")
+        @Test
+        fun test_concat_operation_with_one_parameter() = run {
+            val result = concat(constant(Companion.STRING_TEST))
+            val expected = Bind.expression<String>("@{concat(\'${Companion.STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+
+        @DisplayName("Then should return the bind of two strings with concat operation")
+        @Test
+        fun test_concat_operation_with_two_parameters() = run {
+            val result = concat(constant(Companion.STRING_TEST), constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{concat(\'${Companion.STRING_TEST}\','${Companion.STRING_TEST}')}")
 
             Assertions.assertEquals(result, expected)
         }
