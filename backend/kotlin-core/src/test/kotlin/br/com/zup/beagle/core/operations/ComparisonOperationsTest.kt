@@ -102,7 +102,7 @@ internal class ComparisonOperationTest {
         inner class LtOperationTest {
             @Test
             @DisplayName("Then should return correct expression")
-            fun checkDivideExpression() {
+            fun checkLtExpression() {
                 // GIVEN
                 val expected = Bind.Expression<Boolean>(value = "@{lt(5,2)}")
 
@@ -119,7 +119,7 @@ internal class ComparisonOperationTest {
         inner class LteOperationTest {
             @Test
             @DisplayName("Then should return correct expression")
-            fun checkDivideExpression() {
+            fun checkLteExpression() {
                 // GIVEN
                 val expected = Bind.Expression<Boolean>(value = "@{lte(2,2)}")
 

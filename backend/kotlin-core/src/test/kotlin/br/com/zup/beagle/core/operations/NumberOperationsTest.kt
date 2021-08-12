@@ -32,7 +32,7 @@ internal class NUmberOperationTest {
 
     @DisplayName("When passing parameters to sum operation")
     @Nested
-    inner class Sum {
+    inner class SumOperationTest {
 
         @Test
         @DisplayName("Then should return correct expression")
