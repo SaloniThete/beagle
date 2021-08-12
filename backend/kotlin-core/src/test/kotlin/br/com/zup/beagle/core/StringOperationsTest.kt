@@ -21,6 +21,7 @@ import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.operations.builtin.capitalize
 import br.com.zup.beagle.context.operations.builtin.concat
 import br.com.zup.beagle.context.operations.builtin.lowercase
+import br.com.zup.beagle.context.operations.builtin.uppercase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -86,7 +87,7 @@ internal class StringOperationsTest {
 
         @DisplayName("Then should return the bind of string with lowerCase operation")
         @Test
-        fun test_lowerCase_operation() = run {
+        fun test_lowercase_operation() = run {
             val result = lowercase(constant(Companion.STRING_TEST))
             val expected = Bind.expression<String>("@{lowercase(\'${Companion.STRING_TEST}\')}")
 
@@ -95,9 +96,32 @@ internal class StringOperationsTest {
 
         @DisplayName("Then should return the bind of empty string with lowerCase operation")
         @Test
-        fun test_lowerCase_operation_with_empty_input() = run {
+        fun test_lowercase_operation_with_empty_input() = run {
             val result = lowercase(constant(Companion.EMPTY_STRING_TEST))
             val expected = Bind.expression<String>("@{lowercase(\'${Companion.EMPTY_STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+    }
+
+    @DisplayName("When use uppercase operation")
+    @Nested
+    inner class UpperCaseOperationTest {
+
+        @DisplayName("Then should return the bind of string with uppercase operation")
+        @Test
+        fun test_uppercase_operation() = run {
+            val result = uppercase(constant(Companion.STRING_TEST))
+            val expected = Bind.expression<String>("@{uppercase(\'${Companion.STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+
+        @DisplayName("Then should return the bind of empty string with uppercase operation")
+        @Test
+        fun test_uppercase_operation_with_empty_input() = run {
+            val result = uppercase(constant(Companion.EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{uppercase(\'${Companion.EMPTY_STRING_TEST}\')}")
 
             Assertions.assertEquals(result, expected)
         }
