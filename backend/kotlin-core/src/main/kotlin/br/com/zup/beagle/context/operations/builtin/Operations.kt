@@ -31,10 +31,10 @@ fun Bind<String>.capitalize2(): Bind.Expression<String> = createOperation("capit
 
 fun concat(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("concat", *inputs)
 
-fun lowercase(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("lowercase", *inputs)
+fun lowercase(input: Bind<String>): Bind.Expression<String> = createOperation("lowercase", input)
 fun Bind<String>.toLowerCase(): Bind.Expression<String> = createOperation("lowercase", this)
 
-fun uppercase(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("uppercase", *inputs)
+fun uppercase(input: Bind<String>): Bind.Expression<String> = createOperation("uppercase", input)
 fun Bind<String>.toUpperCase(): Bind.Expression<String> = createOperation("uppercase", this)
 
 fun <I> substring(vararg inputs: Bind<I>): Bind.Expression<String> = createOperation("substr", *inputs)
