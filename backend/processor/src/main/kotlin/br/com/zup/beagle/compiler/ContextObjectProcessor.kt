@@ -20,6 +20,7 @@ import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
 import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -28,6 +29,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import java.io.File
+import java.lang.IndexOutOfBoundsException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -51,7 +53,7 @@ class ContextObjectProcessor: AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
         val elements = roundEnv.getElementsAnnotatedWith(Context::class.java)
-
+//        (it.enclosedElements.filter { it.kind == ElementKind.CONSTRUCTOR })[1]
         elements
             .forEach {
                 if (!isAnnotationValid(it)) {
@@ -103,6 +105,18 @@ class ContextObjectProcessor: AbstractProcessor() {
                 val propertyName = enclosed.simpleName.toString()
                 val propertyType = enclosed.asType().asTypeName().convertToKotlinStringIfNeeded()
 
+                findListRegexMatch(enclosed.asType().toString())?.let { match ->
+                    val typeElement = processingEnv.elementUtils.getTypeElement(match)
+                    val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
+
+                    if (isContextObject) {
+                        fileBuilder.addFunction(buildListAccessFun(
+                            enclosed.simpleName.toString(),
+                            typeElement.asType().asTypeName(),
+                            classTypeName
+                        ))
+                    }
+                }
                 fileBuilder.addProperty(buildExpressionPropertyFor(enclosed, classTypeName))
                 fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
                 fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
@@ -130,17 +144,28 @@ class ContextObjectProcessor: AbstractProcessor() {
         if (contextObjectsFields.isNotEmpty()) {
             val str = contextObjectsFields.fold("") { acc, contextObject ->
                 val name = contextObject.simpleName.toString()
+                val isNullableProperty = contextObject.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
+                val propertyName = if (isNullableProperty) "$name?" else name
 
                 if (findListRegexMatch(contextObject.asType().toString()) != null) {
-                    "$acc, $name = $name.mapIndexed { index, contextObject -> contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")}"
+                    "$acc, $name = $propertyName.mapIndexed { index, contextObject -> contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")}"
                 } else {
-                    "$acc, $name = $name.normalize(contextId = \"\${contextId}.$name\")"
+                    "$acc, $name = $propertyName.normalize(contextId = \"\${contextId}.$name\")"
                 }
             }
 
             return "return this.copy(contextId = contextId$str)"
         }
         return "return this.copy(contextId = contextId)"
+    }
+
+    private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName): FunSpec {
+        return FunSpec.builder("${parameterName}GetElementAt")
+            .receiver(classTypeName)
+            .addParameter("index", Int::class)
+            .returns(elementType)
+            .addCode("return try { $parameterName[index] } catch (e: IndexOutOfBoundsException) { ${elementType}(contextId = \"\$contextId.parameterName[\$index]\")}")
+            .build()
     }
 
     private fun getContextObjectsFields(parameters: List<Element>): List<Element> {

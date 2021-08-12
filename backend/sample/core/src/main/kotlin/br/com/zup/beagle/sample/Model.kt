@@ -24,23 +24,37 @@ import br.com.zup.beagle.widget.context.expressionOf
 @Context
 data class Model(
     override val contextId: String,
-    val counter: List<Int>,
-    val post : String,
-    val child: Model2,
-    val child2: Model3,
-    val childList: List<Model3> = listOf(),
-    val childList2: List<Model2> = listOf()
-): ContextObject
+    val counter: List<Int>?,
+    val post : String?,
+    val child: Model2?,
+    val child2: Model3?,
+    val childList: List<Model3>,
+    val childList2: List<Model2>
+): ContextObject {
+    constructor(contextId: String): this(
+        contextId = contextId,
+        counter = null,
+        post = null,
+        child = null,
+        child2 = null,
+        childList = listOf(),
+        childList2 = listOf()
+    )
+}
 
 @Context
 data class Model2(
     override val contextId: String,
-    val title: String,
-    val child: Model3
-): ContextObject
+    val title: String?,
+    val child: Model3?
+): ContextObject {
+    constructor(contextId: String): this(contextId = contextId, title = null, child = null)
+}
 
 @Context
 data class Model3(
     override val contextId: String,
-    val names: List<String>
-): ContextObject
+    val names: List<String>?
+): ContextObject {
+    constructor(contextId: String): this(contextId = contextId, names = null)
+}
