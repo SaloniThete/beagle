@@ -21,6 +21,7 @@ import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.operations.builtin.capitalize
 import br.com.zup.beagle.context.operations.builtin.concat
 import br.com.zup.beagle.context.operations.builtin.lowercase
+import br.com.zup.beagle.context.operations.builtin.substring
 import br.com.zup.beagle.context.operations.builtin.uppercase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -122,6 +123,21 @@ internal class StringOperationsTest {
         fun test_uppercase_operation_with_empty_input() = run {
             val result = uppercase(constant(Companion.EMPTY_STRING_TEST))
             val expected = Bind.expression<String>("@{uppercase(\'${Companion.EMPTY_STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+    }
+
+    @DisplayName("When use substring operation")
+    @Nested
+    inner class SubstringOperationTest {
+
+        @DisplayName("Then should return the bind of string with substring operation")
+        @Test
+        fun test_uppercase_operation() = run {
+            val startIndex = 2
+            val result = substring(constant(Companion.STRING_TEST), constant(startIndex))
+            val expected = Bind.expression<String>("@{substr(\'${Companion.STRING_TEST}\',${startIndex})}")
 
             Assertions.assertEquals(result, expected)
         }

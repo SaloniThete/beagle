@@ -27,6 +27,7 @@ fun multiply(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOpera
 
 /** String **/
 fun capitalize(input: Bind<String>): Bind.Expression<String> = createOperation("capitalize", input)
+
 @JvmName("BindCapitalize")
 fun Bind<String>.capitalize(): Bind.Expression<String> = createOperation("capitalize", this)
 
@@ -38,7 +39,8 @@ fun Bind<String>.toLowerCase(): Bind.Expression<String> = createOperation("lower
 fun uppercase(input: Bind<String>): Bind.Expression<String> = createOperation("uppercase", input)
 fun Bind<String>.toUpperCase(): Bind.Expression<String> = createOperation("uppercase", this)
 
-fun <I> substring(vararg inputs: Bind<I>): Bind.Expression<String> = createOperation("substr", *inputs)
+fun substring(input: Bind<String>, startIndex: Bind<Number>): Bind.Expression<String> =
+    createExpression("substr", listOf(resolveInput(input), resolveInput(startIndex)))
 
 /** comparison **/
 fun eq(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("eq", *inputs)
@@ -67,17 +69,25 @@ fun length(vararg inputs: Bind<Array<*>>): Bind.Expression<Number> = createOpera
 
 private fun <I, O> createOperation(operationType: String, vararg inputs: Bind<I>): Bind.Expression<O> {
     val values = inputs.map {
-        if (it is Bind.Expression && it.value.isNotEmpty()) {
-            it.value.drop(2).dropLast(1)
+        resolveInput(it)
+    }
+    return createExpression(operationType, values)
+}
+
+private fun <I> resolveInput(input: Bind<I>): Any? {
+    return if (input is Bind.Expression && input.value.isNotEmpty()) {
+        input.value.drop(2).dropLast(1)
+    } else {
+        val resultValue = (input as Bind.Value).value
+        if (resultValue is String) {
+            "'${resultValue}'"
         } else {
-            val resultValue = (it as Bind.Value).value
-            if (resultValue is String) {
-                "'${resultValue}'"
-            } else {
-                resultValue
-            }
+            resultValue
         }
     }
+}
+
+private fun <O> createExpression(operationType: String, values: List<Any?>): Bind.Expression<O> {
     return expressionOf("@{${operationType}(${values.joinToString(",")})}")
 }
 
