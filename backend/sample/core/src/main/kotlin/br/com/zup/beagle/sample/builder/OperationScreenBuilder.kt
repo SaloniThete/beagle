@@ -20,6 +20,7 @@ import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.context.operations.builtin.and
 import br.com.zup.beagle.context.operations.builtin.capitalize
+import br.com.zup.beagle.context.operations.builtin.capitalize2
 import br.com.zup.beagle.context.operations.builtin.concat
 import br.com.zup.beagle.context.operations.builtin.condition
 import br.com.zup.beagle.context.operations.builtin.contains
@@ -44,6 +45,7 @@ import br.com.zup.beagle.context.operations.builtin.substring
 import br.com.zup.beagle.context.operations.builtin.subtract
 import br.com.zup.beagle.context.operations.builtin.sum
 import br.com.zup.beagle.context.operations.builtin.toLowerCase
+import br.com.zup.beagle.context.operations.builtin.toUpperCase
 import br.com.zup.beagle.context.operations.builtin.union
 import br.com.zup.beagle.context.operations.builtin.uppercase
 import br.com.zup.beagle.ext.setStyle
@@ -70,12 +72,17 @@ object OperationScreenBuilder : ScreenBuilder {
             children = listOf(
                 Text("String", textColor = "#00c91b"),
                 Text(capitalize(expressionOf("@{text}")).convertToString()),
+                Text(uppercase(expressionOf("@{text}")).capitalize2().convertToString()),
+
                 Text(concat(constant("aaa"), constant("bbb"), expressionOf("@{text}")).convertToString()),
+
                 Text(lowercase(expressionOf("@{text}")).convertToString()),
                 Text((constant("TeStINg".substring(3)).toLowerCase()).convertToString()),
-                Text(uppercase(expressionOf("@{text}")).convertToString()),
-                Text(substring(constant("testing"), constant(3)).convertToString()),
 
+                Text(uppercase(expressionOf("@{text}")).convertToString()),
+                Text(uppercase(expressionOf("@{text}")).toUpperCase().convertToString()),
+
+                Text(substring(constant("testing"), constant(3)).convertToString()),
                 Container(
                     context = ContextData("number", 4),
                     children = listOf(
