@@ -20,6 +20,7 @@ import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.operations.builtin.capitalize
 import br.com.zup.beagle.context.operations.builtin.concat
+import br.com.zup.beagle.context.operations.builtin.lowercase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -48,7 +49,7 @@ internal class StringOperationsTest {
 
         @DisplayName("Then should return the bind of empty string with capitalize operation")
         @Test
-        fun test_empty_capitalize_operation() = run {
+        fun test_capitalize_operation_with_empty_input() = run {
             val result = capitalize(constant(Companion.EMPTY_STRING_TEST))
             val expected = Bind.expression<String>("@{capitalize(\'${Companion.EMPTY_STRING_TEST}\')}")
 
@@ -74,6 +75,29 @@ internal class StringOperationsTest {
         fun test_concat_operation_with_two_parameters() = run {
             val result = concat(constant(Companion.STRING_TEST), constant(STRING_TEST))
             val expected = Bind.expression<String>("@{concat(\'${Companion.STRING_TEST}\','${Companion.STRING_TEST}')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+    }
+
+    @DisplayName("When use lowercase operation")
+    @Nested
+    inner class LowerCaseOperationTest {
+
+        @DisplayName("Then should return the bind of string with lowerCase operation")
+        @Test
+        fun test_lowerCase_operation() = run {
+            val result = lowercase(constant(Companion.STRING_TEST))
+            val expected = Bind.expression<String>("@{lowercase(\'${Companion.STRING_TEST}\')}")
+
+            Assertions.assertEquals(result, expected)
+        }
+
+        @DisplayName("Then should return the bind of empty string with lowerCase operation")
+        @Test
+        fun test_lowerCase_operation_with_empty_input() = run {
+            val result = lowercase(constant(Companion.EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{lowercase(\'${Companion.EMPTY_STRING_TEST}\')}")
 
             Assertions.assertEquals(result, expected)
         }
