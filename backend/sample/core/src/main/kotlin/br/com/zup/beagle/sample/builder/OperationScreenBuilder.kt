@@ -162,9 +162,9 @@ object OperationScreenBuilder : ScreenBuilder {
                             )
                         ),
                         Container(
-                            context = ContextData(id = "arrayF", ArrayTest(array1 = arrayOf(1, 2, 3), array2 = arrayOf(4, 5, 6))),
+                            context = ContextData(id = "arrayE", ArrayTest(array1 = arrayOf(1, 2, 3), array2 = arrayOf(4, 5, 6))),
                             children = listOf(
-                                Text(union<Number>(expressionOf("@{arrayE.array1}"), expressionOf("@{arrayF.array2}")).toBindString())
+                                Text(union<Number>(expressionOf("@{arrayD.array1}"), expressionOf("@{arrayE.array2}")).toBindString())
                             )
                         ),
                         Container(
