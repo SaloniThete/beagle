@@ -59,8 +59,7 @@ fun or(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation
 fun <I> contains(vararg params: Bind<I>): Bind.Expression<Boolean> = createOperation("contains", params)
 
 fun <I> insert(array: Bind<Array<I>>, element: Bind<I>, index: Bind<Number>? = null): Bind.Expression<Array<I>> =
-    createOperation("insert", arrayOf(array, element,
-        index))
+    createOperation("insert", arrayOf(array, element, index))
 
 fun <I> remove(array: Bind<Array<I>>, element: Bind<I>): Bind.Expression<Array<I>> =
     createOperation("remove", arrayOf(array, element))
