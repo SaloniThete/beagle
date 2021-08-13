@@ -93,10 +93,3 @@ private fun <I> resolveInput(param: Bind<I>): Any? {
 }
 
 fun <T> Bind.Expression<T>.toBindString(): Bind<String> = expressionOf(this.value)
-
-
-fun main() {
-    println(isEmpty(expressionOf("@{other}")))
-    println(isNull(expressionOf("@{other}")))
-    println(length(expressionOf("@{other}")))
-}
