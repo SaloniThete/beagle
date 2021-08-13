@@ -20,74 +20,74 @@ import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.expressionOf
 
 /** Number **/
-fun sum(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("sum", *inputs)
-fun subtract(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("subtract", *inputs)
-fun divide(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("divide", *inputs)
-fun multiply(vararg inputs: Bind<Number>): Bind.Expression<Number> = createOperation("multiply", *inputs)
+fun sum(vararg params: Bind<Number>): Bind.Expression<Number> = createOperation("sum", *params)
+fun subtract(vararg params: Bind<Number>): Bind.Expression<Number> = createOperation("subtract", *params)
+fun divide(vararg params: Bind<Number>): Bind.Expression<Number> = createOperation("divide", *params)
+fun multiply(vararg params: Bind<Number>): Bind.Expression<Number> = createOperation("multiply", *params)
 
 /** String **/
-fun capitalize(input: Bind<String>): Bind.Expression<String> = createOperation("capitalize", input)
+fun capitalize(param: Bind<String>): Bind.Expression<String> = createOperation("capitalize", param)
 
 @JvmName("BindCapitalize")
 fun Bind<String>.capitalize(): Bind.Expression<String> = createOperation("capitalize", this)
 
-fun concat(vararg inputs: Bind<String>): Bind.Expression<String> = createOperation("concat", *inputs)
+fun concat(vararg params: Bind<String>): Bind.Expression<String> = createOperation("concat", *params)
 
-fun lowercase(input: Bind<String>): Bind.Expression<String> = createOperation("lowercase", input)
+fun lowercase(param: Bind<String>): Bind.Expression<String> = createOperation("lowercase", param)
 fun Bind<String>.toLowerCase(): Bind.Expression<String> = createOperation("lowercase", this)
 
-fun uppercase(input: Bind<String>): Bind.Expression<String> = createOperation("uppercase", input)
+fun uppercase(param: Bind<String>): Bind.Expression<String> = createOperation("uppercase", param)
 fun Bind<String>.toUpperCase(): Bind.Expression<String> = createOperation("uppercase", this)
 
-fun substring(input: Bind<String>, startIndex: Bind<Number>): Bind.Expression<String> =
-    createExpression("substr", listOf(resolveInput(input), resolveInput(startIndex)))
+fun substring(param: Bind<String>, startIndex: Bind<Number>): Bind.Expression<String> =
+    createExpression("substr", listOf(resolveParam(param), resolveParam(startIndex)))
 
 /** comparison **/
-fun eq(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("eq", *inputs)
-fun gt(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("gt", *inputs)
-fun gte(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("gte", *inputs)
-fun lt(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("lt", *inputs)
-fun lte(vararg inputs: Bind<Number>): Bind.Expression<Boolean> = createOperation("lte", *inputs)
+fun eq(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation("eq", *params)
+fun gt(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation("gt", *params)
+fun gte(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation("gte", *params)
+fun lt(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation("lt", *params)
+fun lte(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation("lte", *params)
 
 /** logic **/
-fun and(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("and", *inputs)
-fun condition(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("condition", *inputs)
-fun not(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("not", *inputs)
-fun or(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("or", *inputs)
+fun and(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("and", *params)
+fun condition(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("condition", *params)
+fun not(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("not", *params)
+fun or(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("or", *params)
 
 /** Array **/
-fun <I> contains(vararg inputs: Bind<I>): Bind.Expression<Boolean> = createOperation("contains", *inputs)
+fun <I> contains(vararg params: Bind<I>): Bind.Expression<Boolean> = createOperation("contains", *params)
 fun <I> insert(array: Bind<Array<I>>, element: Bind<I>, index: Bind<Number>? = null): Bind.Expression<Array<I>> =
-    createExpression("insert", listOf(resolveInput(array), resolveInput(element),
-        resolveInput(index)))
+    createExpression("insert", listOf(resolveParam(array), resolveParam(element),
+        resolveParam(index)))
 
 fun <I> remove(array: Bind<Array<I>>, element: Bind<I>): Bind.Expression<Array<I>> =
-    createExpression("remove", listOf(resolveInput(array), resolveInput(element)))
+    createExpression("remove", listOf(resolveParam(array), resolveParam(element)))
 
 fun <I> removeIndex(array: Bind<Array<I>>, index: Bind<Number>): Bind.Expression<Array<I>> =
-    createExpression("removeIndex", listOf(resolveInput(array), resolveInput(index)))
+    createExpression("removeIndex", listOf(resolveParam(array), resolveParam(index)))
 
 fun <I> union(firstArray: Bind<Array<I>>, secondArray: Bind<Array<I>>): Bind.Expression<Array<*>> =
-    createExpression("union", listOf(resolveInput(firstArray), resolveInput(secondArray)))
+    createExpression("union", listOf(resolveParam(firstArray), resolveParam(secondArray)))
 
 /** other **/
-fun isEmpty(vararg inputs: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", *inputs)
-fun isNull(vararg inputs: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isNull", *inputs)
-fun length(vararg inputs: Bind<Array<*>>): Bind.Expression<Number> = createOperation("length", *inputs)
+fun isEmpty(vararg params: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", *params)
+fun isNull(vararg params: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isNull", *params)
+fun length(vararg params: Bind<Array<*>>): Bind.Expression<Number> = createOperation("length", *params)
 
-private fun <I, O> createOperation(operationType: String, vararg inputs: Bind<I>): Bind.Expression<O> {
-    val values = inputs.map {
-        resolveInput(it)
+private fun <I, O> createOperation(operationType: String, vararg params: Bind<I>): Bind.Expression<O> {
+    val values = params.map {
+        resolveParam(it)
     }
     return createExpression(operationType, values)
 }
 
-private fun <I> resolveInput(input: Bind<I>?): Any? {
-    return input?.let {
-        if (input is Bind.Expression && input.value.isNotEmpty()) {
-            input.value.drop(2).dropLast(1)
+private fun <I> resolveParam(param: Bind<I>?): Any? {
+    return param?.let {
+        if (param is Bind.Expression && param.value.isNotEmpty()) {
+            param.value.drop(2).dropLast(1)
         } else {
-            val resultValue = (input as Bind.Value).value
+            val resultValue = (param as Bind.Value).value
             if (resultValue is String) {
                 "'${resultValue}'"
             } else {
@@ -95,7 +95,7 @@ private fun <I> resolveInput(input: Bind<I>?): Any? {
             }
         }
     } ?: run {
-        input
+        param
     }
 
 }

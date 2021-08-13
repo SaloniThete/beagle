@@ -130,10 +130,10 @@ object OperationScreenBuilder : ScreenBuilder {
                         Text("Array Test 1", textColor = "#00c91b"),
                         Text(contains(expressionOf("@{numbersArray.array1}"), constant(0)).toBindString()),
                         Text(remove(expressionOf("@{numbersArray.array2}"), constant(4)).toBindString()),
-                        Text(removeIndex(expressionOf("@{numbersArray.array1}"), constant(0)).toBindString()),
+                        Text(removeIndex<Number>(expressionOf("@{numbersArray.array1}"), constant(0)).toBindString()),
                         Text(insert(expressionOf("@{numbersArray.array2}"), constant(7)).toBindString()),
                         Text(insert(expressionOf("@{numbersArray.array2}"), constant(8)).toBindString()),
-                        Text(union(expressionOf("@{numbersArray.array1}"), expressionOf("@{numbersArray.array2}")).toBindString()),
+                        Text(union<Number>(expressionOf("@{numbersArray.array1}"), expressionOf("@{numbersArray.array2}")).toBindString()),
                     )
                 ),
                 Container(
@@ -144,9 +144,9 @@ object OperationScreenBuilder : ScreenBuilder {
                         Text("Array Test 2", textColor = "#00c91b"),
                         Text(contains(expressionOf("@{array.array1}"), constant(0)).toBindString()),
                         Text(remove(expressionOf("@{array.array2}"), constant(4)).toBindString()),
-                        Text(removeIndex(expressionOf("@{array.array3}"), constant(1)).toBindString()),
+                        Text(removeIndex<Number>(expressionOf("@{array.array3}"), constant(1)).toBindString()),
                         Text(insert(expressionOf("@{array.array4}"), constant(13)).toBindString()),
-                        Text(union(expressionOf("@{array.array5}"), expressionOf("@{numbersArray.array6}")).toBindString()),
+                        Text(union<Number>(expressionOf("@{array.array5}"), expressionOf("@{numbersArray.array6}")).toBindString()),
                     )
                 ),
                 Container(
