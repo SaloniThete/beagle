@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 @DisplayName("Given a Operation")
-internal class NUmberOperationTest {
+internal class NumberOperationTest {
 
     @DisplayName("When passing parameters to sum operation")
     @Nested
