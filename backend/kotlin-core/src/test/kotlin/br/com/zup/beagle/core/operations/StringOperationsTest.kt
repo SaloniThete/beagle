@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.core
+package br.com.zup.beagle.core.operations
 
 import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.constant
@@ -43,8 +43,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of string with capitalize operation")
         @Test
         fun test_capitalize_operation() = run {
-            val result = capitalize(constant(Companion.STRING_TEST))
-            val expected = Bind.expression<String>("@{capitalize(\'${Companion.STRING_TEST}\')}")
+            val result = capitalize(constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{capitalize(\'$STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -52,8 +52,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of empty string with capitalize operation")
         @Test
         fun test_capitalize_operation_with_empty_input() = run {
-            val result = capitalize(constant(Companion.EMPTY_STRING_TEST))
-            val expected = Bind.expression<String>("@{capitalize(\'${Companion.EMPTY_STRING_TEST}\')}")
+            val result = capitalize(constant(EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{capitalize(\'$EMPTY_STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -66,8 +66,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of one string with concat operation")
         @Test
         fun test_concat_operation_with_one_parameter() = run {
-            val result = concat(constant(Companion.STRING_TEST))
-            val expected = Bind.expression<String>("@{concat(\'${Companion.STRING_TEST}\')}")
+            val result = concat(constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{concat(\'$STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -75,8 +75,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of two strings with concat operation")
         @Test
         fun test_concat_operation_with_two_parameters() = run {
-            val result = concat(constant(Companion.STRING_TEST), constant(STRING_TEST))
-            val expected = Bind.expression<String>("@{concat(\'${Companion.STRING_TEST}\','${Companion.STRING_TEST}')}")
+            val result = concat(constant(STRING_TEST), constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{concat(\'$STRING_TEST\','$STRING_TEST')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -89,8 +89,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of string with lowerCase operation")
         @Test
         fun test_lowercase_operation() = run {
-            val result = lowercase(constant(Companion.STRING_TEST))
-            val expected = Bind.expression<String>("@{lowercase(\'${Companion.STRING_TEST}\')}")
+            val result = lowercase(constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{lowercase(\'$STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -98,8 +98,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of empty string with lowerCase operation")
         @Test
         fun test_lowercase_operation_with_empty_input() = run {
-            val result = lowercase(constant(Companion.EMPTY_STRING_TEST))
-            val expected = Bind.expression<String>("@{lowercase(\'${Companion.EMPTY_STRING_TEST}\')}")
+            val result = lowercase(constant(EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{lowercase(\'$EMPTY_STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -112,8 +112,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of string with uppercase operation")
         @Test
         fun test_uppercase_operation() = run {
-            val result = uppercase(constant(Companion.STRING_TEST))
-            val expected = Bind.expression<String>("@{uppercase(\'${Companion.STRING_TEST}\')}")
+            val result = uppercase(constant(STRING_TEST))
+            val expected = Bind.expression<String>("@{uppercase(\'$STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -121,8 +121,8 @@ internal class StringOperationsTest {
         @DisplayName("Then should return the bind of empty string with uppercase operation")
         @Test
         fun test_uppercase_operation_with_empty_input() = run {
-            val result = uppercase(constant(Companion.EMPTY_STRING_TEST))
-            val expected = Bind.expression<String>("@{uppercase(\'${Companion.EMPTY_STRING_TEST}\')}")
+            val result = uppercase(constant(EMPTY_STRING_TEST))
+            val expected = Bind.expression<String>("@{uppercase(\'$EMPTY_STRING_TEST\')}")
 
             Assertions.assertEquals(result, expected)
         }
@@ -136,8 +136,8 @@ internal class StringOperationsTest {
         @Test
         fun test_uppercase_operation() = run {
             val startIndex = 2
-            val result = substring(constant(Companion.STRING_TEST), constant(startIndex))
-            val expected = Bind.expression<String>("@{substr(\'${Companion.STRING_TEST}\',${startIndex})}")
+            val result = substring(constant(STRING_TEST), constant(startIndex))
+            val expected = Bind.expression<String>("@{substr(\'$STRING_TEST\',${startIndex})}")
 
             Assertions.assertEquals(result, expected)
         }
