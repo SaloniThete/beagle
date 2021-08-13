@@ -92,7 +92,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
         val classTypeName = element.asType().asTypeName()
 
-        fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf")
+        fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf", "splitContextId")
 
         fileBuilder.addFunction(buildNormalizerFun(classTypeName, fields))
 
@@ -228,7 +228,8 @@ class ContextObjectProcessor: AbstractProcessor() {
         return FunSpec.builder("change")
             .receiver(type)
             .addParameter(parameterName, parameterType)
-            .addStatement("return SetContext(contextId = contextId, value = $parameterName)")
+            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addStatement("return SetContext(contextId = contextIdSplit.first, value = $parameterName, path = contextIdSplit.second)")
             .returns(SetContext::class)
             .build()
     }
@@ -237,7 +238,8 @@ class ContextObjectProcessor: AbstractProcessor() {
         return FunSpec.builder("change${parameterName.capitalize()}")
             .receiver(receiver)
             .addParameter(parameterName, parameterType)
-            .addStatement("return SetContext(contextId = contextId, path = \"$parameterName\", value = $parameterName)")
+            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addStatement("return SetContext(contextId = contextIdSplit.first, path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName\", value = $parameterName)")
             .returns(SetContext::class)
             .build()
     }

@@ -45,14 +45,23 @@ fun <T : Any> valueOfNullable(value: T?) = value?.let { valueOf(it) }
 /**
  * Access elements of a list type expression with a given index
  */
-operator fun <T> Bind.Expression<List<T>>.get(index: Int): Bind<List<T>> {
+operator fun <T> Bind.Expression<List<T>>.get(i: Int): Bind.Expression<T> {
     val regularExpression = "(\\@\\{([\\s\\S])+\\})".toRegex()
     val expressionValue = this.value
 
     regularExpression.find(expressionValue)?.let {
-        val newExpressionValue = "${expressionValue.dropLast(1)}[$index]}"
+        val newExpressionValue = "${expressionValue.dropLast(1)}[$i]}"
         return expressionOf(newExpressionValue)
     }
 
-    return this
+    return expressionOf("")
+}
+
+fun splitContextId(input: String): Pair<String, String?> {
+    val contextIdRegex = ".*?(?=\\.)".toRegex()
+    val pathRegex = "(?<=\\.).*".toRegex()
+    val contextId = contextIdRegex.find(input)?.value
+    val path = pathRegex.find(input)?.value
+
+    return Pair(contextId ?: input, path)
 }
