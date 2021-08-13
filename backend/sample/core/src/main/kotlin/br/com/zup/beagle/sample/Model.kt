@@ -28,7 +28,7 @@ data class Model(
     val post : String?,
     val child: Model2?,
     val child2: Model3?,
-    val childList: List<Model3>,
+    val childList: List<Model3>?,
     val childList2: List<Model2>
 ): ContextObject {
     constructor(contextId: String): this(

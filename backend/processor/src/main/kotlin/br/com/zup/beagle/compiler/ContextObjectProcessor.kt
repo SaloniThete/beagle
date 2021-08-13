@@ -108,12 +108,14 @@ class ContextObjectProcessor: AbstractProcessor() {
                 findListRegexMatch(enclosed.asType().toString())?.let { match ->
                     val typeElement = processingEnv.elementUtils.getTypeElement(match)
                     val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
+                    val isNullable = enclosed.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
 
                     if (isContextObject) {
                         fileBuilder.addFunction(buildListAccessFun(
                             enclosed.simpleName.toString(),
                             typeElement.asType().asTypeName(),
-                            classTypeName
+                            classTypeName,
+                            isNullable
                         ))
                     }
                 }
@@ -135,7 +137,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return FunSpec.builder("normalize")
                     .receiver(classTypeName)
                     .addParameter("contextId", String::class)
-                    .addStatement(statement)
+                    .addCode(statement)
                     .returns(classTypeName)
                     .build()
     }
@@ -148,23 +150,28 @@ class ContextObjectProcessor: AbstractProcessor() {
                 val propertyName = if (isNullableProperty) "$name?" else name
 
                 if (findListRegexMatch(contextObject.asType().toString()) != null) {
-                    "$acc, $name = $propertyName.mapIndexed { index, contextObject -> contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")}"
+                    "$acc,\n    $name = $propertyName.mapIndexed { index, contextObject ->\n" +
+                        "        contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")\n" +
+                        "    }"
                 } else {
-                    "$acc, $name = $propertyName.normalize(contextId = \"\${contextId}.$name\")"
+                    "$acc,\n    $name = $propertyName.normalize(contextId = \"\${contextId}.$name\")"
                 }
             }
 
-            return "return this.copy(contextId = contextId$str)"
+            return "return this.copy(\n    contextId = contextId$str\n)"
         }
         return "return this.copy(contextId = contextId)"
     }
 
-    private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName): FunSpec {
+    private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName, isNullable: Boolean): FunSpec {
+        val tryCodeBlock = if (isNullable) "$parameterName?.get(index) ?: model" else "$parameterName[index]"
+
         return FunSpec.builder("${parameterName}GetElementAt")
             .receiver(classTypeName)
             .addParameter("index", Int::class)
             .returns(elementType)
-            .addCode("return try { $parameterName[index] } catch (e: IndexOutOfBoundsException) { ${elementType}(contextId = \"\$contextId.parameterName[\$index]\")}")
+            .addStatement("val model = ${elementType}(contextId = \"\$contextId.parameterName[\$index]\")")
+            .addCode("return try { $tryCodeBlock } catch (e: IndexOutOfBoundsException) { model }")
             .build()
     }
 
