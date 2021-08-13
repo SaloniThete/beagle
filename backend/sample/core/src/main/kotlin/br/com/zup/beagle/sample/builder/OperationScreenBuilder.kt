@@ -146,7 +146,7 @@ object OperationScreenBuilder : ScreenBuilder {
                         Text(remove(expressionOf("@{array.array2}"), constant(4)).toBindString()),
                         Text(removeIndex<Number>(expressionOf("@{array.array3}"), constant(1)).toBindString()),
                         Text(insert(expressionOf("@{array.array4}"), constant(13)).toBindString()),
-                        Text(union<Number>(expressionOf("@{array.array5}"), expressionOf("@{numbersArray.array6}")).toBindString()),
+                        Text(union<Number>(expressionOf("@{array.array5}"), expressionOf("@{array.array6}")).toBindString()),
                     )
                 ),
                 Container(

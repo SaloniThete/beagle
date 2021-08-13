@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.sample.constants
+package br.com.zup.beagle.sample.micronaut.service
 
-const val BASE_URL = "http://10.0.2.2:8080"
-const val SAMPLE_ENDPOINT = "/operations"
+import br.com.zup.beagle.sample.builder.OperationScreenBuilder
+import javax.inject.Singleton
+
+@Singleton
+class SampleOperationService {
+    fun createOperations() = OperationScreenBuilder
+}
