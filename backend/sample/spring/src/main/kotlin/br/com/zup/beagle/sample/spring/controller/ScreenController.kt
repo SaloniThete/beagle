@@ -75,7 +75,7 @@ import br.com.zup.beagle.sample.spring.service.SampleLazyComponentService
 import br.com.zup.beagle.sample.spring.service.SampleListViewService
 import br.com.zup.beagle.sample.spring.service.SampleNavigationBarService
 import br.com.zup.beagle.sample.spring.service.SampleNavigationTypeService
-import br.com.zup.beagle.sample.spring.service.SampleOperationsService
+import br.com.zup.beagle.sample.spring.service.SampleOperationService
 import br.com.zup.beagle.sample.spring.service.SamplePageViewService
 import br.com.zup.beagle.sample.spring.service.SamplePullToRefreshService
 import br.com.zup.beagle.sample.spring.service.SampleSafeAreaService
@@ -118,7 +118,7 @@ class ScreenController(
     private val sampleAnalyticsService: SampleAnalyticsService,
     private val sampleWebViewService: SampleWebViewService,
     private val sampleScreenContext: SampleContextService,
-    private val sampleOperations: SampleOperationsService,
+    private val sampleOperations: SampleOperationService,
     private val sampleScreenSafeArea: SampleSafeAreaService,
     private val sampleScreenTextInput: TextInputService,
     private val sampleSimpleFormService: SampleSimpleFormService,
