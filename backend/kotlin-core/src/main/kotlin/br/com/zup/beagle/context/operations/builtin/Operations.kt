@@ -57,10 +57,18 @@ fun or(vararg inputs: Bind<Boolean>): Bind.Expression<Boolean> = createOperation
 
 /** Array **/
 fun <I> contains(vararg inputs: Bind<I>): Bind.Expression<Boolean> = createOperation("contains", *inputs)
-fun <I> insert(vararg inputs: Bind<I>): Bind.Expression<Array<I>> = createOperation("insert", *inputs)
-fun <I> remove(vararg inputs: Bind<I>): Bind.Expression<Array<I>> = createOperation("remove", *inputs)
-fun <I> removeIndex(vararg inputs: Bind<I>): Bind.Expression<Array<I>> = createOperation("removeIndex", *inputs)
-fun union(vararg inputs: Bind.Expression<Array<*>>): Bind.Expression<Array<*>> = createOperation("union", *inputs)
+fun <I> insert(array: Bind<Array<I>>, element: Bind<I>, index: Bind<Number>? = null): Bind.Expression<Array<I>> =
+    createExpression("insert", listOf(resolveInput(array), resolveInput(element),
+        resolveInput(index)))
+
+fun <I> remove(array: Bind<Array<I>>, element: Bind<I>): Bind.Expression<Array<I>> =
+    createExpression("remove", listOf(resolveInput(array), resolveInput(element)))
+
+fun <I> removeIndex(array: Bind<Array<I>>, index: Bind<Number>): Bind.Expression<Array<I>> =
+    createExpression("removeIndex", listOf(resolveInput(array), resolveInput(index)))
+
+fun <I> union(firstArray: Bind<Array<I>>, secondArray: Bind<Array<I>>): Bind.Expression<Array<*>> =
+    createExpression("union", listOf(resolveInput(firstArray), resolveInput(secondArray)))
 
 /** other **/
 fun isEmpty(vararg inputs: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", *inputs)
@@ -74,21 +82,26 @@ private fun <I, O> createOperation(operationType: String, vararg inputs: Bind<I>
     return createExpression(operationType, values)
 }
 
-private fun <I> resolveInput(input: Bind<I>): Any? {
-    return if (input is Bind.Expression && input.value.isNotEmpty()) {
-        input.value.drop(2).dropLast(1)
-    } else {
-        val resultValue = (input as Bind.Value).value
-        if (resultValue is String) {
-            "'${resultValue}'"
+private fun <I> resolveInput(input: Bind<I>?): Any? {
+    return input?.let {
+        if (input is Bind.Expression && input.value.isNotEmpty()) {
+            input.value.drop(2).dropLast(1)
         } else {
-            resultValue
+            val resultValue = (input as Bind.Value).value
+            if (resultValue is String) {
+                "'${resultValue}'"
+            } else {
+                resultValue
+            }
         }
+    } ?: run {
+        input
     }
+
 }
 
 private fun <O> createExpression(operationType: String, values: List<Any?>): Bind.Expression<O> {
-    return expressionOf("@{${operationType}(${values.joinToString(",")})}")
+    return expressionOf("@{${operationType}(${values.filterNotNull().joinToString(",")})}")
 }
 
 fun <T> Bind.Expression<T>.toBindString(): Bind<String> = expressionOf(this.value)

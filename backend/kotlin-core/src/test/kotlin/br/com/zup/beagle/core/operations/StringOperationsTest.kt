@@ -40,7 +40,7 @@ internal class StringOperationsTest {
     @Nested
     inner class CapitalizeOperationTest {
 
-        @DisplayName("Then should return the bind of string with capitalize operation")
+        @DisplayName("Then should return expression with capitalize operation")
         @Test
         fun test_capitalize_operation() = run {
             val result = capitalize(constant(STRING_TEST))
@@ -49,7 +49,7 @@ internal class StringOperationsTest {
             Assertions.assertEquals(result, expected)
         }
 
-        @DisplayName("Then should return the bind of empty string with capitalize operation")
+        @DisplayName("Then should return expression with capitalize operation")
         @Test
         fun test_capitalize_operation_with_empty_input() = run {
             val result = capitalize(constant(EMPTY_STRING_TEST))
@@ -63,7 +63,7 @@ internal class StringOperationsTest {
     @Nested
     inner class ConcatOperationTest {
 
-        @DisplayName("Then should return the bind of one string with concat operation")
+        @DisplayName("Then should return expression of one string with concat operation")
         @Test
         fun test_concat_operation_with_one_parameter() = run {
             val result = concat(constant(STRING_TEST))
@@ -72,7 +72,7 @@ internal class StringOperationsTest {
             Assertions.assertEquals(result, expected)
         }
 
-        @DisplayName("Then should return the bind of two strings with concat operation")
+        @DisplayName("Then should return expression of two strings with concat operation")
         @Test
         fun test_concat_operation_with_two_parameters() = run {
             val result = concat(constant(STRING_TEST), constant(STRING_TEST))
@@ -86,7 +86,7 @@ internal class StringOperationsTest {
     @Nested
     inner class LowerCaseOperationTest {
 
-        @DisplayName("Then should return the bind of string with lowerCase operation")
+        @DisplayName("Then should return expression with lowerCase operation")
         @Test
         fun test_lowercase_operation() = run {
             val result = lowercase(constant(STRING_TEST))
@@ -95,7 +95,7 @@ internal class StringOperationsTest {
             Assertions.assertEquals(result, expected)
         }
 
-        @DisplayName("Then should return the bind of empty string with lowerCase operation")
+        @DisplayName("Then should return expression with lowerCase operation")
         @Test
         fun test_lowercase_operation_with_empty_input() = run {
             val result = lowercase(constant(EMPTY_STRING_TEST))
@@ -109,7 +109,7 @@ internal class StringOperationsTest {
     @Nested
     inner class UpperCaseOperationTest {
 
-        @DisplayName("Then should return the bind of string with uppercase operation")
+        @DisplayName("Then should return expression with uppercase operation")
         @Test
         fun test_uppercase_operation() = run {
             val result = uppercase(constant(STRING_TEST))
@@ -118,7 +118,7 @@ internal class StringOperationsTest {
             Assertions.assertEquals(result, expected)
         }
 
-        @DisplayName("Then should return the bind of empty string with uppercase operation")
+        @DisplayName("Then should return expression with uppercase operation")
         @Test
         fun test_uppercase_operation_with_empty_input() = run {
             val result = uppercase(constant(EMPTY_STRING_TEST))
@@ -132,7 +132,7 @@ internal class StringOperationsTest {
     @Nested
     inner class SubstringOperationTest {
 
-        @DisplayName("Then should return the bind of string with substring operation")
+        @DisplayName("Then should return expression with substring operation")
         @Test
         fun test_uppercase_operation() = run {
             val startIndex = 2
