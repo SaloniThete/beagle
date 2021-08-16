@@ -17,7 +17,6 @@
 package br.com.zup.beagle.serialization.jackson
 
 import br.com.zup.beagle.annotation.ImplicitContext
-import com.fasterxml.jackson.core.JsonGenerator
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotation
@@ -39,17 +38,6 @@ internal fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
     }
 
     return implicitContexts
-}
-
-internal fun serializeImplicitContexts(implicitContexts: HashMap<String, Any?>, generator: JsonGenerator) {
-    for (implicitContext in implicitContexts) {
-        serializeAsImplicitContext(implicitContext, generator)
-    }
-}
-
-private fun serializeAsImplicitContext(implicitContext: MutableMap.MutableEntry<String, Any?>, generator: JsonGenerator) {
-    generator.writeFieldName(implicitContext.key)
-    generator.writeObject(implicitContext.value)
 }
 
 private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
