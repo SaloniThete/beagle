@@ -26,6 +26,7 @@ dependencies {
     implementation project(Dependencies.Modules.commonProcessorUtils)
     implementation project(Dependencies.Modules.widgets)
     implementation project(Dependencies.Modules.schemaKotlinCore)
+    implementation Dependencies.GeneralLibraries.kotlinReflect
 
     implementation Dependencies.ProcessorLibraries.autoService
     implementation Dependencies.ProcessorLibraries.incap

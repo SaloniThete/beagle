@@ -23,6 +23,7 @@ import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
 import br.com.zup.beagle.widget.context.expressionOf
 import org.junit.jupiter.api.Test
+import kotlin.math.exp
 import kotlin.test.assertEquals
 
 @Context
@@ -165,6 +166,19 @@ internal class AnnotationProcessorTest {
         val newStreet = "Av Joao Naves"
         val newEmail = "pocas@mail.com"
         val newValue = 15.000
+
+        assertChange(newName, Person::name.name, person.changeName(newName))
+        assertChange(newStreet, "${Person::address.name}.${Address::street.name}", person.address.changeStreet(newStreet))
+        assertChange(newEmail, "${Person::address.name}.${Address::contact.name}.${Contact::email.name}", person.address.contact.changeEmail(newEmail))
+        assertChange(newValue, "${Person::orders.name}[0].${Order::value.name}", person.orders[0].changeValue(newValue))
+    }
+
+    @Test
+    fun test_generated_change_functions_bind() {
+        val newName = expressionOf<String>("context.name")
+        val newStreet = expressionOf<String>("context.street")
+        val newEmail = expressionOf<String>("context.email")
+        val newValue = expressionOf<Double>("context.value")
 
         assertChange(newName, Person::name.name, person.changeName(newName))
         assertChange(newStreet, "${Person::address.name}.${Address::street.name}", person.address.changeStreet(newStreet))

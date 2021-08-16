@@ -15,21 +15,20 @@
  */
 
 import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.compiler.elementType
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import java.io.File
-import java.lang.IndexOutOfBoundsException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -38,6 +37,8 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
+import kotlin.reflect.jvm.internal.impl.builtins.jvm.JavaToKotlinClassMap
+import kotlin.reflect.jvm.internal.impl.name.FqName
 
 @AutoService(Processor::class)
 class ContextObjectProcessor: AbstractProcessor() {
@@ -67,7 +68,10 @@ class ContextObjectProcessor: AbstractProcessor() {
 
     private fun isAnnotationValid(element: Element): Boolean {
         if (element.kind != ElementKind.CLASS) {
-            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated with @Context")
+            processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Only classes can be annotated with @Context"
+            )
             return false
         }
 
@@ -77,7 +81,11 @@ class ContextObjectProcessor: AbstractProcessor() {
         }
 
         if (!inheritFromContextObject) {
-            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes that inherit from ContextObject can be annotated with @Context", element)
+            processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Only classes that inherit from ContextObject can be annotated with @Context",
+                element
+            )
             return false
         }
 
@@ -85,6 +93,7 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     private fun processAnnotation(element: Element) {
+
         val className = element.simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(element).toString()
         val fileName = "${className}Normalizer"
@@ -102,26 +111,7 @@ class ContextObjectProcessor: AbstractProcessor() {
 
         fields.forEach { enclosed ->
             if (enclosed.simpleName.toString() != "contextId") {
-                val propertyName = enclosed.simpleName.toString()
-                val propertyType = enclosed.asType().asTypeName().convertToKotlinStringIfNeeded()
-
-                findListRegexMatch(enclosed.asType().toString())?.let { match ->
-                    val typeElement = processingEnv.elementUtils.getTypeElement(match)
-                    val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
-                    val isNullable = enclosed.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
-
-                    if (isContextObject) {
-                        fileBuilder.addFunction(buildListAccessFun(
-                            enclosed.simpleName.toString(),
-                            typeElement.asType().asTypeName(),
-                            classTypeName,
-                            isNullable
-                        ))
-                    }
-                }
-                fileBuilder.addProperty(buildExpressionPropertyFor(enclosed, classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
+                addExtensionsTo(enclosed, classTypeName, fileBuilder)
             }
         }
 
@@ -130,19 +120,53 @@ class ContextObjectProcessor: AbstractProcessor() {
         file.writeTo(File(kaptKotlinGeneratedDir))
     }
 
+    private fun addExtensionsTo(property: Element, classTypeName: TypeName, fileBuilder: FileSpec.Builder) {
+        if (property.simpleName.toString() != "contextId") {
+            val propertyName = property.simpleName.toString()
+            val propertyType = property.asType().asTypeName().javaToKotlinType()
+
+            val match = findListRegexMatch(property.asType().toString())
+            if (match != null) {
+                val typeElement = processingEnv.elementUtils.getTypeElement(match)
+                val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
+                val isNullable = property.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
+                val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
+                if (isContextObject) {
+                    fileBuilder.addFunction(buildListAccessFun(
+                        property.simpleName.toString(),
+                        typeElementTypeName,
+                        classTypeName,
+                        isNullable
+                    ))
+                }
+
+                fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName, classTypeName))
+                fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName.asBindType(), classTypeName))
+
+                fileBuilder.addProperty(buildExpressionPropertyFor(property, typeElementTypeName.asListType(), classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, typeElementTypeName.asListType(), classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, typeElementTypeName.asListType().asBindType(), classTypeName))
+            } else {
+                fileBuilder.addProperty(buildExpressionPropertyFor(property, propertyType, classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
+                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
+            }
+        }
+    }
+
     private fun buildNormalizerFun(classTypeName: TypeName, classFields: List<Element>): FunSpec {
         val contextObjects = getContextObjectsFields(classFields)
-        val statement = buildNormalizeFuncStatementWith(contextObjects)
+        val normalizingCode = buildNormalizeFuncCodeWith(contextObjects)
 
         return FunSpec.builder("normalize")
                     .receiver(classTypeName)
                     .addParameter("contextId", String::class)
-                    .addCode(statement)
+                    .addCode(normalizingCode)
                     .returns(classTypeName)
                     .build()
     }
 
-    private fun buildNormalizeFuncStatementWith(contextObjectsFields: List<Element>): String {
+    private fun buildNormalizeFuncCodeWith(contextObjectsFields: List<Element>): String {
         if (contextObjectsFields.isNotEmpty()) {
             val str = contextObjectsFields.fold("") { acc, contextObject ->
                 val name = contextObject.simpleName.toString()
@@ -160,6 +184,7 @@ class ContextObjectProcessor: AbstractProcessor() {
 
             return "return this.copy(\n    contextId = contextId$str\n)"
         }
+
         return "return this.copy(contextId = contextId)"
     }
 
@@ -170,7 +195,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             .receiver(classTypeName)
             .addParameter("index", Int::class)
             .returns(elementType)
-            .addStatement("val model = ${elementType}(contextId = \"\$contextId.parameterName[\$index]\")")
+            .addStatement("val model = ${elementType}(\"\$contextId.parameterName[\$index]\")")
             .addCode("return try { $tryCodeBlock } catch (e: IndexOutOfBoundsException) { model }")
             .build()
     }
@@ -206,9 +231,8 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
 
-    private fun buildExpressionPropertyFor(element: Element, classTypeName: TypeName): PropertySpec {
+    private fun buildExpressionPropertyFor(element: Element, elementType: TypeName, classTypeName: TypeName): PropertySpec {
         val propertyName = element.simpleName.toString()
-        val elementType = element.asType().asTypeName().convertToKotlinStringIfNeeded()
 
         return PropertySpec.builder("${propertyName}Expression", elementType.asBindType(), KModifier.PUBLIC)
             .getter(
@@ -239,17 +263,49 @@ class ContextObjectProcessor: AbstractProcessor() {
             .receiver(receiver)
             .addParameter(parameterName, parameterType)
             .addStatement("val contextIdSplit = splitContextId(contextId)")
-            .addStatement("return SetContext(contextId = contextIdSplit.first, path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName\", value = $parameterName)")
+            .addCode("return SetContext(\n" +
+                "   contextId = contextIdSplit.first,\n" +
+                "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName\",\n" +
+                "   value = $parameterName\n" +
+                ")"
+            )
             .returns(SetContext::class)
             .build()
     }
 
-    private fun TypeName.asBindType() = Bind.Expression::class.asTypeName().parameterizedBy(listOf(this.convertToKotlinStringIfNeeded()))
+    private fun buildChangeListElementFunFor(parameterName: String, parameterType: TypeName, receiver: TypeName): FunSpec {
+        return FunSpec.builder("change${parameterName.capitalize()}Element")
+            .receiver(receiver)
+            .addParameter(parameterName, parameterType)
+            .addParameter("index", Int::class)
+            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addCode("return SetContext(\n" +
+                "   contextId = contextIdSplit.first,\n" +
+                "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName[\$index]\",\n" +
+                "   value = $parameterName\n" +
+                ")"
+            )
+            .returns(SetContext::class)
+            .build()
+    }
 
-    private fun TypeName.convertToKotlinStringIfNeeded(): TypeName {
-        if (this == java.lang.String::class.java.asTypeName()) {
-            return String::class.asTypeName()
+    private fun TypeName.asBindType() = Bind.Expression::class.asTypeName().parameterizedBy(listOf(this))
+
+    private fun TypeName.asListType() = List::class.asTypeName().parameterizedBy(listOf(this))
+
+    private fun TypeName.javaToKotlinType(): TypeName {
+        return if (this is ParameterizedTypeName) {
+            (rawType.javaToKotlinType() as ClassName).parameterizedBy(*typeArguments.map { it.javaToKotlinType() }.toTypedArray())
+        } else {
+            val className =
+                JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(toString()))
+                    ?.asSingleFqName()?.asString()
+
+            return if (className == null) {
+                this
+            } else {
+                ClassName.bestGuess(className)
+            }
         }
-        return this
     }
 }
