@@ -18,8 +18,12 @@ package br.com.zup.beagle.serialization.jackson
 
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.annotation.RegisterWidget
+import br.com.zup.beagle.serialization.components.DefaultSerializerTest
+import br.com.zup.beagle.serialization.components.makeImplicitContextJson
+import br.com.zup.beagle.serialization.components.makeObjectImplicitContext
 import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.context.ContextObject
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -30,6 +34,8 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.provider.Arguments
 import java.io.StringWriter
 import java.io.Writer
 
@@ -86,15 +92,24 @@ internal class BeagleImplicitContextSerializerTest {
         verify(jsonWriter)
     }
 
-    @RegisterWidget
-    private class ImplicitContextTest(
-        @ImplicitContext
-        val implicitContext: ((ContextObjectTest) -> List<Any>)? = null)
-        : Widget()
-
-    private data class ContextObjectTest(
-        val value: String? = null,
-        override val contextId: String)
-        : ContextObject
+    @DisplayName("Given a Implicit Context")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    internal class ImplicitContextSerializerTest : DefaultSerializerTest<Widget>() {
+        override fun testArguments() = listOf(
+            Arguments.of(makeImplicitContextJson(), makeObjectImplicitContext())
+        )
+    }
 }
+
+@RegisterWidget
+class ImplicitContextTest(
+    @JsonIgnore
+    @ImplicitContext
+    val implicitContext: ((ContextObjectTest) -> List<Any>)? = null)
+    : Widget()
+
+data class ContextObjectTest(
+    val value: String? = null,
+    override val contextId: String)
+    : ContextObject
 
