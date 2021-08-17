@@ -22,4 +22,5 @@ object BeagleConstants {
     const val DEPRECATED_TAB_VIEW ="This component will be removed in a future version, use TabBar instead."
     const val DEPRECATED_LIST_VIEW = "This component was deprecated in version 1.4 " +
         "and will be removed in a future version"
+    const val DEPRECATED_VALUE_OF = "This component was deprecated and will be removed in a future version"
 }

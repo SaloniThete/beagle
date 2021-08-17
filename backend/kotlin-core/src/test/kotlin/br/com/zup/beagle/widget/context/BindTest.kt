@@ -16,6 +16,7 @@
 
 package br.com.zup.beagle.widget.context
 
+import br.com.zup.beagle.context.Bind
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

@@ -18,6 +18,7 @@ package br.com.zup.beagle.serialization.components
 
 import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.analytics.ScreenEvent
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.ext.setFlex
 import br.com.zup.beagle.serialization.jackson.ImplicitContextTest
 import br.com.zup.beagle.widget.action.Alert
@@ -25,7 +26,6 @@ import br.com.zup.beagle.widget.action.FormMethodType
 import br.com.zup.beagle.widget.action.FormRemoteAction
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.FlexDirection
 import br.com.zup.beagle.widget.core.ImageContentMode
 import br.com.zup.beagle.widget.core.ListDirection

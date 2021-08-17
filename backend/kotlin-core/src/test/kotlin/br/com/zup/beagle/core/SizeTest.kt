@@ -16,11 +16,9 @@
 
 package br.com.zup.beagle.core
 
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.core.Size
 import br.com.zup.beagle.widget.core.UnitType
 import br.com.zup.beagle.widget.core.UnitValue
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

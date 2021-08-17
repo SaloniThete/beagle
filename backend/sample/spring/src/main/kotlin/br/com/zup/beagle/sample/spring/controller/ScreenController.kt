@@ -20,6 +20,7 @@ package br.com.zup.beagle.sample.spring.controller
 
 import br.com.zup.beagle.sample.constants.ACCESSIBILITY_SCREEN_ENDPOINT
 import br.com.zup.beagle.sample.constants.NAVIGATION_TYPE_ENDPOINT
+import br.com.zup.beagle.sample.constants.OPERATIONS_ENDPOINT
 import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_ENDPOINT
 import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_IMAGE_ENDPOINT
 import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_STYLE_ENDPOINT
@@ -74,6 +75,7 @@ import br.com.zup.beagle.sample.spring.service.SampleLazyComponentService
 import br.com.zup.beagle.sample.spring.service.SampleListViewService
 import br.com.zup.beagle.sample.spring.service.SampleNavigationBarService
 import br.com.zup.beagle.sample.spring.service.SampleNavigationTypeService
+import br.com.zup.beagle.sample.spring.service.SampleOperationService
 import br.com.zup.beagle.sample.spring.service.SamplePageViewService
 import br.com.zup.beagle.sample.spring.service.SamplePullToRefreshService
 import br.com.zup.beagle.sample.spring.service.SampleSafeAreaService
@@ -116,6 +118,7 @@ class ScreenController(
     private val sampleAnalyticsService: SampleAnalyticsService,
     private val sampleWebViewService: SampleWebViewService,
     private val sampleScreenContext: SampleContextService,
+    private val sampleOperations: SampleOperationService,
     private val sampleScreenSafeArea: SampleSafeAreaService,
     private val sampleScreenTextInput: TextInputService,
     private val sampleSimpleFormService: SampleSimpleFormService,
@@ -220,6 +223,9 @@ class ScreenController(
 
     @GetMapping(SCREEN_CONTEXT_ENDPOINT)
     fun getSampleContext() = this.sampleScreenContext.createScreenContext()
+
+    @GetMapping(OPERATIONS_ENDPOINT)
+    fun getOperations() = this.sampleOperations.createOperations()
 
     @GetMapping(SCREEN_SAFE_AREA_ENDPOINT)
     fun getSampleSafeArea() = this.sampleScreenSafeArea.createSafeArea()

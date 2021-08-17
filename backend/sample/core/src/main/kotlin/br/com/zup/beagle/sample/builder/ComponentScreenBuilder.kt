@@ -23,6 +23,7 @@ import br.com.zup.beagle.sample.constants.ACCESSIBILITY_SCREEN_ENDPOINT
 import br.com.zup.beagle.sample.constants.BUTTON_STYLE
 import br.com.zup.beagle.sample.constants.CUSTOM_PLATFORM_SAMPLE_ENDPOINT
 import br.com.zup.beagle.sample.constants.NAVIGATION_TYPE_ENDPOINT
+import br.com.zup.beagle.sample.constants.OPERATIONS_ENDPOINT
 import br.com.zup.beagle.sample.constants.PLATFORM_SAMPLE_ENDPOINT
 import br.com.zup.beagle.sample.constants.SCREEN_ACTION_ADD_CHILDREN
 import br.com.zup.beagle.sample.constants.SCREEN_ACTION_ENDPOINT
@@ -92,6 +93,7 @@ object ComponentScreenBuilder : ScreenBuilder {
                 createMenu("Platform", PLATFORM_SAMPLE_ENDPOINT),
                 createMenu("Custom Platform", CUSTOM_PLATFORM_SAMPLE_ENDPOINT),
                 createMenu("Context", SCREEN_CONTEXT_ENDPOINT),
+                createMenu("Operations", OPERATIONS_ENDPOINT),
                 createMenu("Safe Area", SCREEN_SAFE_AREA_ENDPOINT),
                 createMenu("Text Input", SCREEN_TEXT_INPUT_ENDPOINT),
                 createMenu("Simple Form", SCREEN_SIMPLE_FORM_ENDPOINT),

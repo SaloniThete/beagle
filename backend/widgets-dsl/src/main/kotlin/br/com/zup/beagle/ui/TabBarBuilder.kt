@@ -18,8 +18,8 @@ package br.com.zup.beagle.ui
 
 import br.com.zup.beagle.builder.BeagleBuilder
 import br.com.zup.beagle.builder.BeagleListBuilder
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.ui.ImagePath
 import br.com.zup.beagle.widget.ui.TabBar
 import br.com.zup.beagle.widget.ui.TabBarItem

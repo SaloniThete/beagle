@@ -16,9 +16,9 @@
 
 package br.com.zup.beagle.compiler
 
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.expression.ExpressionHelper
 import br.com.zup.beagle.widget.expression.BeagleIterableSubExpression
-import br.com.zup.beagle.widget.expression.ExpressionHelper
 import com.squareup.kotlinpoet.asTypeName
 
 internal const val ROOT_SUFFIX = "_"

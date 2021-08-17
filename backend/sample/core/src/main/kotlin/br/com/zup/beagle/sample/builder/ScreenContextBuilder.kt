@@ -16,6 +16,7 @@
 
 package br.com.zup.beagle.sample.builder
 
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.core.CornerRadius
 import br.com.zup.beagle.core.Style
 import br.com.zup.beagle.ext.applyFlex
@@ -30,7 +31,6 @@ import br.com.zup.beagle.widget.action.RequestActionMethod
 import br.com.zup.beagle.widget.action.SendRequest
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.AlignSelf
 import br.com.zup.beagle.widget.core.EdgeValue
 import br.com.zup.beagle.widget.core.Flex

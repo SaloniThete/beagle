@@ -17,6 +17,7 @@
 package br.com.zup.beagle.sample.builder
 
 import br.com.zup.beagle.action.alert
+import br.com.zup.beagle.context.valueOf
 import br.com.zup.beagle.ext.style
 import br.com.zup.beagle.ext.unitReal
 import br.com.zup.beagle.layout.container
@@ -25,7 +26,6 @@ import br.com.zup.beagle.layout.screen
 import br.com.zup.beagle.layout.scrollView
 import br.com.zup.beagle.ui.listView
 import br.com.zup.beagle.ui.text
-import br.com.zup.beagle.widget.context.valueOf
 import br.com.zup.beagle.widget.core.ListDirection
 import br.com.zup.beagle.widget.core.ScrollAxis
 import br.com.zup.beagle.widget.layout.ScreenBuilder

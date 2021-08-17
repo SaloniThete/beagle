@@ -16,10 +16,10 @@
 
 package br.com.zup.beagle.widget.ui
 
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextComponent
 import br.com.zup.beagle.widget.context.ContextData
 import br.com.zup.beagle.widget.core.ListDirection

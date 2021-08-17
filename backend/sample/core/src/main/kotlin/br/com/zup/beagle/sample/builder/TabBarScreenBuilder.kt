@@ -16,10 +16,10 @@
 
 package br.com.zup.beagle.sample.builder
 
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.widget.action.Alert
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.ContextData
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.layout.Container
 import br.com.zup.beagle.widget.layout.NavigationBar
 import br.com.zup.beagle.widget.layout.NavigationBarItem

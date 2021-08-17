@@ -20,7 +20,7 @@ import br.com.zup.beagle.builder.BeagleBuilder
 import br.com.zup.beagle.builder.widget.EdgeValueBuilder
 import br.com.zup.beagle.builder.widget.FlexBuilder
 import br.com.zup.beagle.builder.widget.SizeBuilder
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.core.CornerRadius
 import br.com.zup.beagle.core.Display
 import br.com.zup.beagle.core.PositionType

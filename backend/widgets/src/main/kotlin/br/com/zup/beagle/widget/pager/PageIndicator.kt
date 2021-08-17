@@ -16,7 +16,7 @@
 
 package br.com.zup.beagle.widget.pager
 
-import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.context.Bind
 
 /**
  *  The PageView component is a specialized container to hold pages (views) that will be displayed horizontally.

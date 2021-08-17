@@ -15,8 +15,8 @@
  */
 
 import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.SetContext
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
@@ -100,8 +100,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
         val classTypeName = element.asType().asTypeName()
 
-        fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf", "splitContextId")
-
+        fileBuilder.addImport("br.com.zup.beagle.context", "Bind", "expressionOf", "splitContextId")
         fileBuilder.addFunction(buildNormalizerFun(classTypeName, fields))
 
         fileBuilder.addProperty(buildRootExpression(classTypeName))

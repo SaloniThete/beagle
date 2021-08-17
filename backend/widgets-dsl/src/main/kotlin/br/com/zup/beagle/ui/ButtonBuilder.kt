@@ -20,8 +20,8 @@ import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.builder.BeagleBuilder
 import br.com.zup.beagle.builder.BeagleListBuilder
 import br.com.zup.beagle.builder.analytics.ClickEventBuilder
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.ui.Button
 import kotlin.properties.Delegates
 

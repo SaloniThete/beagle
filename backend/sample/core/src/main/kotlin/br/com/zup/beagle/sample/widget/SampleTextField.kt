@@ -18,10 +18,10 @@ package br.com.zup.beagle.sample.widget
 
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.annotation.RegisterWidget
+import br.com.zup.beagle.context.Bind
+import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
-import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.form.InputWidget
 
 @RegisterWidget

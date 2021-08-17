@@ -16,8 +16,8 @@
 
 package br.com.zup.beagle.serialization.jackson
 
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.newanalytics.ActionAnalyticsConfig
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.layout.ComposeComponent
 import br.com.zup.beagle.widget.layout.ScreenBuilder
 import com.fasterxml.jackson.databind.module.SimpleModule

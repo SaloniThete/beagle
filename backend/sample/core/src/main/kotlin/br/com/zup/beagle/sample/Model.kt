@@ -17,9 +17,7 @@
 package br.com.zup.beagle.sample
 
 import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextObject
-import br.com.zup.beagle.widget.context.expressionOf
 
 @Context
 data class Model(
