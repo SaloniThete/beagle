@@ -26,6 +26,7 @@ import br.com.zup.beagle.android.context.ContextData
 import br.com.zup.beagle.android.context.expressionOf
 import br.com.zup.beagle.android.testutil.InstantExecutorExtension
 import br.com.zup.beagle.android.view.ViewFactory
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.core.ListDirection
 import io.mockk.Runs
 import io.mockk.every
@@ -56,14 +57,14 @@ class ListViewTest : BaseComponentTest() {
     private val deprecatedAdapterSlot = slot<ListView.ListViewRecyclerAdapter>()
     private val adapterSlot = slot<ListAdapter>()
 
-    private val children = listOf(Container(listOf()))
+    private val children by lazy { listOf(Container(listOf())) }
     private val context = ContextData(
         id = "context",
         value = listOf(Cell(10, "Item 1"), Cell(20, "Item 2"), Cell(30, "Item 3"))
     )
     private val onInit = listOf(SendRequest("http://www.init.com"))
     private val dataSource = expressionOf<List<Any>>("@{context}")
-    private val template = Container(children = listOf(Text(expressionOf("@{item.name}"))))
+    private val template by lazy { Container(children = listOf(Text(expressionOf("@{item.name}")))) }
     private val onScrollEnd = listOf(mockk<Action>(relaxed = true))
     private val iteratorName = "list"
     private val key = "id"
@@ -78,11 +79,11 @@ class ListViewTest : BaseComponentTest() {
         deprecatedListView = ListView(children, ListDirection.VERTICAL)
         listView = ListView(ListDirection.VERTICAL, context, onInit, dataSource, template, onScrollEnd, iteratorName = iteratorName, key = key)
 
-        every { beagleFlexView.addView(any()) } just Runs
-        every { anyConstructed<ViewFactory>().makeRecyclerView(rootView.getContext()) } returns recyclerView
-        every { anyConstructed<ViewFactory>().makeBeagleRecyclerView(rootView.getContext()) } returns beagleRecyclerView
-        every { anyConstructed<ViewFactory>().makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext()) } returns beagleRecyclerView
-        every { anyConstructed<ViewFactory>().makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext()) } returns beagleRecyclerView
+        every { beagleFlexView.addView(any<ServerDrivenComponent>()) } just Runs
+        every { ViewFactory.makeRecyclerView(rootView.getContext()) } returns recyclerView
+        every { ViewFactory.makeBeagleRecyclerView(rootView.getContext()) } returns beagleRecyclerView
+        every { ViewFactory.makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext()) } returns beagleRecyclerView
+        every { ViewFactory.makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext()) } returns beagleRecyclerView
         every { recyclerView.layoutManager = capture(layoutManagerSlot) } just Runs
         every { recyclerView.adapter = any() } just Runs
     }
@@ -196,7 +197,7 @@ class ListViewTest : BaseComponentTest() {
             listView.buildView(rootView)
 
             // Then
-            verify(exactly = 1) { anyConstructed<ViewFactory>().makeBeagleRecyclerView(rootView.getContext()) }
+            verify(exactly = 1) { ViewFactory.makeBeagleRecyclerView(rootView.getContext()) }
         }
 
         @Test
@@ -209,7 +210,7 @@ class ListViewTest : BaseComponentTest() {
             listView.buildView(rootView)
 
             // Then
-            verify(exactly = 1) { anyConstructed<ViewFactory>().makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext()) }
+            verify(exactly = 1) { ViewFactory.makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext()) }
         }
 
         @Test
@@ -222,7 +223,7 @@ class ListViewTest : BaseComponentTest() {
             listView.buildView(rootView)
 
             // Then
-            verify(exactly = 1) { anyConstructed<ViewFactory>().makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext()) }
+            verify(exactly = 1) { ViewFactory.makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext()) }
         }
     }
 

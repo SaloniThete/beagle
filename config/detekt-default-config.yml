@@ -1,3 +1,20 @@
+
+#
+# Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 build:
   maxIssues: 0
   excludeCorrectable: false
@@ -141,6 +158,7 @@ empty-blocks:
   EmptyClassBlock:
     active: true
   EmptyDefaultConstructor:
+    excludes: ['**/test/**']
     active: true
   EmptyDoWhileBlock:
     active: true
@@ -220,6 +238,7 @@ exceptions:
 #     - Throwable
     allowedExceptionNameRegex: '_|(ignore|expected).*'
   TooGenericExceptionThrown:
+    excludes: ['**/test/**']
     active: true
     exceptionNames:
      - Error
@@ -395,9 +414,11 @@ naming:
     excludeClassPattern: '$^'
     ignoreOverridden: true
   InvalidPackageDeclaration:
+    excludes: ['**/test/**']
     active: true
     rootPackage: ''
   MatchingDeclarationName:
+    excludes: ['**/test/**']
     active: true
     mustBeFirst: true
   MemberNameEqualsClassName:
@@ -551,6 +572,7 @@ style:
     ignoreOverridden: false
     ignoreUsageInGenerics: false
   FunctionOnlyReturningConstant:
+    excludes: ['**/test/**']
     active: true
     ignoreOverridableFunction: true
     excludedFunctions: 'describeContents'
@@ -580,12 +602,14 @@ style:
   MandatoryBracesLoops:
     active: false
   MaxLineLength:
+    excludes: ['**/test/**']
     active: true
     maxLineLength: 120
     excludePackageStatements: true
     excludeImportStatements: true
     excludeCommentStatements: false
   MayBeConst:
+    excludes: ['**/test/**']
     active: true
   ModifierOrder:
     active: true
@@ -611,7 +635,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 3
     excludedFunctions: 'equals'
     excludeLabeled: false
     excludeReturnFromLambda: true
@@ -631,6 +655,7 @@ style:
     active: false
     acceptableDecimalLength: 5
   UnnecessaryAbstractClass:
+    excludes: ['**/test/**']
     active: true
     excludeAnnotatedClasses: ['dagger.Module']
   UnnecessaryAnnotationUseSiteTarget:
@@ -646,6 +671,7 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
+    excludes: ['**/test/**']
     active: true
   UnusedPrivateClass:
     active: true

@@ -26,17 +26,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import br.com.zup.beagle.android.BaseTest
-import br.com.zup.beagle.android.engine.renderer.ActivityRootView
-import br.com.zup.beagle.android.engine.renderer.FragmentRootView
+import br.com.zup.beagle.android.data.serializer.BeagleSerializer
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.networking.RequestData
 import br.com.zup.beagle.android.setup.DesignSystem
 import br.com.zup.beagle.android.testutil.RandomData
+import br.com.zup.beagle.android.utils.beagleSerializerFactory
 import br.com.zup.beagle.android.utils.dp
 import br.com.zup.beagle.android.utils.loadView
 import br.com.zup.beagle.android.utils.renderScreen
 import br.com.zup.beagle.android.utils.toAndroidColor
-import br.com.zup.beagle.android.view.BeagleFragment
 import br.com.zup.beagle.android.view.ScreenRequest
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeagleView
@@ -46,7 +45,10 @@ import br.com.zup.beagle.android.view.custom.OnStateChanged
 import br.com.zup.beagle.android.view.mapper.toRequestData
 import br.com.zup.beagle.android.view.viewmodel.GenerateIdViewModel
 import br.com.zup.beagle.android.view.viewmodel.ScreenContextViewModel
+import br.com.zup.beagle.android.widget.ActivityRootView
+import br.com.zup.beagle.android.widget.FragmentRootView
 import br.com.zup.beagle.android.widget.RootView
+import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.core.Style
 import br.com.zup.beagle.core.StyleComponent
 import io.mockk.CapturingSlot
@@ -90,9 +92,6 @@ class ViewExtensionsKtTest : BaseTest() {
     @RelaxedMockK
     private lateinit var activity: AppCompatActivity
 
-    @MockK
-    private lateinit var viewFactory: ViewFactory
-
     @RelaxedMockK
     private lateinit var beagleView: BeagleView
 
@@ -121,12 +120,12 @@ class ViewExtensionsKtTest : BaseTest() {
         mockkStatic("br.com.zup.beagle.android.utils.StringExtensionsKt")
         mockkStatic("br.com.zup.beagle.android.utils.NumberExtensionsKt")
 
-        viewExtensionsViewFactory = viewFactory
+        mockkObject(ViewFactory)
 
         prepareViewModelMock(contextViewModel)
         prepareViewModelMock(generateIdViewModel)
-        every { viewFactory.makeBeagleView(any()) } returns beagleView
-        every { viewFactory.makeView(any()) } returns beagleView
+        every { ViewFactory.makeBeagleView(any()) } returns beagleView
+        every { ViewFactory.makeView(any()) } returns beagleView
         every { viewGroup.addView(capture(viewSlot)) } just Runs
         every { viewGroup.context } returns activity
         every { beagleView.loadView(any<RequestData>()) } just Runs
@@ -160,7 +159,7 @@ class ViewExtensionsKtTest : BaseTest() {
         fun testHideKeyboardShouldCallHideSoftInputFromWindowWithCreatedView() {
             // Given
             every { activity.currentFocus } returns null
-            every { viewExtensionsViewFactory.makeView(activity) } returns beagleView
+            every { ViewFactory.makeView(activity) } returns beagleView
 
             // When
             viewGroup.hideKeyboard()
@@ -287,7 +286,7 @@ class ViewExtensionsKtTest : BaseTest() {
             val requestData = screenRequest.toRequestData()
             verifySequence {
                 generateIdViewModel.createIfNotExisting(0)
-                viewFactory.makeBeagleView(any<FragmentRootView>())
+                ViewFactory.makeBeagleView(any<FragmentRootView>())
                 beagleView.stateChangedListener = any()
                 beagleView.serverStateChangedListener = any()
                 beagleView.loadView(requestData)
@@ -305,7 +304,7 @@ class ViewExtensionsKtTest : BaseTest() {
             // Then
             val requestData = screenRequest.toRequestData()
             verify {
-                viewFactory.makeBeagleView(any<ActivityRootView>())
+                ViewFactory.makeBeagleView(any<ActivityRootView>())
                 beagleView.loadView(requestData)
             }
         }
@@ -439,7 +438,7 @@ class ViewExtensionsKtTest : BaseTest() {
 
         private fun commonGiven(): CapturingSlot<RootView> {
             val slot = slot<RootView>()
-            every { viewFactory.makeBeagleView(capture(slot)) } returns beagleView
+            every { ViewFactory.makeBeagleView(capture(slot)) } returns beagleView
             return slot
         }
     }
@@ -455,35 +454,51 @@ class ViewExtensionsKtTest : BaseTest() {
             }
             }"""
 
+        private val component: ServerDrivenComponent = mockk(relaxed = true)
+        private val serializerFactory: BeagleSerializer = mockk(relaxed = true)
+
         @DisplayName("Then should create the rootView with right parameters")
         @Test
         fun testRenderScreenWithActivity() {
-            //given
-            val beagleFragment: BeagleFragment = mockk()
+            // Given
+            beagleSerializerFactory = serializerFactory
+            every { serializerFactory.deserializeComponent(any()) } returns component
 
-            mockkObject(BeagleFragment)
-            every { BeagleFragment.newInstance(component = any(), any()) } returns beagleFragment
-
-            //then
+            // When
             viewGroup.renderScreen(activity, json, "screenId")
 
-            //when
-            verify(exactly = 1) { BeagleFragment.newInstance(component = any(), "screenId") }
+            // Then
+            verifySequence {
+                viewGroup.id
+                serializerFactory.deserializeComponent(json)
+                ViewFactory.makeBeagleView(any<ActivityRootView>())
+                beagleView.addServerDrivenComponent(component)
+                beagleView.listenerOnViewDetachedFromWindow = any()
+                viewGroup.removeAllViews()
+                viewGroup.addView(beagleView)
+            }
         }
 
         @DisplayName("Then should create the rootView with right parameters")
         @Test
         fun testRenderScreenWithFragment() {
-            //given
-            val beagleFragment: BeagleFragment = mockk()
-            mockkObject(BeagleFragment)
-            every { BeagleFragment.newInstance(component = any(), any()) } returns beagleFragment
-            every { fragment.requireContext() } returns activity
-            //then
+            // Given
+            beagleSerializerFactory = serializerFactory
+            every { serializerFactory.deserializeComponent(any()) } returns component
+
+            // When
             viewGroup.renderScreen(fragment, json, "screenId")
 
-            //when
-            verify(exactly = 1) { BeagleFragment.newInstance(component = any(), "screenId") }
+            // Then
+            verifySequence {
+                viewGroup.id
+                serializerFactory.deserializeComponent(json)
+                ViewFactory.makeBeagleView(any<FragmentRootView>())
+                beagleView.addServerDrivenComponent(component)
+                beagleView.listenerOnViewDetachedFromWindow = any()
+                viewGroup.removeAllViews()
+                viewGroup.addView(beagleView)
+            }
         }
     }
 }

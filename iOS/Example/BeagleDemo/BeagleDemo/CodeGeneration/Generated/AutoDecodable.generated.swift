@@ -1,6 +1,5 @@
-// Generated using Sourcery 1.0.0 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 1.4.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
-
 /*
 * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
 *
@@ -37,6 +36,20 @@ extension CustomActionableContainer {
         } else {
             throw ComponentDecodingError.couldNotCastToType("ActionDummy")
         }
+    }
+}
+
+// MARK: CustomAsyncAction Decodable
+extension CustomAsyncAction {
+
+    enum CodingKeys: String, CodingKey {
+        case onFinish
+    }
+
+    internal init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        onFinish = try container.decodeIfPresent(forKey: .onFinish)
     }
 }
 

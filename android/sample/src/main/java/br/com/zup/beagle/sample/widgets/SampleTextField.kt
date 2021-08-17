@@ -18,13 +18,19 @@ package br.com.zup.beagle.sample.widgets
 
 import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
+import br.com.zup.beagle.android.action.Action
 import br.com.zup.beagle.android.components.form.InputWidget
+import br.com.zup.beagle.android.context.ContextData
+import br.com.zup.beagle.android.utils.handleEvent
 import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.annotation.RegisterWidget
+
+private const val VALUE_KEY = "value"
 
 @RegisterWidget("sampleTextField")
 data class SampleTextField(
     val placeholder: String = "",
+    val onChange: List<Action>? = null
 ) : InputWidget() {
 
     @Transient
@@ -40,6 +46,21 @@ data class SampleTextField(
         textFieldView = this
 
         textFieldView.isSingleLine = true
-        doOnTextChanged { _, _, _, _ -> notifyChanges() }
+
+        doOnTextChanged { newText, _, _, _ ->
+            notifyChanges()
+            onChange?.let {
+                this@SampleTextField.handleEvent(
+                    rootView,
+                    this,
+                    onChange,
+                    ContextData(
+                        id = "onChange",
+                        value = mapOf(VALUE_KEY to newText.toString())
+                    ),
+                    analyticsValue = "onChange"
+                )
+            }
+        }
     }
 }

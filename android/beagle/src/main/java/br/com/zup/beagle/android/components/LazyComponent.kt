@@ -19,7 +19,6 @@ package br.com.zup.beagle.android.components
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.view.get
-import br.com.zup.beagle.R
 import br.com.zup.beagle.android.view.ServerDrivenState
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeagleView
@@ -28,8 +27,7 @@ import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.android.widget.WidgetView
 import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.core.ServerDrivenComponent
-import kotlinx.android.synthetic.main.beagle_include_error_server_driven.view.buttonRetry
-
+import br.com.zup.beagle.databinding.BeagleIncludeErrorServerDrivenBinding
 
 /**
  *  The LazyComponent is used when an asynchronous BFF request is made.
@@ -48,11 +46,8 @@ data class LazyComponent(
     val initialState: ServerDrivenComponent,
 ) : WidgetView() {
 
-    @Transient
-    private val viewFactory: ViewFactory = ViewFactory()
-
     override fun buildView(rootView: RootView): View {
-        return viewFactory.makeBeagleView(rootView).apply {
+        return ViewFactory.makeBeagleView(rootView).apply {
             addServerDrivenComponent(initialState)
             updateView(path, this[0])
             serverStateChangedListener = object : OnServerStateChanged {
@@ -70,9 +65,9 @@ data class LazyComponent(
 
     private fun addErrorScreen(beagleView: BeagleView, serverState: ServerDrivenState.Error) {
         beagleView.removeAllViews()
-        val view = LayoutInflater.from(beagleView.context).inflate(R.layout.beagle_include_error_server_driven, null)
-        beagleView.addView(view)
-        view.buttonRetry.setOnClickListener {
+        val binding = BeagleIncludeErrorServerDrivenBinding.inflate(LayoutInflater.from(beagleView.context))
+        beagleView.addView(binding.root)
+        binding.buttonRetry.setOnClickListener {
             beagleView.removeAllViews()
             beagleView.addServerDrivenComponent(initialState)
             serverState.retry.invoke()

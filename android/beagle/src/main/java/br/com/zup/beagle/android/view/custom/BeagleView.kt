@@ -30,7 +30,6 @@ import br.com.zup.beagle.android.view.viewmodel.BeagleViewModel
 import br.com.zup.beagle.android.view.viewmodel.ViewState
 import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.core.ServerDrivenComponent
-import java.net.URI
 
 @Deprecated("It was deprecated in version 1.2.0 and will be removed in a future version." +
     " Use OnServerStateChanged instead.", replaceWith = ReplaceWith("OnServerStateChanged",
@@ -51,7 +50,7 @@ sealed class BeagleViewState {
 internal class BeagleView(
     private val rootView: RootView,
     private val viewModel: BeagleViewModel = rootView.generateViewModelInstance(),
-) : BeagleFlexView(rootView) {
+) : InternalBeagleFlexView(rootView) {
 
     @Deprecated("It was deprecated in version 1.2.0 and will be removed in a future version." +
         " Use serverStateChangedListener instead.")
@@ -75,7 +74,7 @@ internal class BeagleView(
 
     fun updateView(url: String, view: View) {
         val urlFormatted = url.formatUrl()
-        loadView(RequestData(url = urlFormatted, uri = URI(urlFormatted)), view)
+        loadView(RequestData(url = urlFormatted), view)
     }
 
     private fun loadView(requestData: RequestData, view: View?) {

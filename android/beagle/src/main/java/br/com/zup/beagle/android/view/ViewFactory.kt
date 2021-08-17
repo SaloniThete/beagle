@@ -28,6 +28,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.com.zup.beagle.R
 import br.com.zup.beagle.android.components.BeagleRecyclerView
 import br.com.zup.beagle.android.components.utils.RoundedImageView
@@ -37,9 +38,10 @@ import br.com.zup.beagle.android.view.custom.BeaglePageView
 import br.com.zup.beagle.android.view.custom.BeagleTabLayout
 import br.com.zup.beagle.android.view.custom.BeagleView
 import br.com.zup.beagle.android.widget.RootView
+import br.com.zup.beagle.core.CornerRadius
 import br.com.zup.beagle.core.Style
 
-internal class ViewFactory {
+internal object ViewFactory {
 
     fun makeView(context: Context) = View(context)
 
@@ -48,6 +50,16 @@ internal class ViewFactory {
     fun makeBeagleFlexView(rootView: RootView) = BeagleFlexView(rootView)
 
     fun makeBeagleFlexView(rootView: RootView, style: Style) = BeagleFlexView(rootView, style)
+
+    fun makeBeagleFlexView(
+        rootView: RootView,
+        style: Style,
+        styleId: Int,
+    ) = BeagleFlexView(
+        rootView,
+        style,
+        styleId = styleId,
+    )
 
     fun makeScrollView(context: Context) = ScrollView(context).apply {
         isFillViewport = true
@@ -82,7 +94,7 @@ internal class ViewFactory {
     //we use the context.applicationContext to prevent a crash on android 21
     fun makeWebView(context: Context) = WebView(context.applicationContext)
 
-    fun makeImageView(context: Context, cornerRadius: Double = 0.0) = RoundedImageView(context, cornerRadius)
+    fun makeImageView(context: Context, cornerRadius: CornerRadius) = RoundedImageView(context, cornerRadius)
 
     fun makeRecyclerView(context: Context) = RecyclerView(context)
 
@@ -93,4 +105,6 @@ internal class ViewFactory {
 
     fun makeBeagleRecyclerViewScrollIndicatorVertical(context: Context) =
         BeagleRecyclerView(ContextThemeWrapper(context, R.style.Beagle_Widget_ScrollIndicatorVertical))
+
+    fun makeSwipeRefreshLayout(context: Context) = SwipeRefreshLayout(context)
 }

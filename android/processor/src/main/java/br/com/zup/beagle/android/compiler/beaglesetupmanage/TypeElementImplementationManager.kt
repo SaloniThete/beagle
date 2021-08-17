@@ -16,14 +16,16 @@
 
 package br.com.zup.beagle.android.compiler.beaglesetupmanage
 
-import br.com.zup.beagle.android.compiler.PropertySpecifications
-import br.com.zup.beagle.android.compiler.FORM_LOCAL_ACTION_HANDLER
+import br.com.zup.beagle.android.compiler.BEAGLE_CONFIG
+import br.com.zup.beagle.android.compiler.BEAGLE_IMAGE_DOWNLOADER
+import br.com.zup.beagle.android.compiler.BEAGLE_LOGGER
 import br.com.zup.beagle.android.compiler.DEEP_LINK_HANDLER
+import br.com.zup.beagle.android.compiler.FORM_LOCAL_ACTION_HANDLER
+import br.com.zup.beagle.android.compiler.HTTP_CLIENT_FACTORY_HANDLER
 import br.com.zup.beagle.android.compiler.HTTP_CLIENT_HANDLER
+import br.com.zup.beagle.android.compiler.PropertySpecifications
 import br.com.zup.beagle.android.compiler.STORE_HANDLER
 import br.com.zup.beagle.android.compiler.URL_BUILDER_HANDLER
-import br.com.zup.beagle.android.compiler.BEAGLE_LOGGER
-import br.com.zup.beagle.android.compiler.BEAGLE_IMAGE_DOWNLOADER
 import br.com.zup.beagle.compiler.shared.implements
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
@@ -37,15 +39,22 @@ internal object TypeElementImplementationManager {
     ) {
         val manage = GenericTypeElementManagement(
             processingEnv,
-            typeElement
+            typeElement,
         )
 
         when {
+            typeElement.implements(BEAGLE_CONFIG, processingEnv) -> {
+                val element = propertySpecifications?.config
+                propertySpecifications?.config = manage.manageTypeElement(
+                    element,
+                    BEAGLE_CONFIG.className,
+                )
+            }
             typeElement.implements(FORM_LOCAL_ACTION_HANDLER, processingEnv) -> {
                 val element = propertySpecifications?.formLocalActionHandler
                 propertySpecifications?.formLocalActionHandler = manage.manageTypeElement(
                     element,
-                    FORM_LOCAL_ACTION_HANDLER.className
+                    FORM_LOCAL_ACTION_HANDLER.className,
                 )
             }
             typeElement.implements(DEEP_LINK_HANDLER, processingEnv) -> {
@@ -55,6 +64,11 @@ internal object TypeElementImplementationManager {
             typeElement.implements(HTTP_CLIENT_HANDLER, processingEnv) -> {
                 val element = propertySpecifications?.httpClient
                 propertySpecifications?.httpClient = manage.manageTypeElement(element, HTTP_CLIENT_HANDLER.className)
+            }
+            typeElement.implements(HTTP_CLIENT_FACTORY_HANDLER, processingEnv) -> {
+                val element = propertySpecifications?.httpClientFactory
+                propertySpecifications?.httpClientFactory =
+                    manage.manageTypeElement(element, HTTP_CLIENT_FACTORY_HANDLER.className)
             }
             typeElement.implements(STORE_HANDLER, processingEnv) -> {
                 val element = propertySpecifications?.storeHandler
@@ -72,7 +86,7 @@ internal object TypeElementImplementationManager {
                 val element = propertySpecifications?.imageDownloader
                 propertySpecifications?.imageDownloader = manage.manageTypeElement(
                     element,
-                    BEAGLE_IMAGE_DOWNLOADER.className
+                    BEAGLE_IMAGE_DOWNLOADER.className,
                 )
             }
         }

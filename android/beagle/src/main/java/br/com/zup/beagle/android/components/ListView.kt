@@ -21,11 +21,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.zup.beagle.android.action.Action
 import br.com.zup.beagle.android.components.list.ListAdapter
 import br.com.zup.beagle.android.components.list.ListViewModels
+import br.com.zup.beagle.android.components.utils.Template
 import br.com.zup.beagle.android.context.Bind
 import br.com.zup.beagle.android.context.ContextComponent
 import br.com.zup.beagle.android.context.ContextData
@@ -67,6 +69,7 @@ constructor(
     val isScrollIndicatorVisible: Boolean = false,
     val iteratorName: String = "item",
     val key: String? = null,
+    val templates: List<Template>? = null,
 ) : WidgetView(), ContextComponent, OnInitiableComponent by OnInitiableComponentImpl(onInit) {
 
     /**
@@ -79,7 +82,7 @@ constructor(
             "ListView(direction, context, onInit, dataSource, template, onScrollEnd, scrollEndThreshold," +
                 "iteratorName, key)"))
     constructor(
-        children: List<ServerDrivenComponent>,
+        children: List<ServerDrivenComponent>? = null,
         direction: ListDirection,
     ) : this(
         children = children,
@@ -100,6 +103,11 @@ constructor(
      * @param key points to a unique value present in each dataSource item
      * used as a suffix in the component ids within the Widget.
      */
+    @Deprecated(message = "It was deprecated in version 1.7 and will be removed in a future version. " +
+        "Use templates instead template",
+        replaceWith = ReplaceWith(
+            "ListView(direction, context, onInit, dataSource, onScrollEnd, scrollEndThreshold," +
+                "iteratorName, key, templates)"))
     constructor(
         direction: ListDirection,
         context: ContextData? = null,
@@ -122,11 +130,53 @@ constructor(
         scrollEndThreshold,
         isScrollIndicatorVisible,
         iteratorName,
-        key
+        key,
+        null
+    )
+
+    /**
+     * @param direction define the list direction.
+     * @param context define the contextData that be set to component.
+     * @param onInit allows to define a list of actions to be performed when the Widget is displayed.
+     * @param dataSource it's an expression that points to a list of values used to populate the Widget.
+     * @param onScrollEnd list of actions performed when the list is scrolled to the end.
+     * @param scrollEndThreshold sets the scrolled percentage of the list to trigger onScrollEnd.
+     * @param isScrollIndicatorVisible this attribute enables or disables the scroll bar.
+     * @param iteratorName is the context identifier of each cell.
+     * @param key points to a unique value present in each dataSource item used as a suffix in the component ids within
+     * the Widget.
+     * @param templates Multiple templates support. The template to use will be decided according to the property `case`
+     * of the template. The first template where `case` is `true` is the template chosen to render an item. If for every
+     * template `case` is `false`, then, the first template where `case` is omitted (default template) is used.
+     */
+    constructor(
+        direction: ListDirection,
+        context: ContextData? = null,
+        onInit: List<Action>? = null,
+        dataSource: Bind<List<Any>>,
+        onScrollEnd: List<Action>? = null,
+        scrollEndThreshold: Int? = null,
+        isScrollIndicatorVisible: Boolean = false,
+        iteratorName: String = "item",
+        key: String? = null,
+        templates: List<Template>,
+    ) : this(
+        null,
+        direction,
+        context,
+        onInit,
+        dataSource,
+        template = null,
+        onScrollEnd,
+        scrollEndThreshold,
+        isScrollIndicatorVisible,
+        iteratorName,
+        key,
+        templates,
     )
 
     @Transient
-    private val viewFactory: ViewFactory = ViewFactory()
+    var numColumns: Int = 0
 
     @Transient
     private var canScrollEnd = true
@@ -142,22 +192,34 @@ constructor(
 
     override fun buildView(rootView: RootView): View {
         this.rootView = rootView
-        return if (children.isNullOrEmpty() && template != null && dataSource != null) {
+        val hasTemplate = template != null || templates != null
+        return if (children.isNullOrEmpty() && hasTemplate && dataSource != null) {
             buildNewListView()
         } else {
             buildOldListView()
         }
     }
 
-    @Deprecated(message = "It was deprecated in version 1.5 and will be removed in a future version. " +
-        "Use new ListView implementation instead.",
-        replaceWith = ReplaceWith("buildNewListView()"))
-    private fun buildOldListView(): View {
-        val recyclerView = viewFactory.makeRecyclerView(rootView.getContext())
-        recyclerView.apply {
+    private fun getLayoutManager(context: Context): RecyclerView.LayoutManager {
+        return if (numColumns <= 0) {
             val orientation = listDirectionToRecyclerViewOrientation()
-            layoutManager = LinearLayoutManager(context, orientation, false)
-            adapter = ListViewRecyclerAdapter(children!!, viewFactory, orientation, this@ListView.rootView)
+            LinearLayoutManager(context, orientation, false)
+        } else {
+            GridLayoutManager(context, numColumns, getGridDirection(), false)
+        }
+    }
+
+    private fun getGridDirection() =
+        if (direction == ListDirection.HORIZONTAL) GridLayoutManager.HORIZONTAL else GridLayoutManager.VERTICAL
+
+    private fun buildOldListView(): View {
+        val recyclerView = ViewFactory.makeRecyclerView(rootView.getContext())
+        children?.let { children ->
+            recyclerView.apply {
+                val orientation = listDirectionToRecyclerViewOrientation()
+                layoutManager = LinearLayoutManager(context, orientation, false)
+                adapter = ListViewRecyclerAdapter(children, orientation, this@ListView.rootView)
+            }
         }
         return recyclerView
     }
@@ -182,7 +244,6 @@ constructor(
         replaceWith = ReplaceWith("buildNewListView()"))
     internal class ListViewRecyclerAdapter(
         val children: List<ServerDrivenComponent>,
-        private val viewFactory: ViewFactory,
         private val orientation: Int,
         private val rootView: RootView,
     ) : RecyclerView.Adapter<ViewHolder>() {
@@ -190,11 +251,11 @@ constructor(
         override fun getItemViewType(position: Int): Int = position
 
         override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
-            val view = viewFactory.makeBeagleFlexView(rootView).also {
+            val view = ViewFactory.makeBeagleFlexView(rootView).also {
                 val width = if (orientation == RecyclerView.VERTICAL) MATCH_PARENT else WRAP_CONTENT
                 val layoutParams = ViewGroup.LayoutParams(width, WRAP_CONTENT)
                 it.layoutParams = layoutParams
-                it.addServerDrivenComponent(children[position])
+                it.addView(children[position])
             }
             return ViewHolder(view)
         }
@@ -216,32 +277,32 @@ constructor(
         if (isScrollIndicatorVisible) {
             generateRecyclerViewWithScrollIndicator(orientation)
         } else {
-            viewFactory.makeBeagleRecyclerView(rootView.getContext())
+            ViewFactory.makeBeagleRecyclerView(rootView.getContext())
         }
 
 
     private fun generateRecyclerViewWithScrollIndicator(orientation: Int): BeagleRecyclerView =
         if (orientation == RecyclerView.VERTICAL) {
-            viewFactory.makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext())
+            ViewFactory.makeBeagleRecyclerViewScrollIndicatorVertical(rootView.getContext())
         } else {
-            viewFactory.makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext())
+            ViewFactory.makeBeagleRecyclerViewScrollIndicatorHorizontal(rootView.getContext())
         }
 
 
     private fun setupRecyclerView(orientation: Int) {
         val contextAdapter = ListAdapter(
             orientation,
-            template!!,
+            template,
             iteratorName,
             key,
-            viewFactory,
-            ListViewModels(rootView)
+            ListViewModels(rootView),
+            templates,
+            recyclerView,
         )
         recyclerView.apply {
             adapter = contextAdapter
-            layoutManager = LinearLayoutManager(context, orientation, false).apply {
-                setHasFixedSize(true)
-            }
+            layoutManager = getLayoutManager(context)
+            setHasFixedSize(true)
         }
     }
 
@@ -249,7 +310,7 @@ constructor(
         observeBindChanges(rootView, recyclerView, dataSource!!) { value ->
             canScrollEnd = true
             val adapter = recyclerView.adapter as ListAdapter
-            adapter.setList(value)
+            adapter.setList(value, this.id)
             if (value?.isEmpty() == true) {
                 executeScrollEndActions()
             }
@@ -309,11 +370,8 @@ constructor(
             return 100f
         }
 
-        val percentage = 100.0f * offset / (range - extent).toFloat()
-
-        return percentage
+        return 100.0f * offset / (range - extent).toFloat()
     }
-
 }
 
 class BeagleRecyclerView(context: Context) : RecyclerView(context) {

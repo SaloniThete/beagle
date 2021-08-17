@@ -95,6 +95,18 @@
         tools:ignore="HardcodedText" />
 
     <item
+        android:id="@+id/gridView"
+        android:icon="@mipmap/ic_launcher"
+        android:title="GridView"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/pullToRefresh"
+        android:icon="@mipmap/ic_launcher"
+        android:title="PullToRefresh"
+        tools:ignore="HardcodedText" />
+
+    <item
         android:id="@+id/webView"
         android:icon="@mipmap/ic_launcher"
         android:title="WebView"

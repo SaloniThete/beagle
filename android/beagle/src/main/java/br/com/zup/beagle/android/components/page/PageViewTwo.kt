@@ -40,30 +40,30 @@ import br.com.zup.beagle.widget.core.Flex
  *  The PageView component is a specialized container to hold pages (views) that will be displayed horizontally.
  *
  * @param children define a List of components (views) that are contained on this PageView. Consider the
- * @param pageIndicator defines in what page the PageView is currently on.
  * @param context define the contextData that be set to pageView.
  * @param onPageChange List of actions that are performed when you are on the selected page.
  * @param currentPage Integer number that identifies that selected.
- * @param showArrow This attribute is specific to the web platform, with which it allows you to place the arrows
- * to change pages.
  */
 internal data class PageViewTwo(
-    override val children: List<ServerDrivenComponent>,
+    override val children: List<ServerDrivenComponent>? = null,
     override val context: ContextData? = null,
     val onPageChange: List<Action>? = null,
     val currentPage: Bind<Int>? = null,
 ) : WidgetView(), ContextComponent, MultiChildComponent {
 
-    @Transient
-    private val viewFactory: ViewFactory = ViewFactory()
-
     override fun buildView(rootView: RootView): View {
         val style = Style(flex = Flex(grow = 1.0))
-        val viewPager = viewFactory.makeViewPager(rootView.getContext()).apply {
-            adapter = PageViewAdapterTwo(rootView, children, viewFactory)
+        val container = ViewFactory.makeBeagleFlexView(rootView, style)
+
+        if (children == null) {
+            return container
         }
 
-        val container = viewFactory.makeBeagleFlexView(rootView, style).apply {
+        val viewPager = ViewFactory.makeViewPager(rootView.getContext()).apply {
+            adapter = PageViewAdapterTwo(rootView, children)
+        }
+
+        container.apply {
             addView(viewPager, style)
         }
 
@@ -116,12 +116,11 @@ internal data class PageViewTwo(
 internal class PageViewAdapterTwo(
     private val rootView: RootView,
     private val children: List<ServerDrivenComponent>,
-    private val viewFactory: ViewFactory,
 ) : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = viewFactory.makeBeagleFlexView(rootView).also {
-            it.addServerDrivenComponent(children[position])
+        val view = ViewFactory.makeBeagleFlexView(rootView).also {
+            it.addView(children[position])
         }
         container.addView(view)
         return view

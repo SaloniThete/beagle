@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
+/// SendRequest is used to make HTTP requests.
 public struct SendRequest: Action, AutoInitiableAndDecodable, AnalyticsAction {
     
-    public enum HTTPMethod: String, Codable {
-        case get = "GET"
-        case post = "POST"
-        case put = "PUT"
-        case patch = "PATCH"
-        case delete = "DELETE"
-    }
-    
+    /// Server URL.
     public let url: Expression<String>
-    public let method: Expression<SendRequest.HTTPMethod>?
+    
+    /// HTTP method.
+    public let method: Expression<HTTPMethod>?
+    
+    /// Content that will be delivered with the request.
     public let data: DynamicObject?
+    
+    /// Header items for the request.
     public let headers: Expression<[String: String]>?
+    
+    /// Actions to be executed in request success case.
     public let onSuccess: [Action]?
+    
+    /// Actions to be executed in request error case.
     public let onError: [Action]?
+    
+    /// Actions to be executed in request completion case.
     public var onFinish: [Action]?
+    
+    /// Defines an analytics configuration for this action.
     public let analytics: ActionAnalyticsConfig?
     
 // sourcery:inline:auto:SendRequest.Init
     public init(
         url: Expression<String>,
-        method: Expression<SendRequest.HTTPMethod>? = nil,
+        method: Expression<HTTPMethod>? = nil,
         data: DynamicObject? = nil,
         headers: Expression<[String: String]>? = nil,
         onSuccess: [Action]? = nil,
@@ -58,7 +66,7 @@ public struct SendRequest: Action, AutoInitiableAndDecodable, AnalyticsAction {
     @available(*, deprecated, message: "Since version 1.3, we allow expressions in the parameters method and headers, please consider using the new method for initialization instead.")
     public init(
         url: Expression<String>,
-        method: SendRequest.HTTPMethod? = nil,
+        method: HTTPMethod? = nil,
         data: DynamicObject? = nil,
         headers: [String: String]? = nil,
         onSuccess: [Action]? = nil,

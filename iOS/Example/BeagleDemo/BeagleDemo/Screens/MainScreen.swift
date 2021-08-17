@@ -58,6 +58,10 @@ struct MainScreen: DeeplinkScreen {
                     onPress: [Navigate.openNativeRoute(.init(route: .listViewEndpoint))]
                 )
                 Button(
+                    text: "Grid View",
+                    onPress: [Navigate.openNativeRoute(.init(route: .gridViewEndpoint))]
+                )
+                Button(
                     text: "Image",
                     onPress: [Navigate.openNativeRoute(.init(route: .imageEndpoint))]
                 )
@@ -108,6 +112,10 @@ struct MainScreen: DeeplinkScreen {
                 Button(
                     text: "Global Context",
                     onPress: [Navigate.openNativeRoute(.init(route: .globalContextEndpoint))]
+                )
+                Button(
+                    text: "PullToRefresh",
+                    onPress: [Navigate.pushView(.declarative(pullToRefreshScreen))]
                 )
                 Button(
                     text: "Sample BFF",

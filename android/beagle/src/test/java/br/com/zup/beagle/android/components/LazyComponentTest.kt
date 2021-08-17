@@ -19,9 +19,9 @@ package br.com.zup.beagle.android.components
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.core.view.get
 import br.com.zup.beagle.R
-import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.testutil.RandomData
 import br.com.zup.beagle.android.utils.BeagleRetry
@@ -29,6 +29,7 @@ import br.com.zup.beagle.android.view.ServerDrivenState
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeagleView
 import br.com.zup.beagle.android.view.custom.OnServerStateChanged
+import br.com.zup.beagle.core.ServerDrivenComponent
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -37,12 +38,11 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
-import kotlinx.android.synthetic.main.beagle_include_error_server_driven.view.buttonRetry
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 private val URL = RandomData.httpUrl()
 
@@ -53,7 +53,7 @@ class LazyComponentTest : BaseComponentTest() {
     private val initialState: ServerDrivenComponent = mockk()
     private val beagleView: BeagleView = mockk(relaxed = true)
     private val slot = slot<OnServerStateChanged>()
-    private val errorView = mockk<View>(relaxed = true)
+    private val errorView = mockk<LinearLayout>(relaxed = true)
     private val errorRetryButton = mockk<Button>(relaxed = true, relaxUnitFun = true)
 
     private lateinit var lazyComponent: LazyComponent
@@ -62,7 +62,8 @@ class LazyComponentTest : BaseComponentTest() {
     override fun setUp() {
         super.setUp()
 
-        every { anyConstructed<ViewFactory>().makeBeagleView(any()) } returns beagleView
+        every { ViewFactory.makeBeagleView(any()) } returns beagleView
+
         every { beagleView[0] } returns initialStateView
 
         every {
@@ -70,13 +71,10 @@ class LazyComponentTest : BaseComponentTest() {
         } just Runs
 
         mockkStatic(LayoutInflater::class)
-        every {
-            LayoutInflater.from(beagleView.context)
-                .inflate(R.layout.beagle_include_error_server_driven,
-                    null)
-        } returns errorView
 
-        every { errorView.buttonRetry } returns errorRetryButton
+        every { LayoutInflater.from(any()).inflate(any<Int>(), any(), false) } returns errorView
+
+        every { errorView.findViewById<Button>(R.id.buttonRetry) } returns errorRetryButton
 
         lazyComponent = LazyComponent(URL, initialState)
     }

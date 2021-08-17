@@ -17,10 +17,12 @@
 package br.com.zup.beagle.android.action
 
 import android.view.View
+import br.com.zup.beagle.android.annotation.ContextDataValue
 import br.com.zup.beagle.android.components.layout.Screen
 import br.com.zup.beagle.android.context.Bind
 import br.com.zup.beagle.android.context.expressionOrValueOf
-import br.com.zup.beagle.android.networking.HttpAdditionalData
+import br.com.zup.beagle.android.context.normalizeContextValue
+import br.com.zup.beagle.android.networking.HttpMethod
 import br.com.zup.beagle.android.utils.evaluateExpression
 import br.com.zup.beagle.android.view.custom.BeagleNavigator
 import br.com.zup.beagle.android.widget.RootView
@@ -39,9 +41,23 @@ sealed class Navigate : AnalyticsAction {
      * @param url defined route to be shown.
      */
     @BeagleJson(name = "openExternalURL")
-    data class OpenExternalURL(val url: String, override var analytics: ActionAnalyticsConfig? = null) : Navigate() {
+    data class OpenExternalURL(
+        val url: Bind<String>,
+        override var analytics: ActionAnalyticsConfig? = null,
+    ) : Navigate() {
+
+        constructor(
+            url: String,
+            analytics: ActionAnalyticsConfig? = null,
+        ) : this(
+            url = expressionOrValueOf(url),
+            analytics = analytics
+        )
+
         override fun execute(rootView: RootView, origin: View) {
-            BeagleNavigator.openExternalURL(rootView.getContext(), url)
+            evaluateExpression(rootView, origin, url)?.let { url ->
+                BeagleNavigator.openExternalURL(rootView.getContext(), url)
+            }
         }
     }
 
@@ -54,13 +70,28 @@ sealed class Navigate : AnalyticsAction {
      */
     @BeagleJson(name = "openNativeRoute")
     class OpenNativeRoute(
-        val route: String,
+        val route: Bind<String>,
         val shouldResetApplication: Boolean = false,
         val data: Map<String, String>? = null,
         override var analytics: ActionAnalyticsConfig? = null,
     ) : Navigate() {
+
+        constructor(
+            route: String,
+            shouldResetApplication: Boolean = false,
+            data: Map<String, String>? = null,
+            analytics: ActionAnalyticsConfig? = null,
+        ) : this(
+            route = expressionOrValueOf(route),
+            shouldResetApplication = shouldResetApplication,
+            data = data,
+            analytics = analytics
+        )
+
         override fun execute(rootView: RootView, origin: View) {
-            BeagleNavigator.openNativeRoute(rootView, route, data, shouldResetApplication)
+            evaluateExpression(rootView, origin, route)?.let { route ->
+                BeagleNavigator.openNativeRoute(rootView, route, data, shouldResetApplication)
+            }
         }
     }
 
@@ -90,9 +121,23 @@ sealed class Navigate : AnalyticsAction {
      * @param route route of a screen that it's on the pile.
      */
     @BeagleJson(name = "popToView")
-    data class PopToView(val route: String, override var analytics: ActionAnalyticsConfig? = null) : Navigate() {
+    data class PopToView(
+        val route: Bind<String>,
+        override var analytics: ActionAnalyticsConfig? = null,
+    ) : Navigate() {
+
+        constructor(
+            route: String,
+            analytics: ActionAnalyticsConfig? = null,
+        ) : this(
+            route = expressionOrValueOf(route),
+            analytics = analytics
+        )
+
         override fun execute(rootView: RootView, origin: View) {
-            BeagleNavigator.popToView(rootView.getContext(), route)
+            evaluateExpression(rootView, origin, route)?.let { route ->
+                BeagleNavigator.popToView(rootView.getContext(), route)
+            }
         }
     }
 
@@ -174,7 +219,13 @@ sealed class Navigate : AnalyticsAction {
     internal fun Route.getSafe(rootView: RootView, origin: View): Route {
         if (this is Route.Remote) {
             val newValue = evaluateExpression(rootView, origin, url)
-            return this.copy(url = Bind.Value(newValue ?: ""))
+            val body = httpAdditionalData?.body?.normalizeContextValue()
+                ?.let { evaluateExpression(rootView, origin, it) }
+
+            return this.copy(
+                url = Bind.Value(newValue ?: ""),
+                httpAdditionalData = httpAdditionalData?.copy(body = body),
+            )
         }
         return this
     }
@@ -197,14 +248,14 @@ sealed class Route {
     @BeagleJson
     data class Remote constructor(
         val url: Bind<String>,
-        val shouldPrefetch: Boolean = false,
+        val shouldPrefetch: Boolean? = null,
         val fallback: Screen? = null,
         val httpAdditionalData: HttpAdditionalData? = null,
     ) : Route() {
 
         constructor(
             url: String,
-            shouldPrefetch: Boolean = false,
+            shouldPrefetch: Boolean? = null,
             fallback: Screen? = null,
             httpAdditionalData: HttpAdditionalData? = null,
         ) : this(
@@ -224,3 +275,17 @@ sealed class Route {
         val screen: Screen,
     ) : Route()
 }
+
+/**
+ * HttpAdditionalData is used to do requests.
+ * @param method HTTP method.
+ * @param headers Header items for the request.
+ * @param body Content that will be delivered with the request.
+ */
+@BeagleJson
+data class HttpAdditionalData(
+    val method: HttpMethod? = HttpMethod.GET,
+    val headers: Map<String, String>? = hashMapOf(),
+    @ContextDataValue
+    val body: Any? = null,
+)

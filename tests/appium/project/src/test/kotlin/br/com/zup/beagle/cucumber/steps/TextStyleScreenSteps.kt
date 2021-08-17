@@ -21,21 +21,23 @@ import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import org.junit.Assert
 
-class TextStyleScreenSteps: AbstractStep() {
+class TextStyleScreenSteps : AbstractStep() {
     override var bffRelativeUrlPath = "/text"
 
     @Before("@textStyle")
     fun setup() {
-        loadBffScreenFromMainScreen()
+        loadBffScreen()
     }
 
     @Given("^the Beagle application did launch with the texts on the screen$")
     fun checkScreen() {
-        waitForElementWithTextToBeClickable("TextScreen", false, false)
+        waitForElementWithTextToBeClickable("TextScreen")
     }
 
     @Then("^take a screenshot and assert it is identical to the (.*) image$")
     fun checkStyle(imageDbToCompare: String) {
+        // waits before taking screenshot. Helps to avoid taking the shot while the screen is transitioning (iOS animation)
+        sleep(1000)
         Assert.assertTrue(compareCurrentScreenWithDatabase(imageDbToCompare))
     }
 

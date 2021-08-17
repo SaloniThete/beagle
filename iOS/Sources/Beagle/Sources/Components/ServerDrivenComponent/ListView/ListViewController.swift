@@ -78,16 +78,16 @@ final class ListViewController: UIViewController {
 extension ListViewController: BeagleControllerProtocol {
     
     var dependencies: BeagleDependenciesProtocol {
-        return renderer.controller.dependencies
+        return renderer.dependencies
     }
     
     var serverDrivenState: ServerDrivenState {
-        get { return renderer.controller.serverDrivenState }
-        set { renderer.controller.serverDrivenState = newValue }
+        get { return renderer.controller?.serverDrivenState ?? .finished }
+        set { renderer.controller?.serverDrivenState = newValue }
     }
     
     var screenType: ScreenType {
-        return renderer.controller.screenType
+        return renderer.controller?.screenType ?? .declarativeText("")
     }
     
     var screen: Screen? {
@@ -136,14 +136,13 @@ extension ListViewController: BeagleControllerProtocol {
     func setNeedsLayout(component: UIView) {
         beagleController?.setNeedsLayout(component: component)
         if let listComponent = delegate?.listComponentView, listComponent != component,
-           let cell = ListViewCell.cellForView(component),
-           let indexPath = collectionView.indexPath(for: cell) {
+           let cell = ListViewCell.cellForView(component) {
             cell.applyLayout()
             
             let context = UICollectionViewFlowLayoutInvalidationContext()
             context.invalidateFlowLayoutDelegateMetrics = true
             context.invalidateFlowLayoutAttributes = false
-            context.invalidateItems(at: [indexPath])
+            
             collectionViewFlowLayout.invalidateLayout(with: context)
             
             beagleController?.setNeedsLayout(component: listComponent)

@@ -15,7 +15,6 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/components/beagle_undefined_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,14 +45,14 @@ void main() {
 
     group('When set production environment', () {
       testWidgets('Then it should not have text widget',
-              (WidgetTester tester) async {
-            await tester.pumpWidget(
-                createWidget(environment: BeagleEnvironment.production));
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+            createWidget(environment: BeagleEnvironment.production));
 
-            final textFinder = find.text(text);
+        final textFinder = find.text(text);
 
-            expect(textFinder, findsNothing);
-          });
+        expect(textFinder, findsNothing);
+      });
     });
   });
 }

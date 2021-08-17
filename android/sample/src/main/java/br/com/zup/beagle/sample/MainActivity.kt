@@ -20,8 +20,8 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import br.com.zup.beagle.android.networking.RequestData
 import br.com.zup.beagle.android.utils.newServerDrivenIntent
-import br.com.zup.beagle.android.view.ScreenRequest
 import br.com.zup.beagle.android.view.ServerDrivenActivity
 import br.com.zup.beagle.sample.activities.NavigationBarActivity
 import br.com.zup.beagle.sample.constants.SAMPLE_ENDPOINT
@@ -29,10 +29,12 @@ import br.com.zup.beagle.sample.fragment.ComposeComponentFragment
 import br.com.zup.beagle.sample.fragment.ContextOperationsFragment
 import br.com.zup.beagle.sample.fragment.DisabledFormSubmitFragment
 import br.com.zup.beagle.sample.fragment.FormFragment
+import br.com.zup.beagle.sample.fragment.GridViewFragment
 import br.com.zup.beagle.sample.fragment.ImageViewFragment
 import br.com.zup.beagle.sample.fragment.LazyComponentFragment
 import br.com.zup.beagle.sample.fragment.NavigationFragment
 import br.com.zup.beagle.sample.fragment.PageViewFragment
+import br.com.zup.beagle.sample.fragment.PullToRefreshFragment
 import br.com.zup.beagle.sample.fragment.ScrollViewFragment
 import br.com.zup.beagle.sample.fragment.TabViewFragment
 import br.com.zup.beagle.sample.fragment.TextInputFragment
@@ -67,9 +69,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             R.id.tabBar -> goToFragment(TabViewFragment.newInstance())
             R.id.disabledFormSubmit -> goToFragment(DisabledFormSubmitFragment.newInstance())
             R.id.listView -> goToFragment(ListViewFragment.newInstance())
+            R.id.gridView -> goToFragment(GridViewFragment.newInstance())
+            R.id.pullToRefresh -> goToFragment(PullToRefreshFragment.newInstance())
             R.id.webView -> goToFragment(WebViewFragment.newInstance())
             R.id.composeComponent -> goToFragment(ComposeComponentFragment.newInstance())
-            R.id.sampleBff -> startActivity(newServerDrivenIntent<ServerDrivenActivity>(ScreenRequest(SAMPLE_ENDPOINT)))
+            R.id.sampleBff -> startActivity(newServerDrivenIntent<ServerDrivenActivity>(RequestData(SAMPLE_ENDPOINT)))
         }
     }
 

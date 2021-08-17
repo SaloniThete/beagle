@@ -18,7 +18,7 @@ import br.com.zup.beagle.Dependencies
 
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
-apply from: "./../../jacoco.gradle"
+apply from: "$rootDir/../jacoco.gradle"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -28,7 +28,6 @@ test {
 }
 
 dependencies {
-    implementation Dependencies.GeneralLibraries.kotlin
 
     implementation (Dependencies.ProcessorLibraries.kotlinPoet) {
         exclude group: "com.squareup.okio", module: "okio"
@@ -39,6 +38,8 @@ dependencies {
     implementation project(Dependencies.Modules.commonProcessorSharedCode)
     implementation project(Dependencies.Modules.androidAnnotation)
 
+    implementation Dependencies.GeneralLibraries.kotlinReflect
+
     implementation Dependencies.ProcessorLibraries.incap
     kapt Dependencies.ProcessorLibraries.incapPrcessor
 
@@ -48,6 +49,7 @@ dependencies {
     testImplementation Dependencies.TestLibraries.kotlinCompileTesting
     testImplementation Dependencies.TestLibraries.junitApi
     testImplementation Dependencies.TestLibraries.junitEngine
+    testImplementation Dependencies.TestLibraries.mockk
 }
 
 apply from: new File('./../../maven-publish.gradle')

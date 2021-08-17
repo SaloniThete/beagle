@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import 'package:beagle/default/default_storage.dart';
+import 'package:beagle/beagle.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Given a DefaultStorage', () {
-    SharedPreferences.setMockInitialValues({});
     final defaultStorage = DefaultStorage();
     group('When setItem is called', () {
       test('Then it should store the value for the key', () async {

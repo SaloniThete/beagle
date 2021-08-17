@@ -32,6 +32,7 @@ import br.com.zup.beagle.android.widget.RootView
 import br.com.zup.beagle.android.widget.WidgetView
 import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.core.BeagleJson
+import br.com.zup.beagle.core.CornerRadius
 import br.com.zup.beagle.widget.core.ImageContentMode
 
 /**
@@ -51,14 +52,10 @@ data class Image constructor(
     @Transient
     private val viewMapper: ViewMapper = ViewMapper()
 
-    @Transient
-    private val viewFactory = ViewFactory()
-
     override fun buildView(rootView: RootView): View {
         val imageView: RoundedImageView = getImageView(rootView)
 
         observeBindChanges(rootView, imageView, path) { pathType ->
-
             when (pathType) {
                 is ImagePath.Local -> {
                     loadLocalImage(rootView, imageView, pathType)
@@ -72,8 +69,15 @@ data class Image constructor(
         return imageView
     }
 
-    private fun getImageView(rootView: RootView) = viewFactory.makeImageView(rootView.getContext(),
-        style?.cornerRadius?.radius ?: 0.0).apply {
+    private fun getImageView(rootView: RootView) = ViewFactory.makeImageView(
+        context = rootView.getContext(),
+        cornerRadius = style?.cornerRadius ?: CornerRadius(),
+    ).apply {
+        style?.size?.let { size ->
+            if (size.width == null || size.height == null) {
+                adjustViewBounds = true
+            }
+        }
         scaleType = viewMapper.toScaleType(mode ?: ImageContentMode.FIT_CENTER)
     }
 
@@ -88,18 +92,29 @@ data class Image constructor(
                     }
                 }
             }
-
         }
     }
 
     private fun loadRemoteImage(rootView: RootView, imageView: ImageView, pathType: ImagePath.Remote) {
-        pathType.placeholder?.let { local ->
-            loadLocalImage(rootView, imageView, local)
-        }
+        loadPlaceholder(pathType, rootView, imageView)
 
         observeBindChanges(rootView, imageView, pathType.url) { url ->
+            loadPlaceholder(pathType, rootView, imageView) {
+                imageView.setImageDrawable(null)
+            }
             downloadImage(imageView, url ?: "", rootView)
         }
+    }
+
+    private fun loadPlaceholder(
+        pathType: ImagePath.Remote,
+        rootView: RootView,
+        imageView: ImageView,
+        fallback: (() -> Unit)? = null,
+    ) {
+        pathType.placeholder?.let { local ->
+            loadLocalImage(rootView, imageView, local)
+        } ?: fallback?.invoke()
     }
 
     private fun downloadImage(imageView: ImageView, url: String, rootView: RootView) =

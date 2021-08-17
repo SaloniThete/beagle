@@ -20,7 +20,6 @@ import android.content.Context
 import android.widget.HorizontalScrollView
 import br.com.zup.beagle.android.components.BaseComponentTest
 import br.com.zup.beagle.android.components.Button
-import br.com.zup.beagle.android.extensions.once
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeagleFlexView
 import br.com.zup.beagle.core.ServerDrivenComponent
@@ -33,11 +32,14 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
+@DisplayName("Given a ScrollView")
 class ScrollViewTest : BaseComponentTest() {
 
     private val scrollView: android.widget.ScrollView = mockk(relaxed = true)
@@ -57,60 +59,81 @@ class ScrollViewTest : BaseComponentTest() {
 
         every { scrollView.addView(any()) } just Runs
         every { horizontalScrollView.addView(any()) } just Runs
-        every { anyConstructed<ViewFactory>().makeBeagleFlexView(any(), capture(style)) } returns beagleFlexView
-        every { beagleFlexView.addServerDrivenComponent(any(), false) } just Runs
+        every { ViewFactory.makeBeagleFlexView(any(), capture(style)) } returns beagleFlexView
+        every { beagleFlexView.addView(any<ServerDrivenComponent>(), false) } just Runs
         every { beagleFlexView.context } returns context
-        every { anyConstructed<ViewFactory>().makeScrollView(any()) } returns scrollView
-        every { anyConstructed<ViewFactory>().makeHorizontalScrollView(any()) } returns horizontalScrollView
+        every { ViewFactory.makeScrollView(any()) } returns scrollView
+        every { ViewFactory.makeHorizontalScrollView(any()) } returns horizontalScrollView
     }
 
-    @Test
-    fun when_scrollDirection_VERTICAL_and_scrollBarEnabled_true_build_should_create_a_scrollView() {
-        // Given
-        every { scrollView.isVerticalScrollBarEnabled = capture(scrollBarEnabled) } just Runs
-        scrollViewComponent = ScrollView(children = components, scrollDirection = ScrollAxis.VERTICAL,
-            scrollBarEnabled = true)
+    @DisplayName("When buildView is called")
+    @Nested
+    inner class BuildView {
 
-        // When
-        val view = scrollViewComponent.buildView(rootView)
+        @DisplayName("Then should create a vertical scrollView if scrollDirection is vertical")
+        @Test
+        fun testVerticalScrollView() {
+            // Given
+            every { scrollView.isVerticalScrollBarEnabled = capture(scrollBarEnabled) } just Runs
+            scrollViewComponent = ScrollView(children = components, scrollDirection = ScrollAxis.VERTICAL,
+                scrollBarEnabled = true)
 
-        // Then
-        verify {
-            anyConstructed<ViewFactory>().makeBeagleFlexView(rootView, style.first())
-            beagleFlexView.addServerDrivenComponent(components[0], false)
-            beagleFlexView.setHeightAutoAndDirtyAllViews()
+            // When
+            val view = scrollViewComponent.buildView(rootView)
+
+            // Then
+            verify {
+                ViewFactory.makeBeagleFlexView(rootView, style.first())
+                beagleFlexView.addView(components, false)
+                beagleFlexView.setHeightAutoAndDirtyAllViews()
+            }
+            verify(exactly = 1) { ViewFactory.makeScrollView(context) }
+            verify(exactly = 1) { scrollView.addView(beagleFlexView) }
+            assertEquals(true, scrollBarEnabled.captured)
+            assertEquals(1.0, style[0].flex?.grow)
+            assertEquals(FlexDirection.COLUMN, style[1].flex?.flexDirection)
+            assertTrue(view is BeagleFlexView)
         }
-        verify(exactly = once()) { anyConstructed<ViewFactory>().makeScrollView(context) }
-        verify(exactly = once()) { scrollView.addView(beagleFlexView) }
-        assertEquals(true, scrollBarEnabled.captured)
-        assertEquals(1.0, style[0].flex?.grow)
-        assertEquals(FlexDirection.COLUMN, style[1].flex?.flexDirection)
-        assertTrue(view is BeagleFlexView)
-    }
 
-    @Test
-    fun when_scrollDirection_HORIZONTAL_and_scrollBarEnabled_false_build_should_create_a_scrollView() {
-        // Given
-        every {
-            horizontalScrollView.isHorizontalScrollBarEnabled = capture(scrollBarEnabled)
-        } just Runs
-        scrollViewComponent = ScrollView(children = components, scrollDirection = ScrollAxis.HORIZONTAL,
-            scrollBarEnabled = false)
+        @DisplayName("Then should create a horizontal scrollView if scrollDirection is horizontal")
+        @Test
+        fun testHorizontalScrollView() {
+            // Given
+            every {
+                horizontalScrollView.isHorizontalScrollBarEnabled = capture(scrollBarEnabled)
+            } just Runs
+            scrollViewComponent = ScrollView(children = components, scrollDirection = ScrollAxis.HORIZONTAL,
+                scrollBarEnabled = false)
 
-        // When
-        scrollViewComponent.buildView(rootView)
+            // When
+            scrollViewComponent.buildView(rootView)
 
-        // Then
-        verify {
-            anyConstructed<ViewFactory>().makeBeagleFlexView(rootView, style.first())
+            // Then
+            verify {
+                ViewFactory.makeBeagleFlexView(rootView, style.first())
+            }
+            verify(exactly = 1) {
+                ViewFactory.makeHorizontalScrollView(context)
+                beagleFlexView.addView(components, false)
+                beagleFlexView.setWidthAndHeightAutoAndDirtyAllViews()
+            }
+            assertEquals(false, scrollBarEnabled.captured)
+            assertEquals(1.0, style[0].flex?.grow)
+            assertEquals(FlexDirection.ROW, style[1].flex?.flexDirection)
         }
-        verify(exactly = once()) {
-            anyConstructed<ViewFactory>().makeHorizontalScrollView(context)
-            beagleFlexView.addServerDrivenComponent(components[0], false)
-            beagleFlexView.setWidthAndHeightAutoAndDirtyAllViews()
+
+        @DisplayName("Then should return an empty BeagleFlexView if children is null")
+        @Test
+        fun testBeagleFlexViewEmpty() {
+            // Given
+            val children = null
+            scrollViewComponent = ScrollView(children)
+
+            // When
+            val result = scrollViewComponent.buildView(rootView) as BeagleFlexView
+
+            // Then
+            assertTrue(result.childCount == 0)
         }
-        assertEquals(false, scrollBarEnabled.captured)
-        assertEquals(1.0, style[0].flex?.grow)
-        assertEquals(FlexDirection.ROW, style[1].flex?.flexDirection)
     }
 }

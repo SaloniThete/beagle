@@ -25,10 +25,10 @@ internal object BeagleMessageLogs {
     fun logHttpRequestData(requestData: RequestData) {
         BeagleLoggerProxy.info("""
             *** HTTP REQUEST ***
-            Uri=${requestData.uri}
-            Method=${requestData.method}
-            Headers=${requestData.headers}
-            Body=${requestData.body}
+            Url=${requestData.url}
+            Method=${requestData.httpAdditionalData.method}
+            Headers=${requestData.httpAdditionalData.headers}
+            Body=${requestData.httpAdditionalData.body}
         """.trimIndent())
     }
 
@@ -151,5 +151,10 @@ internal object BeagleMessageLogs {
     fun cannotGetPropertyValue(propertyName: String?) {
         val warningMessage = "Cannot get some attributes of property $propertyName."
         BeagleLoggerProxy.warning(warningMessage)
+    }
+
+    fun errorWhileTryingToDownloadImage(image: String, ex: Exception) {
+        val errorMessage = "Error while trying to download image: $image"
+        BeagleLoggerProxy.error(errorMessage, ex)
     }
 }

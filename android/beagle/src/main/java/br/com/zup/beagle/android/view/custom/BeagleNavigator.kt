@@ -33,7 +33,6 @@ import br.com.zup.beagle.android.networking.urlbuilder.UrlBuilderFactory
 import br.com.zup.beagle.android.setup.BeagleEnvironment
 import br.com.zup.beagle.android.view.BeagleActivity
 import br.com.zup.beagle.android.widget.RootView
-import java.net.URI
 
 internal object BeagleNavigator {
 
@@ -73,9 +72,7 @@ internal object BeagleNavigator {
                     route.fallback,
                 )
                 is Route.Local -> context.navigateTo(
-                    RequestData(
-                        URI(""),
-                    ),
+                    RequestData(url = ""),
                     route.screen,
                 )
             }
@@ -161,16 +158,16 @@ internal object BeagleNavigator {
     }
 
     private fun createRequestData(route: Route.Remote): RequestData {
-        val httpAdditionalData = route.httpAdditionalData ?: HttpAdditionalData()
+        val httpAdditionalData = HttpAdditionalData(
+            body = route.httpAdditionalData?.body?.toString(),
+            method = route.httpAdditionalData?.method ?: HttpMethod.GET,
+            headers = route.httpAdditionalData?.headers ?: hashMapOf()
+        )
+
         val url = (route.url.value as String).formatUrl()
         return RequestData(
             url = url,
-            method = httpAdditionalData.method ?: HttpMethod.GET,
-            body = httpAdditionalData.body,
-            headers = httpAdditionalData.headers ?: hashMapOf(),
             httpAdditionalData = httpAdditionalData,
-            uri = URI(url),
         )
     }
-
 }

@@ -16,11 +16,14 @@
 
 package br.com.zup.beagle.serialization.jackson
 
+import br.com.zup.beagle.annotation.ImplicitContext
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializationConfig
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier
 import com.fasterxml.jackson.databind.ser.std.BeanSerializerBase
+import java.util.stream.Collectors
 
 internal class BeagleSerializerModifier(
     private val classLoader: ClassLoader
@@ -35,4 +38,10 @@ internal class BeagleSerializerModifier(
         } else {
             serializer
         }
+
+    override fun changeProperties(config: SerializationConfig?, beanDesc: BeanDescription?, beanProperties: MutableList<BeanPropertyWriter>?): MutableList<BeanPropertyWriter> {
+        return beanProperties?.stream()
+            ?.filter { property -> property.getAnnotation(ImplicitContext::class.java) == null }
+            ?.collect(Collectors.toList()) ?: super.changeProperties(config, beanDesc, beanProperties)
+    }
 }

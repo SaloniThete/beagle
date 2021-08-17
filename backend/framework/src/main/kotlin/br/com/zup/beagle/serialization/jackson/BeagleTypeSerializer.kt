@@ -77,7 +77,15 @@ internal class BeagleTypeSerializer : BeanSerializerBase {
         getBeagleType(bean::class.java, this.classLoader)
             ?.also { (key, value) -> generator.writeStringField(key, value) }
         super.serializeFields(bean, generator, provider)
+        serializeImplicitContextsFields(bean, generator)
         generator.writeEndObject()
+    }
+
+    private fun serializeImplicitContextsFields(bean: Any, generator: JsonGenerator) {
+        findImplicitContexts(bean).forEach { (name, value) ->
+            generator.writeFieldName(name)
+            generator.writeObject(value)
+        }
     }
 
     private fun setup(classLoader: ClassLoader = BeagleTypeSerializer::class.java.classLoader) {

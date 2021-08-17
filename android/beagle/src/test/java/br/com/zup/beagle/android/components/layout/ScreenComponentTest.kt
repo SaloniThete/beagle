@@ -42,10 +42,10 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 private const val DEFAULT_COLOR = 0xFFFFFF
 
@@ -77,14 +77,14 @@ class ScreenComponentTest : BaseComponentTest() {
         every { rootView.getContext() } returns context
 
         screenComponent = ScreenComponent(navigationBar = null, child = component,
-            screenAnalyticsEvent = null, style = null)
+            screenAnalyticsEvent = null)
     }
 
     @Test
     fun build_should_create_a_screenWidget_with_grow_1_and_justifyContent_SPACE_BETWEEN() {
         // Given
         val style = slot<Style>()
-        every { anyConstructed<ViewFactory>().makeBeagleFlexView(any(), capture(style)) } returns beagleFlexView
+        every { ViewFactory.makeBeagleFlexView(any(), capture(style)) } returns beagleFlexView
         every { context.supportActionBar } returns null
 
         // When
@@ -105,7 +105,7 @@ class ScreenComponentTest : BaseComponentTest() {
         screenComponent.buildView(rootView)
 
         // Then
-        verify(atLeast = once()) { beagleFlexView.addServerDrivenComponent(component) }
+        verify(atLeast = once()) { beagleFlexView.addView(component) }
     }
 
     @Test

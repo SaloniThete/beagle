@@ -46,12 +46,9 @@ data class TabItem(
     val icon: ImagePath.Local? = null,
 ) : WidgetView(), SingleChildComponent {
 
-    @Transient
-    private val viewFactory: ViewFactory = ViewFactory()
-
     override fun buildView(rootView: RootView): View {
-        return viewFactory.makeBeagleFlexView(rootView).also {
-            it.addServerDrivenComponent(child)
+        return ViewFactory.makeBeagleFlexView(rootView).also {
+            it.addView(child)
         }
     }
 }

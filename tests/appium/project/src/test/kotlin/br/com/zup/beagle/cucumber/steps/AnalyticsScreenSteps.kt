@@ -1,6 +1,23 @@
+/*
+ * Copyright 2021 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package br.com.zup.beagle.cucumber.steps
 
 import br.com.zup.beagle.setup.SuiteSetup
+import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 
@@ -40,6 +57,11 @@ class AnalyticsScreenSteps : AbstractStep() {
         )
     )
 
+    @Before("@analytics2.0")
+    fun setup() {
+        SuiteSetup.restartApp()
+    }
+
     @Given("AppiumApp is properly configured with an AnalyticsProvider and with a native screen with id \"screen-analytics-link\"")
     fun properlyConfigured() {
         // couldn't think of a way to easily assert this behavior
@@ -48,36 +70,36 @@ class AnalyticsScreenSteps : AbstractStep() {
     @Given("AppiumApp did navigate to remote screen with url {string}")
     fun checkBaseScreen(url: String) {
         bffRelativeUrlPath = url
-        loadBffScreenFromMainScreen()
-        waitForElementWithTextToBeClickable("Analytics 2.0", false, false)
+        loadBffScreen()
+        waitForElementWithTextToBeClickable("Analytics 2.0")
     }
 
     @Then("^an alert dialog should appear on the screen$")
     fun checkAlertDialog() {
-        waitForElementWithTextToBeClickable("AlertMessage", false, false)
+        waitForElementWithTextToBeClickable("AlertMessage")
     }
 
     @Then("^a confirm dialog should appear on the screen$")
     fun checkConfirmDialog() {
-        waitForElementWithTextToBeClickable("Confirm Message", false, false)
+        waitForElementWithTextToBeClickable("Confirm Message")
     }
 
     @Then("^no analytics record should be created$")
     fun checkNoAnalyticsGenerated() {
-        waitForElementWithTextToBeClickable("Analytics 2.0 native", false, false)
-        waitForElementWithTextToBeInvisible("type", true, false)
+        waitForElementWithTextToBeClickable("Analytics 2.0 native")
+        waitForElementWithTextToBeInvisible("type", likeSearch = true, ignoreCase = false)
     }
 
     @Then("^an analytics record should be created for (.*)$")
     fun checkAnalyticsGenerated(string: String) {
-        waitForElementWithTextToBeClickable("Analytics 2.0 native", likeSearch = false, ignoreCase = false)
+        waitForElementWithTextToBeClickable("Analytics 2.0 native")
         val text = waitForElementWithTextToBeClickable("platform", likeSearch = true, ignoreCase = false).text
-        
+
         val analytics = recordHashMap[string]
         analytics?.forEach {
             val value = if (it.value is Regex)
                 it.value.toString()
-                else "\"${it.value}\""
+            else "\"${it.value}\""
 
             val regex = Regex("\"${it.key}\": $value")
             if (!text.contains(regex))

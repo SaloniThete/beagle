@@ -16,11 +16,11 @@
 
 package br.com.zup.beagle.android.data.serializer.adapter
 
+import br.com.zup.beagle.android.action.HttpAdditionalData
 import br.com.zup.beagle.android.action.Route
 import br.com.zup.beagle.android.components.layout.Screen
 import br.com.zup.beagle.android.context.Bind
 import br.com.zup.beagle.android.data.serializer.BeagleMoshi.moshi
-import br.com.zup.beagle.android.networking.HttpAdditionalData
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
@@ -57,7 +57,7 @@ internal class RouteAdapter(private val adapter: JsonAdapter<Bind<String>>) : Js
 
             Route.Remote(
                 url,
-                value[SHOULD_PREFETCH] as Boolean,
+                value[SHOULD_PREFETCH] as? Boolean,
                 convertScreen(value[FALLBACK]),
                 httpAdditionalData,
             )
@@ -74,7 +74,7 @@ internal class RouteAdapter(private val adapter: JsonAdapter<Bind<String>>) : Js
                 writer.name(URL)
                 getBindAdapter().toJson(writer, value.url)
                 writer.name(SHOULD_PREFETCH)
-                moshi.adapter(Boolean::class.java).toJson(writer, value.shouldPrefetch)
+                moshi.adapter(Boolean::class.java).toJson(writer, value.shouldPrefetch ?: false)
                 writer.name(FALLBACK)
                 moshi.adapter(Screen::class.java).toJson(writer, value.fallback)
                 writer.name(HTTP_ADDITIONAL_DATA)

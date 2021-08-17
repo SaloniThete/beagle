@@ -19,28 +19,28 @@ package br.com.zup.beagle.cucumber.steps
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
-
-private const val IMAGE_SCREEN_HEADER = "Beagle Image"
-private const val IMAGE_TEXT_1 = "Image"
-private const val IMAGE_TEXT_2 = "Image with contentMode = FIT_XY"
+import org.junit.Assert
 
 class ImageScreenSteps : AbstractStep() {
+
+    private val textContainedInImage = "without size"
+
     override var bffRelativeUrlPath = "/image"
 
     @Before("@image")
     fun setup() {
-        loadBffScreenFromMainScreen()
+        loadBffScreen()
     }
 
     @Given("^that I'm on the image screen$")
     fun checkImageScreen() {
-        waitForElementWithTextToBeClickable(IMAGE_SCREEN_HEADER, false, false)
+        waitForElementWithTextToBeClickable(textContainedInImage, likeSearch = true, ignoreCase = false)
     }
 
-    @Then("^image screen should render all image attributes correctly$")
-    fun checkImageScreenTexts() {
-        waitForElementWithTextToBeClickable(IMAGE_TEXT_1, false, false)
-        waitForElementWithTextToBeClickable(IMAGE_TEXT_2, false, false)
-
+    @Then("^take a screenshot from ImageScreenBuilder and assert it is identical to the (.*) image$")
+    fun checkImageAttributes(imageDbToCompare: String) {
+        // waits before taking screenshot. Helps to avoid taking the shot while the screen is transitioning (iOS animation)
+        sleep(1000)
+        Assert.assertTrue(compareCurrentScreenWithDatabase(imageDbToCompare))
     }
 }

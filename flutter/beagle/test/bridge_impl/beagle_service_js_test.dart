@@ -16,11 +16,10 @@
 
 import 'dart:convert';
 
-import 'package:beagle/bridge_impl/beagle_js_engine.dart';
-import 'package:beagle/bridge_impl/beagle_service_js.dart';
-import 'package:beagle/interface/navigation_controller.dart';
-import 'package:beagle/networking/beagle_network_strategy.dart';
-import 'package:beagle/utils/network_strategy.dart';
+import 'package:beagle/beagle.dart';
+import 'package:beagle/src/bridge_impl/beagle_js_engine.dart';
+import 'package:beagle/src/bridge_impl/beagle_service_js.dart';
+import 'package:beagle/src/utils/network_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -31,7 +30,7 @@ void main() {
   const baseUrl = 'https://usebeagle.io';
   const useBeagleHeaders = true;
   final actions = {'beagle:alert': ({action, view, element, context}) {}};
-  final customOperations = {'operation': ([paramA, paramB]) {}};
+  final operations = {'operation': ([paramA, paramB]) {}};
   const strategy = BeagleNetworkStrategy.networkOnly;
   final navigationControllers = {
     'general': NavigationController(
@@ -48,7 +47,7 @@ void main() {
       baseUrl: baseUrl,
       useBeagleHeaders: useBeagleHeaders,
       actions: actions,
-      customOperations: customOperations,
+      operations: operations,
       strategy: strategy,
       navigationControllers: navigationControllers,
     );
@@ -66,7 +65,7 @@ void main() {
         final expectedParams = {
           'baseUrl': baseUrl,
           'actionKeys': actions.keys.toList(),
-          'customOperations': customOperations.keys.toList(),
+          'customOperations': operations.keys.toList(),
           'useBeagleHeaders': useBeagleHeaders,
           'strategy': NetworkStrategyUtils.getJsStrategyName(strategy),
           'navigationControllers': {

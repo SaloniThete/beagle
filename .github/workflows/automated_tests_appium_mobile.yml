@@ -14,8 +14,20 @@
 #
 
 # Workflow used as a reference for triggering Appium tests
-name: Beagle Appium Tests
-on: workflow_dispatch
+name: Beagle Appium tests trigger
+on:
+  workflow_dispatch:
+  # invoked by merges to main (pushing a branch to main)
+  # src: https://github.community/t/trigger-workflow-only-on-pull-request-merge/17359/2
+  push:
+    branches:
+      - main
+    paths:
+      - 'android/**'
+      - 'common/**'
+      - 'backend/**'
+      - 'tests/**'
+      - 'iOS/**'
 
 jobs:
   appium_tests:

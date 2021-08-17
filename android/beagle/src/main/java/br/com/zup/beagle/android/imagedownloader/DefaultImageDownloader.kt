@@ -17,12 +17,11 @@
 package br.com.zup.beagle.android.imagedownloader
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView
 import androidx.lifecycle.lifecycleScope
 import br.com.zup.beagle.android.cache.imagecomponent.ImageDownloader
 import br.com.zup.beagle.android.data.formatUrl
-import br.com.zup.beagle.android.logger.BeagleLoggerProxy
+import br.com.zup.beagle.android.logger.BeagleMessageLogs
 import br.com.zup.beagle.android.utils.CoroutineDispatchers
 import br.com.zup.beagle.android.widget.RootView
 import kotlinx.coroutines.launch
@@ -34,26 +33,26 @@ internal class DefaultImageDownloader : BeagleImageDownloader {
 
     override fun download(url: String, imageView: ImageView, rootView: RootView) {
         imageView.post {
-                rootView.getLifecycleOwner().lifecycleScope.launch(CoroutineDispatchers.IO) {
-                    val bitmap = try {
-                        imageDownloader.getRemoteImage(url.formatUrl() ?: url, imageView.width, imageView.height)
-                    } catch (e: Exception) {
-                        BeagleLoggerProxy.error(e.message ?: "Error when try to download Image")
-                        null
-                    }
-
-                    bitmap?.let {
-                        setImage(imageView, bitmap)
-                    }
+            rootView.getLifecycleOwner().lifecycleScope.launch(CoroutineDispatchers.IO) {
+                try {
+                    val formattedUrl = url.formatUrl().takeIf { it.isNotEmpty() } ?: url
+                    val bitmap = imageDownloader.getRemoteImage(
+                        formattedUrl,
+                        imageView.width,
+                        imageView.height,
+                        rootView.getContext(),
+                    )
+                    setImage(imageView, bitmap)
+                } catch (e: Exception) {
+                    BeagleMessageLogs.errorWhileTryingToDownloadImage(url, e)
                 }
+            }
         }
     }
 
     private suspend fun setImage(view: ImageView, bitmap: Bitmap?) {
         withContext(CoroutineDispatchers.Main) {
-            view.context?.let {
-                view.setImageDrawable(BitmapDrawable(it.resources, bitmap))
-            }
+            view.setImageBitmap(bitmap)
         }
     }
 }

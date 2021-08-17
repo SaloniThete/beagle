@@ -16,32 +16,44 @@
 
 package br.com.zup.beagle.android.cache.imagecomponent
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.DisplayMetrics
 import br.com.zup.beagle.android.utils.CoroutineDispatchers
 import kotlinx.coroutines.withContext
-import java.io.InputStream
 import java.net.URL
+
+internal object URLFactory {
+    fun createURL(url: String?) = URL(url)
+}
 
 internal class ImageDownloader {
 
-    suspend fun getRemoteImage(url: String, contentWidth: Int, contentHeight: Int) : Bitmap? {
+    suspend fun getRemoteImage(
+        url: String,
+        contentWidth: Int,
+        contentHeight: Int,
+        context: Context,
+    ): Bitmap? {
         val cacheId = LruImageCache.generateBitmapId(url, contentWidth, contentHeight)
 
         return withContext(CoroutineDispatchers.IO) {
             val bitmapCached = LruImageCache.get(cacheId)
 
-            bitmapCached
-                ?: url.let {
-                    downloadBitmap(it, contentWidth, contentHeight).apply {
-                        LruImageCache.put(cacheId, this)
-                    }
-                }
+            bitmapCached ?: downloadBitmap(url, context)?.apply {
+                LruImageCache.put(cacheId, this)
+            }
         }
     }
 
-    private fun downloadBitmap(url: String?, contentWidth: Int, contentHeight: Int) : Bitmap {
-        val inputStream: InputStream = URL(url).openStream()
-        return BitmapFactory.decodeStream(inputStream)
+    private fun downloadBitmap(url: String, context: Context): Bitmap? {
+        val inputStream = URLFactory.createURL(url).openStream()
+        val options = BitmapFactory.Options().apply {
+            inDensity = DisplayMetrics.DENSITY_DEFAULT
+            inScreenDensity = context.resources.displayMetrics.densityDpi
+            inTargetDensity = context.resources.displayMetrics.densityDpi
+        }
+        return BitmapFactory.decodeStream(inputStream, null, options)
     }
 }

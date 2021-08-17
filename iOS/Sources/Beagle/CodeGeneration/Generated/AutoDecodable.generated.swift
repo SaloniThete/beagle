@@ -1,6 +1,5 @@
-// Generated using Sourcery 1.0.0 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 1.4.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
-
 /*
 * Copyright 2020 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
 *
@@ -16,26 +15,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
-// MARK: AddChildren Decodable
-extension AddChildren {
-
-    enum CodingKeys: String, CodingKey {
-        case componentId
-        case value
-        case mode
-        case analytics
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        componentId = try container.decode(String.self, forKey: .componentId)
-        value = try container.decode(forKey: .value)
-        mode = try container.decodeIfPresent(Mode.self, forKey: .mode) ?? .append
-        analytics = try container.decodeIfPresent(ActionAnalyticsConfig.self, forKey: .analytics)
-    }
-}
 
 // MARK: Alert Decodable
 extension Alert {
@@ -135,15 +114,17 @@ extension Container {
         case children
         case onInit
         case context
+        case styleId
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        children = try container.decode(forKey: .children)
+        children = try container.decodeIfPresent(forKey: .children)
         widgetProperties = try WidgetProperties(from: decoder)
         onInit = try container.decodeIfPresent(forKey: .onInit)
         context = try container.decodeIfPresent(Context.self, forKey: .context)
+        styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
     }
 }
 
@@ -270,12 +251,52 @@ extension PageView {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        children = try container.decode(forKey: .children)
+        children = try container.decodeIfPresent(forKey: .children)
         let rawPageIndicator: ServerDrivenComponent? = try container.decodeIfPresent(forKey: .pageIndicator)
         pageIndicator = rawPageIndicator as? PageIndicatorComponent
         context = try container.decodeIfPresent(Context.self, forKey: .context)
         onPageChange = try container.decodeIfPresent(forKey: .onPageChange)
         currentPage = try container.decodeIfPresent(Expression<Int>.self, forKey: .currentPage)
+    }
+}
+
+// MARK: PullToRefresh Decodable
+extension PullToRefresh {
+
+    enum CodingKeys: String, CodingKey {
+        case context
+        case onPull
+        case isRefreshing
+        case color
+        case child
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        context = try container.decodeIfPresent(Context.self, forKey: .context)
+        onPull = try container.decodeIfPresent(forKey: .onPull)
+        isRefreshing = try container.decodeIfPresent(Expression<Bool>.self, forKey: .isRefreshing)
+        color = try container.decodeIfPresent(Expression<String>.self, forKey: .color)
+        child = try container.decode(forKey: .child)
+    }
+}
+
+// MARK: Route.NewPath.HttpAdditionalData Decodable
+extension Route.NewPath.HttpAdditionalData {
+
+    enum CodingKeys: String, CodingKey {
+        case method
+        case headers
+        case body
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        method = try container.decodeIfPresent(HTTPMethod.self, forKey: .method)
+        headers = try container.decodeIfPresent([String: String].self, forKey: .headers)
+        body = try container.decodeIfPresent(DynamicObject.self, forKey: .body)
     }
 }
 
@@ -318,7 +339,7 @@ extension ScrollView {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        children = try container.decode(forKey: .children)
+        children = try container.decodeIfPresent(forKey: .children)
         scrollDirection = try container.decodeIfPresent(ScrollAxis.self, forKey: .scrollDirection)
         scrollBarEnabled = try container.decodeIfPresent(Bool.self, forKey: .scrollBarEnabled)
         context = try container.decodeIfPresent(Context.self, forKey: .context)
@@ -343,7 +364,7 @@ extension SendRequest {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         url = try container.decode(Expression<String>.self, forKey: .url)
-        method = try container.decodeIfPresent(Expression<SendRequest.HTTPMethod>.self, forKey: .method)
+        method = try container.decodeIfPresent(Expression<HTTPMethod>.self, forKey: .method)
         data = try container.decodeIfPresent(DynamicObject.self, forKey: .data)
         headers = try container.decodeIfPresent(Expression<[String: String]>.self, forKey: .headers)
         onSuccess = try container.decodeIfPresent(forKey: .onSuccess)
@@ -369,7 +390,7 @@ extension SimpleForm {
         context = try container.decodeIfPresent(Context.self, forKey: .context)
         onSubmit = try container.decodeIfPresent(forKey: .onSubmit)
         onValidationError = try container.decodeIfPresent(forKey: .onValidationError)
-        children = try container.decode(forKey: .children)
+        children = try container.decodeIfPresent(forKey: .children)
         widgetProperties = try WidgetProperties(from: decoder)
     }
 }
@@ -391,6 +412,22 @@ extension TabBar {
         styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
         currentTab = try container.decodeIfPresent(Expression<Int>.self, forKey: .currentTab)
         onTabSelection = try container.decodeIfPresent(forKey: .onTabSelection)
+    }
+}
+
+// MARK: Template Decodable
+extension Template {
+
+    enum CodingKeys: String, CodingKey {
+        case `case`
+        case view
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        `case` = try container.decodeIfPresent(Expression<Bool>.self, forKey: .`case`)
+        view = try container.decode(forKey: .view)
     }
 }
 
@@ -422,6 +459,7 @@ extension TextInput {
         case value
         case placeholder
         case disabled
+        case enabled
         case readOnly
         case type
         case hidden
@@ -431,7 +469,6 @@ extension TextInput {
         case onFocus
         case error
         case showError
-        case enabled
     }
 
     public init(from decoder: Decoder) throws {

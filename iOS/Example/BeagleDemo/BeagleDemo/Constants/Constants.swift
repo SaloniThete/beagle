@@ -28,6 +28,7 @@ extension String {
     static let pageViewEndpoint = "pageview"
     static let tabBarEndpoint = "tabbar"
     static let listViewEndpoint = "listview"
+    static let gridViewEndpoint = "gridview"
     static let formEndpoint = "form"
     static let customComponentEndpoint = "customComponent"
     static let componentsEndpoint = "/components"
@@ -62,6 +63,7 @@ extension String {
     static let textInputStyle = "DesignSystem.TextInput.Style"
     static let textInputBFFStyle = "DesignSystem.TextInput.Style.Bff"
     static let buttonContextStyle = "DesignSystem.Button.Context"
+    static let containerStyle = "DesignSystem.Container.Image"
     
     // MARK: - Hex Colors
     static let blueButton = "#0f4c81"

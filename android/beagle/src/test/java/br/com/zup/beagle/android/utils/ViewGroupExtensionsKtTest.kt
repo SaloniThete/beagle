@@ -20,15 +20,17 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import br.com.zup.beagle.android.BaseTest
-import br.com.zup.beagle.android.components.utils.viewExtensionsViewFactory
-import br.com.zup.beagle.android.engine.renderer.ActivityRootView
-import br.com.zup.beagle.android.engine.renderer.FragmentRootView
+import br.com.zup.beagle.android.data.serializer.BeagleSerializer
 import br.com.zup.beagle.android.networking.RequestData
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeagleView
 import br.com.zup.beagle.android.view.custom.OnServerStateChanged
+import br.com.zup.beagle.android.widget.ActivityRootView
+import br.com.zup.beagle.android.widget.FragmentRootView
+import br.com.zup.beagle.core.ServerDrivenComponent
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verifySequence
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -44,36 +46,35 @@ private val REQUEST_DATA_FAKE = RequestData(
 internal class ViewGroupExtensionsKtTest : BaseTest() {
 
     private val viewGroup: ViewGroup = mockk(relaxed = true, relaxUnitFun = true)
-
     private val beagleView: BeagleView = mockk(relaxed = true, relaxUnitFun = true)
-
-    private val viewFactory: ViewFactory = mockk(relaxed = true, relaxUnitFun = true)
+    private val activityMock: AppCompatActivity = mockk(relaxed = true, relaxUnitFun = true)
+    private val serializerFactory: BeagleSerializer = mockk(relaxed = true)
+    private val component: ServerDrivenComponent = mockk(relaxed = true)
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
 
-        viewExtensionsViewFactory = viewFactory
+        mockkObject(ViewFactory)
 
-        every { viewFactory.makeBeagleView(any()) } returns beagleView
-
+        beagleSerializerFactory = serializerFactory
+        every { ViewFactory.makeBeagleView(any()) } returns beagleView
+        every { serializerFactory.deserializeComponent(any()) } returns component
     }
 
     @DisplayName("When load view with activity")
     @Nested
     inner class LoadViewActivityTest {
 
-        private val activity: AppCompatActivity = mockk(relaxed = true, relaxUnitFun = true)
-
         @DisplayName("Then should create a Beagle View")
         @Test
         fun testBeagleViewAddInViewGroup() {
             // When
-            viewGroup.loadView(activity, REQUEST_DATA_FAKE)
+            viewGroup.loadView(activityMock, REQUEST_DATA_FAKE)
 
             // Then
             verifySequence {
-                viewFactory.makeBeagleView(any<ActivityRootView>())
+                ViewFactory.makeBeagleView(any<ActivityRootView>())
                 beagleView.stateChangedListener = null
                 beagleView.serverStateChangedListener = null
                 beagleView.loadView(REQUEST_DATA_FAKE)
@@ -87,7 +88,6 @@ internal class ViewGroupExtensionsKtTest : BaseTest() {
     @Nested
     inner class LoadViewActivityAndListenerTest {
 
-        private val activityMock: AppCompatActivity = mockk(relaxed = true, relaxUnitFun = true)
         private val listenerMock: OnServerStateChanged = mockk(relaxed = true, relaxUnitFun = true)
 
         @DisplayName("Then should create a Beagle View")
@@ -98,7 +98,7 @@ internal class ViewGroupExtensionsKtTest : BaseTest() {
 
             // Then
             verifySequence {
-                viewFactory.makeBeagleView(any<ActivityRootView>())
+                ViewFactory.makeBeagleView(any<ActivityRootView>())
                 beagleView.stateChangedListener = null
                 beagleView.serverStateChangedListener = listenerMock
                 beagleView.loadView(REQUEST_DATA_FAKE)
@@ -122,7 +122,7 @@ internal class ViewGroupExtensionsKtTest : BaseTest() {
 
             // Then
             verifySequence {
-                viewFactory.makeBeagleView(any<FragmentRootView>())
+                ViewFactory.makeBeagleView(any<FragmentRootView>())
                 beagleView.stateChangedListener = null
                 beagleView.serverStateChangedListener = null
                 beagleView.loadView(REQUEST_DATA_FAKE)
@@ -147,12 +147,43 @@ internal class ViewGroupExtensionsKtTest : BaseTest() {
 
             // Then
             verifySequence {
-                viewFactory.makeBeagleView(any<FragmentRootView>())
+                ViewFactory.makeBeagleView(any<FragmentRootView>())
                 beagleView.stateChangedListener = null
                 beagleView.serverStateChangedListener = listenerMock
                 beagleView.loadView(REQUEST_DATA_FAKE)
                 beagleView.loadCompletedListener = any()
                 beagleView.listenerOnViewDetachedFromWindow = any()
+            }
+        }
+    }
+
+    @DisplayName("When loadView with screenJson")
+    @Nested
+    inner class LoadViewWithScreenJson {
+
+        @DisplayName("Then should setup a BeagleView")
+        @Test
+        fun loadViewSetupBeagleView() {
+            // Given
+            val screenJson = """
+                {
+                    "_beagleComponent_": "beagle:text",
+                    "text": "Welcome to the Beagle!"
+                }
+                """.trimIndent()
+
+            // When
+            viewGroup.loadView(activityMock, screenJson)
+
+            // Then
+            verifySequence {
+                viewGroup.id
+                serializerFactory.deserializeComponent(screenJson)
+                ViewFactory.makeBeagleView(any<ActivityRootView>())
+                beagleView.addServerDrivenComponent(component)
+                beagleView.listenerOnViewDetachedFromWindow = any()
+                viewGroup.removeAllViews()
+                viewGroup.addView(beagleView)
             }
         }
     }

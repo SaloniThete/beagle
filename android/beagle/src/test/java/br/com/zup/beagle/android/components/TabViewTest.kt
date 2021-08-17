@@ -24,11 +24,11 @@ import br.com.zup.beagle.android.utils.StyleManager
 import br.com.zup.beagle.android.view.ViewFactory
 import br.com.zup.beagle.android.view.custom.BeaglePageView
 import br.com.zup.beagle.android.view.custom.BeagleTabLayout
+import br.com.zup.beagle.core.ServerDrivenComponent
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
-import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -58,14 +58,14 @@ class TabViewTest : BaseComponentTest() {
         every { BeagleEnvironment.beagleSdk.designSystem?.image(any()) } returns 10
         every { BeagleEnvironment.beagleSdk.designSystem?.tabViewStyle(any()) } returns 0
 
-        every { anyConstructed<ViewFactory>().makeViewPager(rootView.getContext()) } returns viewPager
-        every { anyConstructed<ViewFactory>().makeTabLayout(rootView.getContext(), any()) } returns tabLayout
-        every { anyConstructed<ViewFactory>().makeFrameLayoutParams(any(), any()) } returns frameLayoutParams
+        every { ViewFactory.makeViewPager(rootView.getContext()) } returns viewPager
+        every { ViewFactory.makeTabLayout(rootView.getContext(), any()) } returns tabLayout
+        every { ViewFactory.makeFrameLayoutParams(any(), any()) } returns frameLayoutParams
 
         every { viewPager.adapter = any() } just runs
         every { viewPager.addOnPageChangeListener(any()) } just runs
 
-        every { beagleFlexView.addView(any()) } just runs
+        every { beagleFlexView.addView(any<ServerDrivenComponent>()) } just runs
 
 
         tabView = TabView(listOf(tabItem), DEFAULT_STYLE)

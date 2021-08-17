@@ -17,29 +17,35 @@
 package br.com.zup.beagle.ext
 
 import br.com.zup.beagle.builder.core.AccessibilityBuilder
-import br.com.zup.beagle.builder.core.StyleBuilder
-import br.com.zup.beagle.builder.widget.FlexBuilder
 import br.com.zup.beagle.core.Accessibility
 import br.com.zup.beagle.core.Style
+import br.com.zup.beagle.core.StyleComponent
 import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.core.Flex
+import br.com.zup.beagle.builder.core.StyleBuilder as OldStyle
 
 /**
  * Add an identifier to this widget.
  * @return the current widget
  */
 fun <T : Widget> T.setId(id: String) = this.apply { this.id = id }
-fun <T: Widget> T.id(block: () -> String) = this.setId(block.invoke())
+fun <T : Widget> T.id(block: () -> String) = this.setId(block.invoke())
 
 /**
  * Apply the layout component.
  *
- * @see Flex
+ * @see Flexible
  *
  * @return the current widget
  */
+
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("setFlex { }"))
 fun <T : Widget> T.applyFlex(flex: Flex) = this.apply { this.style = (this.style ?: Style()).copy(flex = flex) }
-fun <T: Widget> T.flex(block: FlexBuilder.() -> Unit) = this.applyFlex(FlexBuilder().apply(block).build())
+
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("setFlex { }"))
+fun <T : StyleComponent> T.flex(block: Flex.() -> Unit): T = setFlex(block)
 
 /**
  * Apply the appearance.
@@ -48,10 +54,28 @@ fun <T: Widget> T.flex(block: FlexBuilder.() -> Unit) = this.applyFlex(FlexBuild
  *
  * @return the current widget
  */
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("Styled(component, { })"))
 fun <T : Widget> T.applyStyle(style: Style) = this.apply {
-    this.style = if (style.flex != null) style else style.copy(flex = this.style?.flex)
+    this.style = style.copy(
+        flex = Flex(
+            flexDirection = style.flex.flexDirection ?: this.style?.flex?.flexDirection,
+            flexWrap = style.flex.flexWrap ?: this.style?.flex?.flexWrap ,
+            justifyContent = style.flex.justifyContent ?: this.style?.flex?.justifyContent,
+            alignItems = style.flex.alignItems ?: this.style?.flex?.alignItems,
+            alignSelf = style.flex.alignSelf ?: this.style?.flex?.alignSelf,
+            alignContent = style.flex.alignContent ?: this.style?.flex?.alignContent,
+            basis = style.flex.basis ?: this.style?.flex?.basis,
+            flex = style.flex.flex ?: this.style?.flex?.flex,
+            grow = style.flex.grow ?: this.style?.flex?.grow,
+            shrink = style.flex.shrink ?: this.style?.flex?.shrink
+        )
+    )
 }
-fun <T: Widget> T.style(block: StyleBuilder.() -> Unit) = this.applyStyle(StyleBuilder().apply(block).build())
+
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("setStyle { }"))
+fun <T : Widget> T.style(block: OldStyle.() -> Unit) = this.applyStyle(OldStyle().apply(block).build())
 
 /**
  * Apply the accessibility .
@@ -60,7 +84,12 @@ fun <T: Widget> T.style(block: StyleBuilder.() -> Unit) = this.applyStyle(StyleB
  *
  * @return the current widget
  */
-fun <T : Widget> T.applyAccessibility(accessibility: Accessibility)
-        = this.apply { this.accessibility = accessibility }
-fun <T: Widget> T.accessibility(block: AccessibilityBuilder.() -> Unit)
-        = this.applyAccessibility(AccessibilityBuilder().apply(block).build())
+
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("setAccessibility { }"))
+fun <T : Widget> T.applyAccessibility(accessibility: Accessibility) = this.apply { this.accessibility = accessibility }
+
+@Deprecated("It was deprecated in version 1.7.0 and will be removed in a future version.",
+    ReplaceWith("setAccessibility { }"))
+fun <T : Widget> T.accessibility(block: AccessibilityBuilder.() -> Unit) =
+    this.applyAccessibility(AccessibilityBuilder().apply(block).build())
