@@ -20,13 +20,13 @@ import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 
 /**
  *  The container component is a general container that can hold other components inside.
  *
  * @param children define a list of components that are part of the container.
- * @param context define the contextData that be set to container.
+ * @param context define the context that be set to container.
  * @param onInit it is a parameter that allows you to define a list of actions to be performed
  * when the Widget is displayed.
  * @param styleId reference a native style in your local styles file to be applied on this container.
@@ -34,7 +34,7 @@ import br.com.zup.beagle.widget.context.ContextData
  */
 data class Container(
     val children: List<ServerDrivenComponent>? = null,
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onInit: List<Action>? = null,
     val styleId: String? = null,
 ) : Widget(), ContextComponent

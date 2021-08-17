@@ -21,7 +21,7 @@ import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.core.ListDirection
 import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_LIST_VIEW
 
@@ -36,7 +36,7 @@ data class ListView(
     )
     val children: List<ServerDrivenComponent>? = null,
     val direction: ListDirection = ListDirection.VERTICAL,
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onInit: List<Action>? = null,
     val dataSource: Bind<List<Any>>? = null,
     val template: ServerDrivenComponent? = null,
@@ -70,7 +70,7 @@ data class ListView(
 
     /**
      * @param direction define the list direction.
-     * @param context define the contextData that be set to component.
+     * @param context define the context that be set to component.
      * @param onInit allows to define a list of actions to be performed when the Widget is displayed.
      * @param dataSource it's an expression that points to a list of values used to populate the Widget.
      * @param template represents each cell in the list through a ServerDrivenComponent.
@@ -88,7 +88,7 @@ data class ListView(
                 "iteratorName, key, useParentScroll, templates)"))
     constructor(
         direction: ListDirection,
-        context: ContextData? = null,
+        context: Context? = null,
         onInit: List<Action>? = null,
         dataSource: Bind<List<Any>>,
         template: ServerDrivenComponent,
@@ -115,7 +115,7 @@ data class ListView(
 
     /**
      * @param direction define the list direction.
-     * @param context define the contextData that be set to component.
+     * @param context define the context that be set to component.
      * @param onInit allows to define a list of actions to be performed when the Widget is displayed.
      * @param dataSource it's an expression that points to a list of values used to populate the Widget.
      * @param onScrollEnd list of actions performed when the list is scrolled to the end.
@@ -130,7 +130,7 @@ data class ListView(
      */
     constructor(
         direction: ListDirection,
-        context: ContextData? = null,
+        context: Context? = null,
         onInit: List<Action>? = null,
         dataSource: Bind<List<Any>>,
         onScrollEnd: List<Action>? = null,

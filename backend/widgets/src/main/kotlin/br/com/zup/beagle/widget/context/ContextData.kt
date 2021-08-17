@@ -24,6 +24,6 @@ package br.com.zup.beagle.widget.context
  * @param value is a parameter (data) of any kind.
  */
 data class ContextData(
-    val id: String,
+    override val id: String,
     val value: Any
-)
+) : Context

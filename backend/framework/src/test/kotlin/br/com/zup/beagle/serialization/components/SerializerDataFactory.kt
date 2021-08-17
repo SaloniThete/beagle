@@ -20,14 +20,10 @@ import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.analytics.ScreenEvent
 import br.com.zup.beagle.ext.setFlex
 import br.com.zup.beagle.widget.action.Alert
-import br.com.zup.beagle.widget.action.Condition
-import br.com.zup.beagle.widget.action.Confirm
-import br.com.zup.beagle.widget.action.FormLocalAction
 import br.com.zup.beagle.widget.action.FormMethodType
 import br.com.zup.beagle.widget.action.FormRemoteAction
-import br.com.zup.beagle.widget.action.Navigate
-import br.com.zup.beagle.widget.action.Route
 import br.com.zup.beagle.widget.action.SetContext
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.context.ContextData
 import br.com.zup.beagle.widget.context.expressionOf
 import br.com.zup.beagle.widget.core.FlexDirection
@@ -46,9 +42,6 @@ import br.com.zup.beagle.widget.layout.Screen
 import br.com.zup.beagle.widget.layout.ScrollView
 import br.com.zup.beagle.widget.lazy.LazyComponent
 import br.com.zup.beagle.widget.navigation.Touchable
-import br.com.zup.beagle.widget.networking.HttpAdditionalData
-import br.com.zup.beagle.widget.networking.HttpMethod
-import br.com.zup.beagle.widget.pager.PageIndicator
 import br.com.zup.beagle.widget.ui.Button
 import br.com.zup.beagle.widget.ui.GridView
 import br.com.zup.beagle.widget.ui.GridViewDirection
@@ -96,6 +89,25 @@ fun makeContainerJson() = """
        "context": ${makeContextWithPrimitiveValueJson()},
        "onInit": [${makeActionAlertJson()}],
        "styleId": "style"
+    }
+"""
+
+fun makeContainerWithCustomContextJson() = """
+    {
+       "_beagleComponent_":"beagle:container",
+       "children":[],
+       "context": ${makeContextWithCustomContextJson()}
+    }
+"""
+
+fun makeContextWithCustomContextJson() = """
+    {
+        "id": "contextId",
+        "value": {
+            "inner": {
+                "myValue": true
+            }
+        }
     }
 """
 
@@ -206,6 +218,23 @@ fun makeObjectContainer() = Container(
     onInit = listOf(makeActionAlertObject()),
     styleId = "style"
 )
+
+fun makeObjectContainerWithCustomContext(): Container {
+    data class InnerContext(
+        override val id: String,
+        val myValue: Boolean
+    ) : Context
+
+    data class MyContext(
+        override val id: String,
+        val inner: InnerContext
+    ) : Context
+
+    return Container(
+        children = listOf(),
+        context = MyContext(id = "contextId", inner = InnerContext("contextId.myValue", true)),
+    )
+}
 
 fun makeObjectForm() = Form(
     child = makeObjectButton(),

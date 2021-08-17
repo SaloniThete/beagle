@@ -19,7 +19,7 @@ package br.com.zup.beagle.serialization.jackson
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.widget.Widget
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -52,7 +52,7 @@ internal class BeagleImplicitContextSerializerTest {
 
     @Test
     fun findImplicitContexts_without_implicit_context_should_return_empty_list() = run {
-        val result = findImplicitContexts(ContextObjectTest(contextId = "id"))
+        val result = findImplicitContexts(ContextTest(id = "id"))
         Assertions.assertEquals(result.isEmpty(), true)
     }
 
@@ -89,12 +89,12 @@ internal class BeagleImplicitContextSerializerTest {
     @RegisterWidget
     private class ImplicitContextTest(
         @ImplicitContext
-        val implicitContext: ((ContextObjectTest) -> List<Any>)? = null)
+        val implicitContext: ((ContextTest) -> List<Any>)? = null)
         : Widget()
 
-    private data class ContextObjectTest(
+    private data class ContextTest(
         val value: String? = null,
-        override val contextId: String)
-        : ContextObject
+        override val id: String)
+        : Context
 }
 

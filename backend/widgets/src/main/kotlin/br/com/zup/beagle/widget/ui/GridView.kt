@@ -20,10 +20,10 @@ import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 
 /**
- * @param context define the contextData that be set to component.
+ * @param context define the context that be set to component.
  * @param onInit allows to define a list of actions to be performed when the Widget is displayed.
  * @param dataSource it's an expression that points to a list of values used to populate the Widget.
  * @param templates Multiple templates support. The template to use will be decided according to the property `case`
@@ -40,7 +40,7 @@ import br.com.zup.beagle.widget.context.ContextData
  * @param direction define the grid direction.
  */
 data class GridView private constructor(
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onInit: List<Action>? = null,
     val dataSource: Bind<List<Any>>,
     val templates: List<Template>,
@@ -60,7 +60,7 @@ data class GridView private constructor(
             "GridView(context, onInit, dataSource, templates, onScrollEnd, scrollEndThreshold," +
                 "iteratorName, key, spanCount, direction)"))
     constructor(
-        context: ContextData? = null,
+        context: Context? = null,
         onInit: List<Action>? = null,
         dataSource: Bind<List<Any>>,
         templates: List<Template>,
@@ -86,7 +86,7 @@ data class GridView private constructor(
     )
 
     constructor(
-        context: ContextData? = null,
+        context: Context? = null,
         onInit: List<Action>? = null,
         dataSource: Bind<List<Any>>,
         templates: List<Template>,

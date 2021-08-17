@@ -17,7 +17,7 @@ package br.com.zup.beagle.widget.ui
 
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_TAB_VIEW
 
 /**
@@ -26,13 +26,13 @@ import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_TAB_VIEW
  *
  * @param children define yours view has in tab
  * @param styleId reference a native style in your local styles file to be applied on this view.
- * @param context define the contextData that be set to tabView.
+ * @param context define the context that be set to tabView.
  */
 @Deprecated(DEPRECATED_TAB_VIEW)
 data class TabView(
     val children: List<TabItem>,
     val styleId: String? = null,
-    override val context: ContextData? = null
+    override val context: Context? = null
 ) : ServerDrivenComponent, ContextComponent
 
 /**

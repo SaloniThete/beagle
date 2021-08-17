@@ -23,5 +23,5 @@ interface ContextComponent {
     /**
      * Creates a context.
      */
-    val context: ContextData?
+    val context: Context?
 }

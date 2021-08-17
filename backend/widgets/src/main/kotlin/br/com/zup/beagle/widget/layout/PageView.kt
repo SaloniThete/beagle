@@ -20,7 +20,7 @@ import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.pager.PageIndicatorComponent
 import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_PAGE_VIEW
 
@@ -29,7 +29,7 @@ import br.com.zup.beagle.widget.utils.BeagleConstants.DEPRECATED_PAGE_VIEW
  *
  * @param children define a List of components (views) that are contained on this PageView. Consider the
  * @param pageIndicator defines in what page the PageView is currently on.
- * @param context define the contextData that be set to pageView.
+ * @param context define the context that be set to pageView.
  * @param onPageChange List of actions that are performed when you are on the selected page.
  * @param currentPage Integer number that identifies that selected.
  * @param showArrow This attribute is specific to the web platform, with which it allows you to place the arrows
@@ -40,7 +40,7 @@ data class PageView(
     val children: List<ServerDrivenComponent>? = null,
     @Deprecated(DEPRECATED_PAGE_VIEW)
     val pageIndicator: PageIndicatorComponent? = null,
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onPageChange: List<Action>? = null,
     val currentPage: Bind<Int>? = null,
     val showArrow: Boolean? = null
@@ -50,7 +50,7 @@ data class PageView(
     constructor(
         children: List<ServerDrivenComponent>? = null,
         pageIndicator: PageIndicatorComponent? = null,
-        context: ContextData? = null,
+        context: Context? = null,
         showArrow: Boolean? = null
     ) : this(
         children,
@@ -63,7 +63,7 @@ data class PageView(
 
     constructor(
         children: List<ServerDrivenComponent>? = null,
-        context: ContextData? = null,
+        context: Context? = null,
         onPageChange: List<Action>? = null,
         currentPage: Bind<Int>? = null,
         showArrow: Boolean? = null

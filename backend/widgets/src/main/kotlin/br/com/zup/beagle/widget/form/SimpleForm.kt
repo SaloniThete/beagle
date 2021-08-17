@@ -19,12 +19,12 @@ package br.com.zup.beagle.widget.form
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 
 /**
  * Component will define a submit handler for a SimpleForm.
  *
- * @param context define the contextData that be set to form
+ * @param context define the context that be set to form
  *
  * @param children define the items on the simple form.
  *
@@ -34,7 +34,7 @@ import br.com.zup.beagle.widget.context.ContextData
  *
  */
 class SimpleForm(
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onSubmit: List<Action>,
     val children: List<ServerDrivenComponent>? = null,
     val onValidationError: List<Action>? = null,

@@ -16,6 +16,6 @@
 
 package br.com.zup.beagle.widget.context
 
-interface ContextObject {
-    val contextId: String
+interface Context {
+    val id: String
 }

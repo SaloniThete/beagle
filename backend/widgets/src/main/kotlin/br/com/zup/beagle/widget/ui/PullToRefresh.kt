@@ -21,12 +21,12 @@ import br.com.zup.beagle.widget.Widget
 import br.com.zup.beagle.widget.action.Action
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.context.valueOfNullable
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PullToRefresh(
-    override val context: ContextData? = null,
+    override val context: Context? = null,
     val onPull: List<Action>,
     @get:JsonProperty("isRefreshing") val isRefreshing: Bind<Boolean>? = null,
     val color: Bind<String>? = null,
@@ -34,7 +34,7 @@ data class PullToRefresh(
 ) : Widget(), ContextComponent {
 
     constructor(
-        context: ContextData? = null,
+        context: Context? = null,
         onPull: List<Action>,
         isRefreshing: Bind<Boolean>? = null,
         color: String? = null,
