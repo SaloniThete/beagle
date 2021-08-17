@@ -93,7 +93,6 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     private fun processAnnotation(element: Element) {
-
         val className = element.simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(element).toString()
         val fileName = "${className}Normalizer"
@@ -125,12 +124,12 @@ class ContextObjectProcessor: AbstractProcessor() {
             val propertyName = property.simpleName.toString()
             val propertyType = property.asType().asTypeName().javaToKotlinType()
 
-            val match = findListRegexMatch(property.asType().toString())
-            if (match != null) {
-                val typeElement = processingEnv.elementUtils.getTypeElement(match)
+            findListRegexMatch(property.asType().toString())?.let {
+                val typeElement = processingEnv.elementUtils.getTypeElement(it)
                 val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
                 val isNullable = property.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
                 val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
+
                 if (isContextObject) {
                     fileBuilder.addFunction(buildListAccessFun(
                         property.simpleName.toString(),
@@ -142,15 +141,11 @@ class ContextObjectProcessor: AbstractProcessor() {
 
                 fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName, classTypeName))
                 fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName.asBindType(), classTypeName))
-
-                fileBuilder.addProperty(buildExpressionPropertyFor(property, typeElementTypeName.asListType(), classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, typeElementTypeName.asListType(), classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, typeElementTypeName.asListType().asBindType(), classTypeName))
-            } else {
-                fileBuilder.addProperty(buildExpressionPropertyFor(property, propertyType, classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
-                fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
             }
+
+            fileBuilder.addProperty(buildExpressionPropertyFor(property, propertyType, classTypeName))
+            fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
+            fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
         }
     }
 
@@ -195,7 +190,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             .receiver(classTypeName)
             .addParameter("index", Int::class)
             .returns(elementType)
-            .addStatement("val model = ${elementType}(\"\$contextId.parameterName[\$index]\")")
+            .addStatement("val model = ${elementType}(\"\$contextId.$parameterName[\$index]\")")
             .addCode("return try { $tryCodeBlock } catch (e: IndexOutOfBoundsException) { model }")
             .build()
     }
@@ -290,8 +285,6 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     private fun TypeName.asBindType() = Bind.Expression::class.asTypeName().parameterizedBy(listOf(this))
-
-    private fun TypeName.asListType() = List::class.asTypeName().parameterizedBy(listOf(this))
 
     private fun TypeName.javaToKotlinType(): TypeName {
         return if (this is ParameterizedTypeName) {

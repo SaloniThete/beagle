@@ -186,6 +186,35 @@ internal class AnnotationProcessorTest {
         assertChange(newValue, "${Person::orders.name}[0].${Order::value.name}", person.orders[0].changeValue(newValue))
     }
 
+    @Test
+    fun test_generated_get_element_functions() {
+        val index = 40
+        val expectedOrderContextId = "contextId.orders[$index]"
+
+        assertEquals(expectedOrderContextId, person.ordersGetElementAt(index).contextId)
+        assertEquals(person.orders[0], person.ordersGetElementAt(0), "When element exist it must return it")
+    }
+
+    @Test
+    fun test_generated_change_element_functions() {
+        val index = 30
+        val newProduct = "newProduct"
+        val newOrder = Order(contextId = "contextId", products = listOf("newProducts"), value = 30.00)
+
+        assertChange(newProduct, "orders[0].products[$index]", person.orders[0].changeProductsElement(newProduct, index))
+        assertChange(newOrder, "orders[$index]", person.changeOrdersElement(newOrder, index))
+    }
+
+    @Test
+    fun test_generated_change_element_functions_bind() {
+        val index = 30
+        val newProduct = expressionOf<String>("context.product")
+        val newOrder = expressionOf<Order>("context.order")
+
+        assertChange(newProduct, "orders[0].products[$index]", person.orders[0].changeProductsElement(newProduct, index))
+        assertChange(newOrder, "orders[$index]", person.changeOrdersElement(newOrder, index))
+    }
+
     private fun assertChange(value: Any, path: String?, setContext: SetContext) {
         val expectedSetContact = SetContext(contextId = contextId, value = value, path = path)
         assertEquals(expectedSetContact, setContext)
