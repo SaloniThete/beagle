@@ -16,14 +16,13 @@
 
 package br.com.zup.beagle.serialization.components
 
-import br.com.zup.beagle.widget.Widget
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.provider.Arguments
 
 @DisplayName("Given a Implicit Context")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class ImplicitContextSerializerTest : DefaultSerializerTest<Widget>() {
+internal class ImplicitContextSerializerTest : DefaultSerializerTest<Any>() {
     override fun testArguments() = listOf(
         Arguments.of(makeImplicitContextJson(), makeObjectImplicitContext())
     )

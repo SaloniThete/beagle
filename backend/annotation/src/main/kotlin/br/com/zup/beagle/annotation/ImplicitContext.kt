@@ -16,6 +16,6 @@
 
 package br.com.zup.beagle.annotation
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FIELD)
 annotation class ImplicitContext(val id: String = "")

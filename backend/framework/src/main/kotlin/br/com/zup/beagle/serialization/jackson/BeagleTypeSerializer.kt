@@ -17,7 +17,6 @@
 package br.com.zup.beagle.serialization.jackson
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
 import com.fasterxml.jackson.databind.ser.impl.ObjectIdWriter
@@ -77,51 +76,15 @@ internal class BeagleTypeSerializer : BeanSerializerBase {
         generator.writeStartObject()
         getBeagleType(bean::class.java, this.classLoader)
             ?.also { (key, value) -> generator.writeStringField(key, value) }
-        findImplicitContexts(bean).apply {
-            if (this.isEmpty())
-                super.serializeFields(bean, generator, provider)
-            else
-                serializeImplicitFields(bean, generator, provider, this)
-
-        }
+        super.serializeFields(bean, generator, provider)
+        serializeImplicitContextsFields(bean, generator)
         generator.writeEndObject()
     }
 
-    private fun serializeImplicitFields(bean: Any?, gen: JsonGenerator?, provider: SerializerProvider, hashMap: HashMap<String, Any?>) {
-        val props: Array<BeanPropertyWriter> = if (_filteredProps != null && provider.activeView != null) {
-            _filteredProps
-        } else {
-            _props
-        }
-        var i = 0
-        try {
-            val len = props.size
-            while (i < len) {
-                val prop = props[i]
-                if (prop != null) { // can have nulls in filtered list
-                    if (!hashMap.containsKey(prop.name)) {
-                        prop.serializeAsField(bean, gen, provider)
-                    } else {
-                        gen?.writeFieldName(prop.name)
-                        gen?.writeObject(hashMap[prop.name])
-                    }
-                }
-                ++i
-            }
-            _anyGetterWriter?.getAndSerialize(bean, gen, provider)
-        } catch (e: Exception) {
-            val name = if (i == props.size) "[anySetter]" else props[i].name
-            wrapAndThrow(provider, e, bean, name)
-        } catch (e: StackOverflowError) {
-            // 04-Sep-2009, tatu: Dealing with this is tricky, since we don't have many
-            //   stack frames to spare... just one or two; can't make many calls.
-
-            // 10-Dec-2015, tatu: and due to above, avoid "from" method, call ctor directly:
-            //JsonMappingException mapE = JsonMappingException.from(gen, "Infinite recursion (StackOverflowError)", e);
-            val mapE = JsonMappingException(gen, "Infinite recursion (StackOverflowError)", e)
-            val name = if (i == props.size) "[anySetter]" else props[i].name
-            mapE.prependPath(JsonMappingException.Reference(bean, name))
-            throw mapE
+    private fun serializeImplicitContextsFields(bean: Any, generator: JsonGenerator) {
+        findImplicitContexts(bean).forEach { (name, value) ->
+            generator.writeFieldName(name)
+            generator.writeObject(value)
         }
     }
 

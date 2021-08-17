@@ -29,15 +29,22 @@ import kotlin.reflect.jvm.javaType
 internal fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
     val implicitContexts = HashMap<String, Any?>()
     bean?.let {
-        for (property in bean::class.memberProperties) {
-            property.isAccessible = true
-            property.findAnnotation<ImplicitContext>()?.let {
-                implicitContexts.put(property.name, resolveMethod(bean, property))
+        it::class.java.declaredFields.forEach { field ->
+            field.isAccessible = true
+            if (field.isAnnotationPresent(ImplicitContext::class.java)) {
+                val property = findProperty(bean, field.name)
+                implicitContexts[property.name] = resolveMethod(bean, property)
             }
         }
     }
 
     return implicitContexts
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun findProperty(bean: Any, name: String): KProperty1<Any, *> {
+    return bean::class.memberProperties
+        .first { it.name == name } as KProperty1<Any, *>
 }
 
 private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
