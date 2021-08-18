@@ -2,7 +2,6 @@ package br.com.zup.beagle.sample.pix
 
 import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.context.constant
-import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.context.operations.builtin.*
 import br.com.zup.beagle.core.Display
 import br.com.zup.beagle.ext.setStyle
@@ -24,13 +23,20 @@ import br.com.zup.beagle.widget.ui.Text
 
 @ContextObject
 data class PixContext(
+    override val id: String,
     val myValue: String = "",
-    override val id: String
+    val person: Person = Person("")
 ) : Context
 
-val pixContext = PixContext(id = "pix")
+@ContextObject
+data class Person(
+    override val id: String,
+    val firstName: String = "",
+    val lastName: String = ""
+) : Context
 
 object PixScreenBuilder : ScreenBuilder {
+    private val pixContext = PixContext("").normalize("pix")
     override fun build() = Screen(
         child = Container(
             context = pixContext,
@@ -85,7 +91,8 @@ object PixScreenBuilder : ScreenBuilder {
                 margin = EdgeValue.only(bottom = 10)
             },
             containerContact(),
-            selectContact()
+            selectContact(),
+            showName()
         )
     )
 
@@ -95,6 +102,7 @@ object PixScreenBuilder : ScreenBuilder {
             Navigate.PushStack(route = Route.Remote(url = BASE_URL + SELECT_CONTACT_ENDPOINT))
         )
     ).setStyle {
+        margin = EdgeValue.only(bottom = 30)
         display = condition(
             isNull(constant(true)),
             constant(Display.FLEX), constant(Display.NONE)
@@ -120,14 +128,52 @@ object PixScreenBuilder : ScreenBuilder {
         )
     }
 
+    private fun showName() = Container(
+        children = listOf(
+            Text(
+                text = constant("Primeiro nome")
+            ).setStyle {
+                margin = EdgeValue.only(bottom = 10)
+            },
+            SampleTextField(
+                placeholder = "",
+                onChange = {
+                    listOf(
+                        pixContext.person.changeFirstName(it.valueExpression)
+                    )
+                }
+            ),
+            Text(text = concat(constant("Primeiro nome: "), pixContext.person.firstNameExpression)).setStyle {
+                margin = EdgeValue.only(bottom = 30)
+            },
+            Text(
+                text = constant("Último nome")
+            ).setStyle {
+                margin = EdgeValue.only(bottom = 10)
+            },
+            SampleTextField(
+                placeholder = "",
+                onChange = {
+                    listOf(
+                        pixContext.person.changeLastName(it.valueExpression)
+                    )
+                }
+            ),
+            Text(text = concat(constant("Último nome: "), pixContext.person.lastNameExpression)).setStyle {
+                margin = EdgeValue.only(bottom = 10)
+            },
+        )
+    ).setStyle {
+        display = condition(
+            isNull(constant(true)),
+            constant(Display.FLEX), constant(Display.NONE)
+        )
+    }
+
     private fun footer() = Button(
         text = constant("Trasferir"),
         onPress = listOf(
-
         ),
-        enabled = condition(
-            or(isNull(constant(true)), isEmpty(expressionOf("@{myValue}"))),
-            constant(false), constant(true)
-        )
+        enabled = not(isEmpty(pixContext.myValueExpression))
     )
 }

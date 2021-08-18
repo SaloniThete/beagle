@@ -40,7 +40,7 @@ internal class OtherOperationsTest {
             val expected = Bind.Expression<Boolean>(value = "@{isEmpty(myArray)}")
 
             // WHEN
-            val result = isEmpty(expressionOf("@{myArray}"))
+            val result = isEmpty(expressionOf<Boolean>("@{myArray}"))
 
             // THEN
             assertEquals(expected, result)
