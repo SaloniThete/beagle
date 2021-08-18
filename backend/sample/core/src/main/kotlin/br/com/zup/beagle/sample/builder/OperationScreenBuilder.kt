@@ -16,6 +16,7 @@
 
 package br.com.zup.beagle.sample.builder
 
+import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.constant
 import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.context.operations.builtin.and
@@ -74,7 +75,6 @@ object OperationScreenBuilder : ScreenBuilder {
                     context = ContextData("text", "tEsT"),
                     children = listOf(
                         Text("String", textColor = "#00c91b"),
-                        Text(capitalize(expressionOf("@{text}")).toBindString()),
                         Text(uppercase(expressionOf("@{text}")).capitalize().toBindString()),
 
                         Text(concat(constant("aaa"), constant("bbb"), expressionOf("@{text}")).toBindString()),
@@ -122,7 +122,8 @@ object OperationScreenBuilder : ScreenBuilder {
                             children = listOf(
                                 Text("logic", textColor = "#00c91b"),
                                 Text(and(constant(true), expressionOf("@{logic}")).toBindString()),
-                                Text(condition(constant(true), expressionOf("@{logic}")).toBindString()),
+                                Text(condition<Bind<Boolean>>(constant(true), expressionOf("@{logic}"),
+                                    expressionOf("@{logic}")).toBindString()),
                                 Text(not(expressionOf("@{logic}"), constant(true)).toBindString()),
                                 Text(or(constant(true), expressionOf("@{logic}")).toBindString())
                             )
@@ -132,7 +133,7 @@ object OperationScreenBuilder : ScreenBuilder {
                             children = listOf(
                                 Text("other", textColor = "#00c91b"),
                                 Text(isEmpty(expressionOf("@{other}")).toBindString()),
-                                Text(isNull(expressionOf("@{other}")).toBindString()),
+                                Text(isNull(expressionOf<Boolean>("@{other}")).toBindString()),
                                 Text(length(expressionOf("@{other}")).toBindString())
                             )
                         ).setStyle { margin = EdgeValue(bottom = UnitValue.Companion.real(10)) },

@@ -58,7 +58,7 @@ internal class OtherOperationsTest {
             val expected = Bind.Expression<Boolean>(value = "@{isNull(myArray)}")
 
             // WHEN
-            val result = isNull(expressionOf("@{myArray}"))
+            val result = isNull(expressionOf<Boolean>("@{myArray}"))
 
             // THEN
             assertEquals(expected, result)

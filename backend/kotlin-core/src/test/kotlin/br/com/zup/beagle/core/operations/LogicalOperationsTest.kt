@@ -56,10 +56,10 @@ internal class LogicOperationTest {
         @DisplayName("Then should return correct expression")
         fun checkConditionExpression() {
             // GIVEN
-            val expected = Bind.Expression<Boolean>(value = "@{condition(true,false)}")
+            val expected = Bind.Expression<Boolean>(value = "@{condition(true,true,false)}")
 
             // WHEN
-            val result = condition(constant(true), constant(false))
+            val result = condition(constant(true), constant(true), constant(false))
 
             // THEN
             assertEquals(expected, result)

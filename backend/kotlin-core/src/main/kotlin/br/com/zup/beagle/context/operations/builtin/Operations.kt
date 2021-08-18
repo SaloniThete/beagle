@@ -51,7 +51,10 @@ fun lte(vararg params: Bind<Number>): Bind.Expression<Boolean> = createOperation
 
 /** logic **/
 fun and(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("and", params)
-fun condition(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("condition", params)
+
+fun <I> condition(condition: Bind<Boolean>, param1: Bind<I>, param2: Bind<I>): Bind.Expression<I> =
+    createOperation("condition", arrayOf(condition, param1, param2))
+
 fun not(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("not", params)
 fun or(vararg params: Bind<Boolean>): Bind.Expression<Boolean> = createOperation("or", params)
 
@@ -72,7 +75,7 @@ fun <I> union(firstArray: Bind<Array<I>>, secondArray: Bind<Array<I>>): Bind.Exp
 
 /** other **/
 fun isEmpty(vararg params: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", params)
-fun isNull(vararg params: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isNull", params)
+fun isNull(vararg params: Bind<*>): Bind.Expression<Boolean> = createOperation("isNull", params)
 fun length(vararg params: Bind<Array<*>>): Bind.Expression<Number> = createOperation("length", params)
 
 private fun <O> createOperation(operationType: String, params: Array<out Any?>): Bind.Expression<O> {

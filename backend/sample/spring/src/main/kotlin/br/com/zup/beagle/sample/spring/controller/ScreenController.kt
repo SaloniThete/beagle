@@ -18,77 +18,8 @@
 
 package br.com.zup.beagle.sample.spring.controller
 
-import br.com.zup.beagle.sample.constants.ACCESSIBILITY_SCREEN_ENDPOINT
-import br.com.zup.beagle.sample.constants.NAVIGATION_TYPE_ENDPOINT
-import br.com.zup.beagle.sample.constants.OPERATIONS_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_IMAGE_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_STYLE_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_BAR_TEXT_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_TYPE_STEP2_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_NAVIGATION_TYPE_STEP3_ENDPOINT
-import br.com.zup.beagle.sample.constants.REPRESENTATION_PRESENT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SAMPLE_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_ACTION_ADD_CHILDREN
-import br.com.zup.beagle.sample.constants.SCREEN_ACTION_CLICK_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_ACTION_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_ANALYTICS_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_BFF_NETWORK_IMAGE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_BUILDER_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_BUTTON_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_COMPONENTS_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_COMPOSE_COMPONENT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_CONTEXT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_EXAMPLE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_FORM_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_IMAGE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_LAZY_COMPONENT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_LIST_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_NAVIGATION_BAR_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_NETWORK_IMAGE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_PAGE_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_PULL_TO_REFRESH
-import br.com.zup.beagle.sample.constants.SCREEN_SAFE_AREA_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_SAFE_AREA_FALSE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_SAFE_AREA_TRUE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_SCROLL_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_SIMPLE_FORM_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_TAB_BAR_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_TAB_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_TEXT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_TEXT_INPUT_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_TOUCHABLE_ENDPOINT
-import br.com.zup.beagle.sample.constants.SCREEN_WEB_VIEW_ENDPOINT
-import br.com.zup.beagle.sample.spring.service.AccessibilityService
-import br.com.zup.beagle.sample.spring.service.AddChildrenService
-import br.com.zup.beagle.sample.spring.service.SampleActionClickService
-import br.com.zup.beagle.sample.spring.service.SampleActionService
-import br.com.zup.beagle.sample.spring.service.SampleAnalyticsService
-import br.com.zup.beagle.sample.spring.service.SampleButtonService
-import br.com.zup.beagle.sample.spring.service.SampleComponentsService
-import br.com.zup.beagle.sample.spring.service.SampleComposeComponentService
-import br.com.zup.beagle.sample.spring.service.SampleContextService
-import br.com.zup.beagle.sample.spring.service.SampleFormService
-import br.com.zup.beagle.sample.spring.service.SampleImageLocalService
-import br.com.zup.beagle.sample.spring.service.SampleImageRemoteService
-import br.com.zup.beagle.sample.spring.service.SampleLazyComponentService
-import br.com.zup.beagle.sample.spring.service.SampleListViewService
-import br.com.zup.beagle.sample.spring.service.SampleNavigationBarService
-import br.com.zup.beagle.sample.spring.service.SampleNavigationTypeService
-import br.com.zup.beagle.sample.spring.service.SampleOperationService
-import br.com.zup.beagle.sample.spring.service.SamplePageViewService
-import br.com.zup.beagle.sample.spring.service.SamplePullToRefreshService
-import br.com.zup.beagle.sample.spring.service.SampleSafeAreaService
-import br.com.zup.beagle.sample.spring.service.SampleScreenBuilderService
-import br.com.zup.beagle.sample.spring.service.SampleScrollViewService
-import br.com.zup.beagle.sample.spring.service.SampleSimpleFormService
-import br.com.zup.beagle.sample.spring.service.SampleTabBarService
-import br.com.zup.beagle.sample.spring.service.SampleTabViewService
-import br.com.zup.beagle.sample.spring.service.SampleTextService
-import br.com.zup.beagle.sample.spring.service.SampleTouchableService
-import br.com.zup.beagle.sample.spring.service.SampleViewService
-import br.com.zup.beagle.sample.spring.service.SampleWebViewService
-import br.com.zup.beagle.sample.spring.service.TextInputService
+import br.com.zup.beagle.sample.constants.*
+import br.com.zup.beagle.sample.spring.service.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -124,6 +55,7 @@ class ScreenController(
     private val sampleSimpleFormService: SampleSimpleFormService,
     private val sampleAddChildrenService: AddChildrenService,
     private val samplePullToRefreshService: SamplePullToRefreshService,
+    private val pixService: PixService
 ) {
     @GetMapping(ACCESSIBILITY_SCREEN_ENDPOINT)
     fun getAccessibilityView() = this.accessibilityService.createAccessibilityView()
@@ -247,4 +179,7 @@ class ScreenController(
 
     @GetMapping(SCREEN_PULL_TO_REFRESH)
     fun getSamplePullToRefreshService() = this.samplePullToRefreshService.createPullToRefreshView()
+
+    @GetMapping(PIX_ENDPOINT)
+    fun getPixScreen() = this.pixService.createPixScreen()
 }
