@@ -100,7 +100,6 @@ private fun <I> resolveParam(param: Bind<I>?): Any? {
     } ?: run {
         param
     }
-
 }
 
 fun <T> Bind.Expression<T>.toBindString(): Bind<String> = expressionOf(this.value)
