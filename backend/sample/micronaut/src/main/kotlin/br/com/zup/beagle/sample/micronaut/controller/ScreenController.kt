@@ -20,8 +20,8 @@ package br.com.zup.beagle.sample.micronaut.controller
 
 import br.com.zup.beagle.sample.constants.*
 import br.com.zup.beagle.sample.micronaut.service.*
-import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Controller
 
 @Controller
 class ScreenController(

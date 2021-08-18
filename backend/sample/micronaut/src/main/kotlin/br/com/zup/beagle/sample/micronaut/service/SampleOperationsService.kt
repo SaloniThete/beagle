@@ -20,6 +20,6 @@ import br.com.zup.beagle.sample.builder.OperationScreenBuilder
 import javax.inject.Singleton
 
 @Singleton
-class SampleOperationService {
+class SampleOperationsService {
     fun createOperations() = OperationScreenBuilder
 }
