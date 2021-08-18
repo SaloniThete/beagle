@@ -17,13 +17,11 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
+import kotlin.test.assertEquals
 
-class SuperIterableContextTest {
+internal class BasicContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        Random.nextInt().also {
-            checkExpression(SuperIterableContext_.things[it][it][it][it], "@{things[$it][$it][$it][$it]}", Any::class)
-        }
+        checkExpression(BasicContext_.name, "@{name}", String::class)
     }
 }

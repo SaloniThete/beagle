@@ -19,12 +19,12 @@ package br.com.zup.beagle.serialization.jackson
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.widget.Widget
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 
-internal class BeagleImplicitContextTest {
+internal class BeagleImplicitContextObjectTest {
 
     private val implicitContextTest = ImplicitContextTest { listOf() }
 
@@ -37,7 +37,7 @@ internal class BeagleImplicitContextTest {
 
     @Test
     fun findImplicitContexts_without_implicit_context_should_return_empty_list() = run {
-        val result = findImplicitContexts(ContextObjectTest(contextId = "id"))
+        val result = findImplicitContexts(ContextObjectTest(id = "id"))
         Assertions.assertEquals(result.isEmpty(), true)
     }
 }
@@ -50,6 +50,6 @@ class ImplicitContextTest(
 
 data class ContextObjectTest(
     val value: String? = null,
-    override val contextId: String)
-    : ContextObject
+    override val id: String)
+    : Context
 

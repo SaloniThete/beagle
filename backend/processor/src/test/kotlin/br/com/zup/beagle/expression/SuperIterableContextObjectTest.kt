@@ -17,13 +17,13 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
-internal class RecursiveContextTest {
+class SuperIterableContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        checkExpression(RecursiveContext_.done, "@{done}", Boolean::class)
-        checkExpression(RecursiveContext_.context.done, "@{context.done}", Boolean::class)
-        checkExpression(RecursiveContext_.context.context.done, "@{context.context.done}", Boolean::class)
-        checkExpression(RecursiveContext_.context.context.context.done, "@{context.context.context.done}", Boolean::class)
+        Random.nextInt().also {
+            checkExpression(SuperIterableContext_.things[it][it][it][it], "@{things[$it][$it][$it][$it]}", Any::class)
+        }
     }
 }

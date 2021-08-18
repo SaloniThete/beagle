@@ -17,11 +17,11 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
 
-internal class SetContextTest {
+internal class EasyFalseCycleContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        Random.nextInt().also { checkExpression(SetContext_.names[it], "@{names[$it]}", Byte::class) }
+        checkExpression(EasyFalseCycleContext_.b.done, "@{b.done}", Boolean::class)
+        checkExpression(EasyFalseCycleContext_.a.c.done, "@{a.c.done}", Boolean::class)
     }
 }

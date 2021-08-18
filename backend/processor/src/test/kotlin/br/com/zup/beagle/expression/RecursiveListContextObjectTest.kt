@@ -17,12 +17,19 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
-internal class NullableContextTest {
+class RecursiveListContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        checkExpression(NullableContext_.a, "@{a}", Int::class)
-        checkExpression(NullableContext_.b.name, "@{b.name}", String::class)
-        checkExpression(NullableContext_.c[0], "@{c[0]}", String::class)
+        Random.nextInt().also {
+            checkExpression(RecursiveListContext_.done, "@{done}", Boolean::class)
+            checkExpression(RecursiveListContext_.contexts[it].done, "@{contexts[$it].done}", Boolean::class)
+            checkExpression(
+                RecursiveListContext_.contexts[it].contexts[it].done,
+                "@{contexts[$it].contexts[$it].done}",
+                Boolean::class
+            )
+        }
     }
 }

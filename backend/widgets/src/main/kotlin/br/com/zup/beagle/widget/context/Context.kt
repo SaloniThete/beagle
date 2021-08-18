@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.expression
+package br.com.zup.beagle.widget.context
 
-import org.junit.jupiter.api.Test
-
-internal class VisibilityContextTest {
-    @Test
-    fun test_generated_expressions() {
-        checkExpression(VisibilityContext_.b, "@{b}", Byte::class)
-        checkExpression(VisibilityContext_.d, "@{d}", Long::class)
-    }
+interface Context {
+    val id: String
 }

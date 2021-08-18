@@ -18,10 +18,11 @@ package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
 
-internal class EnumContextTest {
+internal class NullableContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        checkExpression(EnumContext_.a, "@{a}", EnumWithoutFields::class)
-        checkExpression(EnumContext_.b, "@{b}", EnumWithFields::class)
+        checkExpression(NullableContext_.a, "@{a}", Int::class)
+        checkExpression(NullableContext_.b.name, "@{b.name}", String::class)
+        checkExpression(NullableContext_.c[0], "@{c[0]}", String::class)
     }
 }

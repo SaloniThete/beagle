@@ -25,6 +25,7 @@ import br.com.zup.beagle.widget.action.Alert
 import br.com.zup.beagle.widget.action.FormMethodType
 import br.com.zup.beagle.widget.action.FormRemoteAction
 import br.com.zup.beagle.widget.action.SetContext
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.context.ContextData
 import br.com.zup.beagle.widget.core.FlexDirection
 import br.com.zup.beagle.widget.core.ImageContentMode
@@ -89,6 +90,25 @@ fun makeContainerJson() = """
        "context": ${makeContextWithPrimitiveValueJson()},
        "onInit": [${makeActionAlertJson()}],
        "styleId": "style"
+    }
+"""
+
+fun makeContainerWithCustomContextJson() = """
+    {
+       "_beagleComponent_":"beagle:container",
+       "children":[],
+       "context": ${makeContextWithCustomContextJson()}
+    }
+"""
+
+fun makeContextWithCustomContextJson() = """
+    {
+        "id": "contextId",
+        "value": {
+            "inner": {
+                "myValue": true
+            }
+        }
     }
 """
 
@@ -199,6 +219,23 @@ fun makeObjectContainer() = Container(
     onInit = listOf(makeActionAlertObject()),
     styleId = "style"
 )
+
+fun makeObjectContainerWithCustomContext(): Container {
+    data class InnerContext(
+        override val id: String,
+        val myValue: Boolean
+    ) : Context
+
+    data class MyContext(
+        override val id: String,
+        val inner: InnerContext
+    ) : Context
+
+    return Container(
+        children = listOf(),
+        context = MyContext(id = "contextId", inner = InnerContext("contextId.myValue", true)),
+    )
+}
 
 fun makeObjectForm() = Form(
     child = makeObjectButton(),

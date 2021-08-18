@@ -16,21 +16,21 @@
 
 package br.com.zup.beagle.sample
 
-import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.annotation.ContextObject
+import br.com.zup.beagle.widget.context.Context
 
-@Context
+@ContextObject
 data class Model(
-    override val contextId: String,
+    override val id: String,
     val counter: List<Int>?,
     val post : String?,
     val child: Model2?,
     val child2: Model3?,
     val childList: List<Model3>?,
     val childList2: List<Model2>
-): ContextObject {
+): Context {
     constructor(contextId: String): this(
-        contextId = contextId,
+        id = contextId,
         counter = null,
         post = null,
         child = null,
@@ -40,19 +40,19 @@ data class Model(
     )
 }
 
-@Context
+@ContextObject
 data class Model2(
-    override val contextId: String,
+    override val id: String,
     val title: String?,
     val child: Model3?
-): ContextObject {
-    constructor(contextId: String): this(contextId = contextId, title = null, child = null)
+): Context {
+    constructor(id: String): this(id = id, title = null, child = null)
 }
 
-@Context
+@ContextObject
 data class Model3(
-    override val contextId: String,
+    override val id: String,
     val names: List<String>?
-): ContextObject {
-    constructor(contextId: String): this(contextId = contextId, names = null)
+): Context {
+    constructor(id: String): this(id = id, names = null)
 }

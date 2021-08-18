@@ -17,6 +17,7 @@
 package br.com.zup.beagle.serialization.jackson
 
 import br.com.zup.beagle.annotation.ImplicitContext
+import br.com.zup.beagle.widget.context.Context
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotation
@@ -60,7 +61,7 @@ private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
     val id = generateImplicitContextId(property)
     val values = inputClass.kotlin.primaryConstructor
         ?.parameters
-        ?.associate { it to (if (it.name == "contextId") id else null) }
+        ?.associate { it to (if (it.name == Context::id.name) id else null) }
         ?: error("parameters not found")
 
     inputClass.kotlin.primaryConstructor?.isAccessible = true

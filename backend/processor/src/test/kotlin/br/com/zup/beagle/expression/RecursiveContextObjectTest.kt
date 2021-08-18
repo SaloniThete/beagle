@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.annotation
+package br.com.zup.beagle.expression
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class Context
+import org.junit.jupiter.api.Test
+
+internal class RecursiveContextObjectTest {
+    @Test
+    fun test_generated_expressions() {
+        checkExpression(RecursiveContext_.done, "@{done}", Boolean::class)
+        checkExpression(RecursiveContext_.context.done, "@{context.done}", Boolean::class)
+        checkExpression(RecursiveContext_.context.context.done, "@{context.context.done}", Boolean::class)
+        checkExpression(RecursiveContext_.context.context.context.done, "@{context.context.context.done}", Boolean::class)
+    }
+}

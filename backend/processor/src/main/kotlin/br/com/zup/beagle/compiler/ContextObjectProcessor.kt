@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.widget.action.SetContext
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -47,13 +47,13 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(Context::class.java.name)
+        return mutableSetOf(ContextObject::class.java.name)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val elements = roundEnv.getElementsAnnotatedWith(Context::class.java)
+        val elements = roundEnv.getElementsAnnotatedWith(ContextObject::class.java)
 //        (it.enclosedElements.filter { it.kind == ElementKind.CONSTRUCTOR })[1]
         elements
             .forEach {
@@ -77,13 +77,13 @@ class ContextObjectProcessor: AbstractProcessor() {
 
         val typeElement = processingEnv.elementUtils.getTypeElement(element.asType().toString())
         val inheritFromContextObject = typeElement.interfaces.any { int ->
-            int.asTypeName().toString() == ContextObject::class.java.name
+            int.asTypeName().toString() == Context::class.java.name
         }
 
         if (!inheritFromContextObject) {
             processingEnv.messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Only classes that inherit from ContextObject can be annotated with @Context",
+                "Only classes that inherit from Context can be annotated with @ContextObject",
                 element
             )
             return false
@@ -108,7 +108,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         fileBuilder.addFunction(buildRootChangeFun(element, false))
 
         fields.forEach { enclosed ->
-            if (enclosed.simpleName.toString() != "contextId") {
+            if (enclosed.simpleName.toString() != "id") {
                 addExtensionsTo(enclosed, classTypeName, fileBuilder)
             }
         }
@@ -119,13 +119,13 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     private fun addExtensionsTo(property: Element, classTypeName: TypeName, fileBuilder: FileSpec.Builder) {
-        if (property.simpleName.toString() != "contextId") {
+        if (property.simpleName.toString() != "id") {
             val propertyName = property.simpleName.toString()
             val propertyType = property.asType().asTypeName().javaToKotlinType()
 
             findListRegexMatch(property.asType().toString())?.let {
                 val typeElement = processingEnv.elementUtils.getTypeElement(it)
-                val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
+                val isContextObject = typeElement?.getAnnotation(ContextObject::class.java) != null
                 val isNullable = property.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
                 val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
 
@@ -154,7 +154,7 @@ class ContextObjectProcessor: AbstractProcessor() {
 
         return FunSpec.builder("normalize")
                     .receiver(classTypeName)
-                    .addParameter("contextId", String::class)
+                    .addParameter("id", String::class)
                     .addCode(normalizingCode)
                     .returns(classTypeName)
                     .build()
@@ -169,17 +169,17 @@ class ContextObjectProcessor: AbstractProcessor() {
 
                 if (findListRegexMatch(contextObject.asType().toString()) != null) {
                     "$acc,\n    $name = $propertyName.mapIndexed { index, contextObject ->\n" +
-                        "        contextObject.normalize(contextId = \"\${contextId}.$name[\$index]\")\n" +
+                        "        contextObject.normalize(id = \"\${id}.$name[\$index]\")\n" +
                         "    }"
                 } else {
-                    "$acc,\n    $name = $propertyName.normalize(contextId = \"\${contextId}.$name\")"
+                    "$acc,\n    $name = $propertyName.normalize(id = \"\${id}.$name\")"
                 }
             }
 
-            return "return this.copy(\n    contextId = contextId$str\n)"
+            return "return this.copy(\n    id = id$str\n)"
         }
 
-        return "return this.copy(contextId = contextId)"
+        return "return this.copy(id = id)"
     }
 
     private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName, isNullable: Boolean): FunSpec {
@@ -189,7 +189,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             .receiver(classTypeName)
             .addParameter("index", Int::class)
             .returns(elementType)
-            .addStatement("val model = ${elementType}(\"\$contextId.$parameterName[\$index]\")")
+            .addStatement("val model = ${elementType}(\"\$id.$parameterName[\$index]\")")
             .addCode("return try { $tryCodeBlock } catch (e: IndexOutOfBoundsException) { model }")
             .build()
     }
@@ -200,7 +200,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             val match = findListRegexMatch(elementTypeName)
 
             val typeElement = processingEnv.elementUtils.getTypeElement(match ?: elementTypeName)
-            return typeElement?.getAnnotation(Context::class.java) != null
+            return typeElement?.getAnnotation(ContextObject::class.java) != null
         }
 
         return parameters.filter { isElementContextAnnotated(it) }
@@ -217,7 +217,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return PropertySpec.builder("expression", classTypeName.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return expressionOf<$classTypeName>(\"@{\$contextId}\")")
+                    .addStatement("return expressionOf<$classTypeName>(\"@{\$id}\")")
                     .build()
             )
             .receiver(classTypeName)
@@ -231,7 +231,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return PropertySpec.builder("${propertyName}Expression", elementType.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return expressionOf(\"@{\$contextId.$propertyName}\")")
+                    .addStatement("return expressionOf(\"@{\$id.$propertyName}\")")
                     .build()
             )
             .receiver(classTypeName)
@@ -246,7 +246,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return FunSpec.builder("change")
             .receiver(type)
             .addParameter(parameterName, parameterType)
-            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addStatement("val contextIdSplit = splitContextId(id)")
             .addStatement("return SetContext(contextId = contextIdSplit.first, value = $parameterName, path = contextIdSplit.second)")
             .returns(SetContext::class)
             .build()
@@ -256,7 +256,7 @@ class ContextObjectProcessor: AbstractProcessor() {
         return FunSpec.builder("change${parameterName.capitalize()}")
             .receiver(receiver)
             .addParameter(parameterName, parameterType)
-            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addStatement("val contextIdSplit = splitContextId(id)")
             .addCode("return SetContext(\n" +
                 "   contextId = contextIdSplit.first,\n" +
                 "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName\",\n" +
@@ -272,7 +272,7 @@ class ContextObjectProcessor: AbstractProcessor() {
             .receiver(receiver)
             .addParameter(parameterName, parameterType)
             .addParameter("index", Int::class)
-            .addStatement("val contextIdSplit = splitContextId(contextId)")
+            .addStatement("val contextIdSplit = splitContextId(id)")
             .addCode("return SetContext(\n" +
                 "   contextId = contextIdSplit.first,\n" +
                 "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName[\$index]\",\n" +

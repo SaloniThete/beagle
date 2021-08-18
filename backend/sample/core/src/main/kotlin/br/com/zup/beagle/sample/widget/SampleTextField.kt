@@ -21,7 +21,7 @@ import br.com.zup.beagle.annotation.RegisterWidget
 import br.com.zup.beagle.context.Bind
 import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.form.InputWidget
 
 @RegisterWidget
@@ -33,9 +33,9 @@ class SampleTextField(
 
 data class SampleOnChange(
     val value: String? = null,
-    override val contextId: String)
-    : ContextObject
+    override val id: String)
+    : Context
 
 //todo generate
 val SampleOnChange.valueExpression: Bind.Expression<String>
-    get() = expressionOf("@{${this.contextId}.value}")
+    get() = expressionOf("@{${this.id}.value}")

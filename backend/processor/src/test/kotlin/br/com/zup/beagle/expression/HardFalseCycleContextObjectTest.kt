@@ -17,11 +17,11 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
-internal class BasicContextTest {
+internal class HardFalseCycleContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        checkExpression(BasicContext_.name, "@{name}", String::class)
+        checkExpression(HardFalseCycleContext_.a.done, "@{a.done}", Boolean::class)
+        checkExpression(HardFalseCycleContext_.b.c.done, "@{b.c.done}", Boolean::class)
     }
 }

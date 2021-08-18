@@ -23,8 +23,8 @@ import br.com.zup.beagle.core.IdentifierComponent
 import br.com.zup.beagle.core.ServerDrivenComponent
 import br.com.zup.beagle.core.Style
 import br.com.zup.beagle.widget.action.Action
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.context.ContextComponent
-import br.com.zup.beagle.widget.context.ContextData
 import br.com.zup.beagle.widget.ui.ImagePath
 
 /**
@@ -111,7 +111,7 @@ data class NavigationBar(
  *                  It could be any visual component that extends the ServerDrivenComponent.1
  * @param style enable a few visual options to be changed.
  * @param screenAnalyticsEvent send event when screen appear/disappear
- * @param context define the contextData that be set to screen.
+ * @param context define the context that be set to screen.
  *
  */
 data class Screen(
@@ -121,5 +121,5 @@ data class Screen(
     val child: ServerDrivenComponent,
     val style: Style? = null,
     override val screenAnalyticsEvent: ScreenEvent? = null,
-    override val context: ContextData? = null
+    override val context: Context? = null
 ) : ScreenAnalytics, ContextComponent

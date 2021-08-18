@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.widget.context
+package br.com.zup.beagle.annotation
 
-interface ContextObject {
-    val contextId: String
-}
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+annotation class ContextObject

@@ -18,10 +18,10 @@ package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
 
-internal class EasyFalseCycleContextTest {
+internal class EnumContextObjectTest {
     @Test
     fun test_generated_expressions() {
-        checkExpression(EasyFalseCycleContext_.b.done, "@{b.done}", Boolean::class)
-        checkExpression(EasyFalseCycleContext_.a.c.done, "@{a.c.done}", Boolean::class)
+        checkExpression(EnumContext_.a, "@{a}", EnumWithoutFields::class)
+        checkExpression(EnumContext_.b, "@{b}", EnumWithFields::class)
     }
 }

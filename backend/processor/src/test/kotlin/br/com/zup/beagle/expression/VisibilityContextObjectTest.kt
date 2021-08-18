@@ -18,17 +18,10 @@ package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
 
-internal class LeafContextTest {
+internal class VisibilityContextObjectTest {
     @Test
-    fun test_generated_expression() {
-        checkExpression(LeafContext_.a, "@{a}", Any::class)
-        checkExpression(LeafContext_.b, "@{b}", Boolean::class)
-        checkExpression(LeafContext_.c, "@{c}", Byte::class)
-        checkExpression(LeafContext_.d, "@{d}", Char::class)
-        checkExpression(LeafContext_.e, "@{e}", Int::class)
-        checkExpression(LeafContext_.f, "@{f}", Long::class)
-        checkExpression(LeafContext_.g, "@{g}", Float::class)
-        checkExpression(LeafContext_.h, "@{h}", Double::class)
-        checkExpression(LeafContext_.i, "@{i}", String::class)
+    fun test_generated_expressions() {
+        checkExpression(VisibilityContext_.b, "@{b}", Byte::class)
+        checkExpression(VisibilityContext_.d, "@{d}", Long::class)
     }
 }

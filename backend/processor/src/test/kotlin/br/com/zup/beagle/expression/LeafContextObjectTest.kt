@@ -17,19 +17,18 @@
 package br.com.zup.beagle.expression
 
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
 
-class RecursiveListContextTest {
+internal class LeafContextObjectTest {
     @Test
-    fun test_generated_expressions() {
-        Random.nextInt().also {
-            checkExpression(RecursiveListContext_.done, "@{done}", Boolean::class)
-            checkExpression(RecursiveListContext_.contexts[it].done, "@{contexts[$it].done}", Boolean::class)
-            checkExpression(
-                RecursiveListContext_.contexts[it].contexts[it].done,
-                "@{contexts[$it].contexts[$it].done}",
-                Boolean::class
-            )
-        }
+    fun test_generated_expression() {
+        checkExpression(LeafContext_.a, "@{a}", Any::class)
+        checkExpression(LeafContext_.b, "@{b}", Boolean::class)
+        checkExpression(LeafContext_.c, "@{c}", Byte::class)
+        checkExpression(LeafContext_.d, "@{d}", Char::class)
+        checkExpression(LeafContext_.e, "@{e}", Int::class)
+        checkExpression(LeafContext_.f, "@{f}", Long::class)
+        checkExpression(LeafContext_.g, "@{g}", Float::class)
+        checkExpression(LeafContext_.h, "@{h}", Double::class)
+        checkExpression(LeafContext_.i, "@{i}", String::class)
     }
 }
