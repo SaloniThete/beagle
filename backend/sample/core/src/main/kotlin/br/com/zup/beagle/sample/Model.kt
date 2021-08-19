@@ -17,6 +17,7 @@
 package br.com.zup.beagle.sample
 
 import br.com.zup.beagle.annotation.ContextObject
+import br.com.zup.beagle.annotation.GlobalContext
 import br.com.zup.beagle.widget.context.Context
 
 @ContextObject
@@ -29,8 +30,8 @@ data class Model(
     val childList: List<Model3>?,
     val childList2: List<Model2>
 ): Context {
-    constructor(contextId: String): this(
-        id = contextId,
+    constructor(id: String): this(
+        id = id,
         counter = null,
         post = null,
         child = null,
@@ -56,3 +57,11 @@ data class Model3(
 ): Context {
     constructor(id: String): this(id = id, names = null)
 }
+
+@GlobalContext
+data class Global(
+    val name: String,
+    val age: Int,
+    val orders: List<String>,
+    val child: Model3
+)
