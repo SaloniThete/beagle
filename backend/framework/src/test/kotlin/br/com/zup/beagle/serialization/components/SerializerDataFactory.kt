@@ -106,7 +106,16 @@ fun makeContextWithCustomContextJson() = """
         "value": {
             "inner": {
                 "myValue": true
-            }
+            },
+            "innerList": [
+                {
+                    "myValue": true
+                },
+                {
+                    "myValue": true
+                }
+            ],
+            "stringList": ["hello1","hello2"]
         }
     }
 """
@@ -227,12 +236,22 @@ fun makeObjectContainerWithCustomContext(): Container {
 
     data class MyContext(
         override val id: String,
-        val inner: InnerContext
+        val inner: InnerContext,
+        val innerList: List<InnerContext>,
+        val stringList: List<String>
     ) : Context
 
     return Container(
         children = listOf(),
-        context = MyContext(id = "contextId", inner = InnerContext("contextId.myValue", true)),
+        context = MyContext(
+            id = "contextId",
+            inner = InnerContext("contextId.myValue", true),
+            innerList = listOf(
+                InnerContext("contextId.myValue", true),
+                InnerContext("contextId.myValue", true)
+            ),
+            stringList = listOf("hello1", "hello2")
+        ),
     )
 }
 
