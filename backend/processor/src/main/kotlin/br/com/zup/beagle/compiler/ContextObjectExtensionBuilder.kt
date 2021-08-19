@@ -19,6 +19,7 @@ package br.com.zup.beagle.compiler
 import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
+import br.com.zup.beagle.widget.context.Context
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -36,20 +37,20 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
 
 class ContextObjectExtensionsFileBuilder(
     private val element: Element,
-    private val processingEnvironment: ProcessingEnvironment,
+    processingEnvironment: ProcessingEnvironment,
     private val isGlobal: Boolean
 ) {
+    private val elementUtils = processingEnvironment.elementUtils
+    private val typeUtils = processingEnvironment.typeUtils
+
     private val className = element.simpleName.toString()
-    private val pack = processingEnvironment.elementUtils.getPackageOf(element).toString()
+    private val pack = elementUtils.getPackageOf(element).toString()
     private val fileName = "${className}Normalizer"
     private val fileBuilder = FileSpec.builder(pack, fileName)
     private val classTypeName = element.asType().asTypeName()
 
-    private val elementUtils = processingEnvironment.elementUtils
-    private val typeUtils = processingEnvironment.typeUtils
-
     fun build(): FileSpec {
-        val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
+        val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD && it.simpleName.toString() != Context::id.name }
 
         fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf", "splitContextId")
 
@@ -60,42 +61,38 @@ class ContextObjectExtensionsFileBuilder(
         fileBuilder.addFunction(buildRootChangeFun(false))
 
         fields.forEach { enclosed ->
-            if (enclosed.simpleName.toString() != "id") {
-                addExtensionsTo(enclosed)
-            }
+            addExtensionsTo(enclosed)
         }
 
         return fileBuilder.build()
     }
 
     private fun addExtensionsTo(property: Element) {
-        if (property.simpleName.toString() != "id") {
-            val propertyName = property.simpleName.toString()
-            val propertyType = property.asType().asTypeName().javaToKotlinType()
+        val propertyName = property.simpleName.toString()
+        val propertyType = property.asType().asTypeName().javaToKotlinType()
 
-            findListRegexMatch(property.asType().toString())?.let {
-                val typeElement = processingEnvironment.elementUtils.getTypeElement(it)
-                val isContextObject = typeElement?.getAnnotation(ContextObject::class.java) != null
-                val isNullable = property.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
-                val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
-
-                if (isContextObject) {
-                    fileBuilder.addFunction(buildListAccessFun(
-                        property.simpleName.toString(),
-                        typeElementTypeName,
-                        classTypeName,
-                        isNullable
-                    ))
-                }
-
-                fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName, classTypeName))
-                fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName.asBindType(), classTypeName))
-            }
-
-            fileBuilder.addProperty(buildExpressionPropertyFor(property, propertyType, classTypeName))
-            fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType, classTypeName))
-            fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType(), classTypeName))
+        if (typeUtils.isIterable(property.asType())) {
+            addListExtensionTo(property)
         }
+
+        fileBuilder.addProperty(buildExpressionPropertyFor(property, propertyType))
+        fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType))
+        fileBuilder.addFunction(buildChangeFunFor(propertyName, propertyType.asBindType()))
+    }
+
+    private fun addListExtensionTo(property: Element) {
+        val propertyName = property.simpleName.toString()
+        val finalElementType = typeUtils.getFinalElementType(property.asType())
+        val typeElement = elementUtils.getTypeElement(finalElementType.toString())
+        val isContextObject = typeElement?.getAnnotation(ContextObject::class.java) != null
+        val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
+
+        if (isContextObject) {
+            fileBuilder.addFunction(buildListAccessFun(propertyName, typeElementTypeName, property.isNullable()))
+        }
+
+        fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName))
+        fileBuilder.addFunction(buildChangeListElementFunFor(propertyName, typeElementTypeName.asBindType()))
     }
 
     private fun buildNormalizerFun(classFields: List<Element>): FunSpec {
@@ -117,11 +114,10 @@ class ContextObjectExtensionsFileBuilder(
         if (contextObjectsFields.isNotEmpty()) {
             val str = contextObjectsFields.fold("") { acc, contextObject ->
                 val name = contextObject.simpleName.toString()
-                val isNullableProperty = contextObject.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
-                val propertyName = if (isNullableProperty) "$name?" else name
+                val propertyName = if (contextObject.isNullable()) "$name?" else name
                 val contextIdStatement = if (isGlobal) "global" else "\${id}"
 
-                if (findListRegexMatch(contextObject.asType().toString()) != null) {
+                if (typeUtils.isIterable(contextObject.asType())) {
                     "$acc,\n    $name = $propertyName.mapIndexed { index, contextObject ->\n" +
                         "        contextObject.normalize(id = \"$contextIdStatement.$name[\$index]\")\n" +
                         "    }"
@@ -144,7 +140,7 @@ class ContextObjectExtensionsFileBuilder(
         }
     }
 
-    private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName, isNullable: Boolean): FunSpec {
+    private fun buildListAccessFun(parameterName: String, elementType: TypeName, isNullable: Boolean): FunSpec {
         val tryCodeBlock = if (isNullable) "$parameterName?.get(index) ?: model" else "$parameterName[index]"
         val contextIdStatement = if (isGlobal) "global" else "\$id"
 
@@ -159,21 +155,21 @@ class ContextObjectExtensionsFileBuilder(
 
     private fun getContextObjectsFields(parameters: List<Element>): List<Element> {
         fun isElementContextAnnotated(element: Element): Boolean {
-            val elementTypeName = element.asType().toString()
-            val match = findListRegexMatch(elementTypeName)
+            return if (typeUtils.isLeaf(element.asType())) {
+                false
+            } else {
+                val elementTypeName =
+                    if(typeUtils.isIterable(element.asType()))
+                        typeUtils.getFinalElementType(element.asType()).toString()
+                    else
+                        element.asType().toString()
+                val typeElement = elementUtils.getTypeElement(elementTypeName)
 
-            val typeElement = processingEnvironment.elementUtils.getTypeElement(match ?: elementTypeName)
-            return typeElement?.getAnnotation(ContextObject::class.java) != null
+                typeElement?.getAnnotation(ContextObject::class.java) != null
+            }
         }
 
         return parameters.filter { isElementContextAnnotated(it) }
-    }
-
-    private fun findListRegexMatch(input: String): String? {
-        val listRegularExpression = "(?<=java.util.List\\<).+?(?=\\>)".toRegex()
-        val match = listRegularExpression.find(input)
-
-        return match?.value
     }
 
     private fun buildRootExpression(): PropertySpec {
@@ -189,7 +185,7 @@ class ContextObjectExtensionsFileBuilder(
     }
 
 
-    private fun buildExpressionPropertyFor(element: Element, elementType: TypeName, classTypeName: TypeName): PropertySpec {
+    private fun buildExpressionPropertyFor(element: Element, elementType: TypeName): PropertySpec {
         val propertyName = element.simpleName.toString()
         val contextIdStatement = if (isGlobal) "global" else "\$id"
 
@@ -224,9 +220,9 @@ class ContextObjectExtensionsFileBuilder(
         return builder.build()
     }
 
-    private fun buildChangeFunFor(parameterName: String, parameterType: TypeName, receiver: TypeName): FunSpec {
+    private fun buildChangeFunFor(parameterName: String, parameterType: TypeName): FunSpec {
         val builder = FunSpec.builder("change${parameterName.capitalize()}")
-            .receiver(receiver)
+            .receiver(classTypeName)
             .addParameter(parameterName, parameterType)
             .returns(SetContext::class)
 
@@ -252,9 +248,9 @@ class ContextObjectExtensionsFileBuilder(
         return builder.build()
     }
 
-    private fun buildChangeListElementFunFor(parameterName: String, parameterType: TypeName, receiver: TypeName): FunSpec {
+    private fun buildChangeListElementFunFor(parameterName: String, parameterType: TypeName): FunSpec {
         val builder = FunSpec.builder("change${parameterName.capitalize()}Element")
-            .receiver(receiver)
+            .receiver(classTypeName)
             .addParameter(parameterName, parameterType)
             .addParameter("index", Int::class)
 
@@ -299,4 +295,6 @@ class ContextObjectExtensionsFileBuilder(
             }
         }
     }
+
+    private fun Element.isNullable(): Boolean = getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
 }
