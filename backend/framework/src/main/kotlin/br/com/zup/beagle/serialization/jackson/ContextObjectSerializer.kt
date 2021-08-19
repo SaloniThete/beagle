@@ -21,6 +21,7 @@ import br.com.zup.beagle.widget.context.Context
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 
 class ContextObjectSerializer : JsonSerializer<Context>() {
@@ -35,14 +36,14 @@ class ContextObjectSerializer : JsonSerializer<Context>() {
         if (value is ContextData) {
             gen.writeObjectField(ContextData::value.name, value.value)
         } else {
-            writeContext(ContextData::value.name, value, gen)
+            gen.writeFieldName(ContextData::value.name)
+            writeContext(value, gen)
         }
 
         gen.writeEndObject()
     }
 
-    private fun writeContext(fieldName: String, context: Context, gen: JsonGenerator) {
-        gen.writeFieldName(fieldName)
+    private fun writeContext(context: Context, gen: JsonGenerator) {
         gen.writeStartObject()
         context::class.memberProperties.filter {
             it.name != ContextData::id.name
@@ -51,11 +52,23 @@ class ContextObjectSerializer : JsonSerializer<Context>() {
         }.forEach { property ->
             val propertyValue = property.value
             if (propertyValue is Context) {
-                writeContext(property.key, propertyValue, gen)
+                gen.writeFieldName(property.key)
+                writeContext(propertyValue, gen)
+            } else if (propertyValue is List<*> && propertyValue.isNotEmpty() && propertyValue.first() is Context) {
+                writeContextList(property.key, propertyValue, gen)
             } else {
                 gen.writeObjectField(property.key, property.value)
             }
         }
         gen.writeEndObject()
+    }
+
+    private fun writeContextList(propertyName: String, value: List<Any?>, gen: JsonGenerator) {
+        gen.writeFieldName(propertyName)
+        gen.writeStartArray()
+        value.forEach {
+            writeContext(it as Context, gen)
+        }
+        gen.writeEndArray()
     }
 }
