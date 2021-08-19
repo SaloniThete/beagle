@@ -16,7 +16,7 @@
 
 package br.com.zup.beagle.compiler
 
-import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
 import com.squareup.kotlinpoet.ClassName
@@ -45,6 +45,9 @@ class ContextObjectExtensionsFileBuilder(
     private val fileBuilder = FileSpec.builder(pack, fileName)
     private val classTypeName = element.asType().asTypeName()
 
+    private val elementUtils = processingEnvironment.elementUtils
+    private val typeUtils = processingEnvironment.typeUtils
+
     fun build(): FileSpec {
         val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD }
 
@@ -57,7 +60,7 @@ class ContextObjectExtensionsFileBuilder(
         fileBuilder.addFunction(buildRootChangeFun(false))
 
         fields.forEach { enclosed ->
-            if (enclosed.simpleName.toString() != "contextId") {
+            if (enclosed.simpleName.toString() != "id") {
                 addExtensionsTo(enclosed)
             }
         }
@@ -66,13 +69,13 @@ class ContextObjectExtensionsFileBuilder(
     }
 
     private fun addExtensionsTo(property: Element) {
-        if (property.simpleName.toString() != "contextId") {
+        if (property.simpleName.toString() != "id") {
             val propertyName = property.simpleName.toString()
             val propertyType = property.asType().asTypeName().javaToKotlinType()
 
             findListRegexMatch(property.asType().toString())?.let {
                 val typeElement = processingEnvironment.elementUtils.getTypeElement(it)
-                val isContextObject = typeElement?.getAnnotation(Context::class.java) != null
+                val isContextObject = typeElement?.getAnnotation(ContextObject::class.java) != null
                 val isNullable = property.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
                 val typeElementTypeName = typeElement.asType().asTypeName().javaToKotlinType()
 
@@ -104,7 +107,7 @@ class ContextObjectExtensionsFileBuilder(
             .returns(classTypeName)
 
         if (!isGlobal) {
-            builder.addParameter("contextId", String::class)
+            builder.addParameter("id", String::class)
         }
 
         return builder.build()
@@ -116,34 +119,34 @@ class ContextObjectExtensionsFileBuilder(
                 val name = contextObject.simpleName.toString()
                 val isNullableProperty = contextObject.getAnnotation(org.jetbrains.annotations.Nullable::class.java) != null
                 val propertyName = if (isNullableProperty) "$name?" else name
-                val contextIdStatement = if (isGlobal) "global" else "\${contextId}"
+                val contextIdStatement = if (isGlobal) "global" else "\${id}"
 
                 if (findListRegexMatch(contextObject.asType().toString()) != null) {
                     "$acc,\n    $name = $propertyName.mapIndexed { index, contextObject ->\n" +
-                        "        contextObject.normalize(contextId = \"$contextIdStatement.$name[\$index]\")\n" +
+                        "        contextObject.normalize(id = \"$contextIdStatement.$name[\$index]\")\n" +
                         "    }"
                 } else {
-                    "$acc,\n    $name = $propertyName.normalize(contextId = \"$contextIdStatement.$name\")"
+                    "$acc,\n    $name = $propertyName.normalize(id = \"$contextIdStatement.$name\")"
                 }
             }
 
             return if (isGlobal) {
                 "return this.copy(    ${str.drop(1)}\n)"
             } else {
-                "return this.copy(\n    contextId = contextId$str\n)"
+                "return this.copy(\n    id = id$str\n)"
             }
         }
 
         return if (isGlobal) {
             "return this"
         } else {
-            "return this.copy(contextId = contextId)"
+            "return this.copy(id = id)"
         }
     }
 
     private fun buildListAccessFun(parameterName: String, elementType: TypeName, classTypeName: TypeName, isNullable: Boolean): FunSpec {
         val tryCodeBlock = if (isNullable) "$parameterName?.get(index) ?: model" else "$parameterName[index]"
-        val contextIdStatement = if (isGlobal) "global" else "\$contextId"
+        val contextIdStatement = if (isGlobal) "global" else "\$id"
 
         return FunSpec.builder("${parameterName}GetElementAt")
             .receiver(classTypeName)
@@ -160,7 +163,7 @@ class ContextObjectExtensionsFileBuilder(
             val match = findListRegexMatch(elementTypeName)
 
             val typeElement = processingEnvironment.elementUtils.getTypeElement(match ?: elementTypeName)
-            return typeElement?.getAnnotation(Context::class.java) != null
+            return typeElement?.getAnnotation(ContextObject::class.java) != null
         }
 
         return parameters.filter { isElementContextAnnotated(it) }
@@ -174,7 +177,7 @@ class ContextObjectExtensionsFileBuilder(
     }
 
     private fun buildRootExpression(): PropertySpec {
-        val contextIdStatement = if (isGlobal) "global" else "\$contextId"
+        val contextIdStatement = if (isGlobal) "global" else "\$id"
         return PropertySpec.builder("expression", classTypeName.asBindType(), KModifier.PUBLIC)
             .getter(
                 FunSpec.getterBuilder()
@@ -188,7 +191,7 @@ class ContextObjectExtensionsFileBuilder(
 
     private fun buildExpressionPropertyFor(element: Element, elementType: TypeName, classTypeName: TypeName): PropertySpec {
         val propertyName = element.simpleName.toString()
-        val contextIdStatement = if (isGlobal) "global" else "\$contextId"
+        val contextIdStatement = if (isGlobal) "global" else "\$id"
 
         return PropertySpec.builder("${propertyName}Expression", elementType.asBindType(), KModifier.PUBLIC)
             .getter(FunSpec.getterBuilder()
@@ -214,7 +217,7 @@ class ContextObjectExtensionsFileBuilder(
                 .addStatement("return SetContext(contextId = \"global\", value = $parameterName)")
         } else {
             builder
-                .addStatement("val contextIdSplit = splitContextId(contextId)")
+                .addStatement("val contextIdSplit = splitContextId(id)")
                 .addStatement("return SetContext(contextId = contextIdSplit.first, value = $parameterName, path = contextIdSplit.second)")
         }
 
@@ -237,7 +240,7 @@ class ContextObjectExtensionsFileBuilder(
                 )
         } else {
             builder
-                .addStatement("val contextIdSplit = splitContextId(contextId)")
+                .addStatement("val contextIdSplit = splitContextId(id)")
                 .addCode("return SetContext(\n" +
                     "   contextId = contextIdSplit.first,\n" +
                     "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName\",\n" +
@@ -267,7 +270,7 @@ class ContextObjectExtensionsFileBuilder(
                 )
         } else {
             builder
-                .addStatement("val contextIdSplit = splitContextId(contextId)")
+                .addStatement("val contextIdSplit = splitContextId(id)")
                 .addCode("return SetContext(\n" +
                     "   contextId = contextIdSplit.first,\n" +
                     "   path = \"\${if (contextIdSplit.second != null) \"\${contextIdSplit.second}.\" else \"\"}$parameterName[\$index]\",\n" +

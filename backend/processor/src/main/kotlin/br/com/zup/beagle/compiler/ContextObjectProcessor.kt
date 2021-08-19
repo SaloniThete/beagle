@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import br.com.zup.beagle.annotation.Context
+import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.annotation.GlobalContext
 import br.com.zup.beagle.compiler.ContextObjectExtensionsFileBuilder
-import br.com.zup.beagle.widget.action.SetContext
-import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -39,8 +29,6 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
-import kotlin.reflect.jvm.internal.impl.builtins.jvm.JavaToKotlinClassMap
-import kotlin.reflect.jvm.internal.impl.name.FqName
 
 @AutoService(Processor::class)
 class ContextObjectProcessor: AbstractProcessor() {
@@ -49,13 +37,13 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(Context::class.java.name, GlobalContext::class.java.name)
+        return mutableSetOf(ContextObject::class.java.name, GlobalContext::class.java.name)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val elements = roundEnv.getElementsAnnotatedWith(Context::class.java)
+        val elements = roundEnv.getElementsAnnotatedWith(ContextObject::class.java)
 //        (it.enclosedElements.filter { it.kind == ElementKind.CONSTRUCTOR })[1]
         elements
             .forEach {
@@ -73,20 +61,20 @@ class ContextObjectProcessor: AbstractProcessor() {
         if (element.kind != ElementKind.CLASS) {
             processingEnv.messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Only classes can be annotated with @Context"
+                "Only classes can be annotated with @ContextObject"
             )
             return false
         }
 
         val typeElement = processingEnv.elementUtils.getTypeElement(element.asType().toString())
         val inheritFromContextObject = typeElement.interfaces.any { int ->
-            int.asTypeName().toString() == ContextObject::class.java.name
+            int.asTypeName().toString() == Context::class.java.name
         }
 
         if (!inheritFromContextObject) {
             processingEnv.messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Only classes that inherit from ContextObject can be annotated with @Context",
+                "Only classes that inherit from ContextObject can be annotated with @ContextObject",
                 element
             )
             return false

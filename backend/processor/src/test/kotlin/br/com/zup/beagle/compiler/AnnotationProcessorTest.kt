@@ -16,56 +16,53 @@
 
 package br.com.zup.beagle.compiler
 
-import br.com.zup.beagle.annotation.Context
-import br.com.zup.beagle.expression.SetContext_
+import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
-import br.com.zup.beagle.widget.context.ContextObject
+import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.context.expressionOf
 import org.junit.jupiter.api.Test
-import kotlin.math.exp
 import kotlin.test.assertEquals
 
-@Context
+@ContextObject
 data class Person(
-    override val contextId: String = "",
+    override val id: String = "",
     val name: String,
     val age: Int,
     val orders: List<Order>,
     val address: Address
-): ContextObject {
-    constructor(contextId: String): this(contextId, "", 12, listOf(), Address(""))
+): Context {
+    constructor(id: String): this(id, "", 12, listOf(), Address(""))
 }
 
-@Context
+@ContextObject
 data class Order(
-    override val contextId: String = "",
+    override val id: String = "",
     val products: List<String>,
     val value: Double
-): ContextObject {
-    constructor(contextId: String): this(contextId, listOf(), 0.0)
+): Context {
+    constructor(id: String): this(id, listOf(), 0.0)
 }
 
-@Context
+@ContextObject
 data class Address(
-    override val contextId: String = "",
+    override val id: String = "",
     val street: String,
     val zupCode: String,
     val contact: Contact
-): ContextObject {
-    constructor(contextId: String): this(contextId, "", "", Contact(""))
+): Context {
+    constructor(id: String): this(id, "", "", Contact(""))
 }
 
 
-@Context
+@ContextObject
 data class Contact(
-    override val contextId: String = "",
+    override val id: String = "",
     val email: String,
     val number: String
-): ContextObject {
-    constructor(contextId: String): this(contextId, "", "")
+): Context {
+    constructor(id: String): this(id, "", "")
 }
-
 
 internal class AnnotationProcessorTest {
 
@@ -98,19 +95,19 @@ internal class AnnotationProcessorTest {
         val expectedContactContextId = "$contextId.${Person::address.name}.${Address::contact.name}"
         val expectedOrderContextId = "$contextId.${Person::orders.name}[0]"
 
-        assertEquals(contextId, person.contextId)
-        assertEquals(expectedAddressContextId, person.address.contextId)
-        assertEquals(expectedContactContextId, person.address.contact.contextId)
-        assertEquals(expectedOrderContextId, person.orders[0].contextId)
+        assertEquals(contextId, person.id)
+        assertEquals(expectedAddressContextId, person.address.id)
+        assertEquals(expectedContactContextId, person.address.contact.id)
+        assertEquals(expectedOrderContextId, person.orders[0].id)
     }
 
     @Test
     fun test_generated_root_expression() {
-        val expectedPersonExpression: Bind<Int> = expressionOf("@{${person.contextId}}")
-        val expectedAddressExpression: Bind<String> = expressionOf("@{${person.address.contextId}}")
-        val expectedContactExpression: Bind<String> = expressionOf("@{${person.address.contact.contextId}}")
+        val expectedPersonExpression: Bind<Int> = expressionOf("@{${person.id}}")
+        val expectedAddressExpression: Bind<String> = expressionOf("@{${person.address.id}}")
+        val expectedContactExpression: Bind<String> = expressionOf("@{${person.address.contact.id}}")
         val expectedOrdersExpression: Bind<List<String>> = expressionOf("@{$contextId.${Person::orders.name}}")
-        val expectedOrderElementExpression: Bind<Order> = expressionOf("@{${person.orders[0].contextId}}")
+        val expectedOrderElementExpression: Bind<Order> = expressionOf("@{${person.orders[0].id}}")
 
         assertEquals(expectedPersonExpression, person.expression)
         assertEquals(expectedAddressExpression, person.address.expression)
@@ -123,10 +120,10 @@ internal class AnnotationProcessorTest {
 
     @Test
     fun test_generated_expressions() {
-        val expectedAgeExpression: Bind<Int> = expressionOf("@{${person.contextId}.${Person::age.name}}")
-        val expectedStreetExpression: Bind<String> = expressionOf("@{${person.address.contextId}.${Address::street.name}}")
-        val expectedEmailExpression: Bind<String> = expressionOf("@{${person.address.contact.contextId}.${Contact::email.name}}")
-        val expectedProductsExpression: Bind<List<String>> = expressionOf("@{${person.orders[0].contextId}.${Order::products.name}}")
+        val expectedAgeExpression: Bind<Int> = expressionOf("@{${person.id}.${Person::age.name}}")
+        val expectedStreetExpression: Bind<String> = expressionOf("@{${person.address.id}.${Address::street.name}}")
+        val expectedEmailExpression: Bind<String> = expressionOf("@{${person.address.contact.id}.${Contact::email.name}}")
+        val expectedProductsExpression: Bind<List<String>> = expressionOf("@{${person.orders[0].id}.${Order::products.name}}")
 
         assertEquals(expectedAgeExpression, person.ageExpression)
         assertEquals(expectedStreetExpression, person.address.streetExpression)
@@ -136,10 +133,10 @@ internal class AnnotationProcessorTest {
 
     @Test
     fun test_generated_root_change_functions() {
-        val newAddress = Address(contextId = contextId)
-        val newPerson = Person(contextId = contextId)
-        val newContact = Contact(contextId = contextId)
-        val newOrder = Order(contextId = contextId)
+        val newAddress = Address(id = contextId)
+        val newPerson = Person(id = contextId)
+        val newContact = Contact(id = contextId)
+        val newOrder = Order(id = contextId)
 
         assertChange(newPerson, null, person.change(newPerson))
         assertChange(newAddress, Person::address.name, person.address.change(newAddress))
@@ -191,7 +188,7 @@ internal class AnnotationProcessorTest {
         val index = 40
         val expectedOrderContextId = "contextId.orders[$index]"
 
-        assertEquals(expectedOrderContextId, person.ordersGetElementAt(index).contextId)
+        assertEquals(expectedOrderContextId, person.ordersGetElementAt(index).id)
         assertEquals(person.orders[0], person.ordersGetElementAt(0), "When element exist it must return it")
     }
 
@@ -199,7 +196,7 @@ internal class AnnotationProcessorTest {
     fun test_generated_change_element_functions() {
         val index = 30
         val newProduct = "newProduct"
-        val newOrder = Order(contextId = "contextId", products = listOf("newProducts"), value = 30.00)
+        val newOrder = Order(id = "contextId", products = listOf("newProducts"), value = 30.00)
 
         assertChange(newProduct, "orders[0].products[$index]", person.orders[0].changeProductsElement(newProduct, index))
         assertChange(newOrder, "orders[$index]", person.changeOrdersElement(newOrder, index))

@@ -18,4 +18,4 @@ package br.com.zup.beagle.annotation
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Context
+annotation class ContextObject
