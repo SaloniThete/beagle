@@ -31,8 +31,8 @@ data class Person(
     val age: Int,
     val orders: List<Order>,
     val address: Address
-) : Context {
-    constructor(id: String) : this(id, "", 12, listOf(), Address(""))
+): Context {
+    constructor(id: String): this(id, "", 12, listOf(), Address(""))
 }
 
 @ContextObject
@@ -40,8 +40,8 @@ data class Order(
     override val id: String = "",
     val products: List<String>,
     val value: Double
-) : Context {
-    constructor(id: String) : this(id, listOf(), 0.0)
+): Context {
+    constructor(id: String): this(id, listOf(), 0.0)
 }
 
 @ContextObject
@@ -50,8 +50,8 @@ data class Address(
     val street: String,
     val zupCode: String,
     val contact: Contact
-) : Context {
-    constructor(id: String) : this(id, "", "", Contact(""))
+): Context {
+    constructor(id: String): this(id, "", "", Contact(""))
 }
 
 
@@ -60,10 +60,9 @@ data class Contact(
     override val id: String = "",
     val email: String,
     val number: String
-) : Context {
-    constructor(id: String) : this(id, "", "")
+): Context {
+    constructor(id: String): this(id, "", "")
 }
-
 
 internal class AnnotationProcessorTest {
 

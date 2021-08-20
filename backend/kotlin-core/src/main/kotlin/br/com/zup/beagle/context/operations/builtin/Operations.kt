@@ -74,7 +74,7 @@ fun <I> union(firstArray: Bind<Array<I>>, secondArray: Bind<Array<I>>): Bind.Exp
     createOperation("union", arrayOf(firstArray, secondArray))
 
 /** other **/
-fun isEmpty(vararg params: Bind<Array<*>>): Bind.Expression<Boolean> = createOperation("isEmpty", params)
+fun isEmpty(vararg params: Bind<*>): Bind.Expression<Boolean> = createOperation("isEmpty", params)
 fun isNull(vararg params: Bind<*>): Bind.Expression<Boolean> = createOperation("isNull", params)
 fun length(vararg params: Bind<Array<*>>): Bind.Expression<Number> = createOperation("length", params)
 
@@ -100,7 +100,6 @@ private fun <I> resolveParam(param: Bind<I>?): Any? {
     } ?: run {
         param
     }
-
 }
 
 fun <T> Bind.Expression<T>.toBindString(): Bind<String> = expressionOf(this.value)
