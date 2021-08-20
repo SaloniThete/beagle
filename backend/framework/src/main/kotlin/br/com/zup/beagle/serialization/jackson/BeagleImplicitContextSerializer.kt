@@ -18,9 +18,9 @@ package br.com.zup.beagle.serialization.jackson
 
 import br.com.zup.beagle.annotation.ImplicitContext
 import br.com.zup.beagle.widget.context.Context
+import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
@@ -34,7 +34,7 @@ internal fun findImplicitContexts(bean: Any?): HashMap<String, Any?> {
             field.isAccessible = true
             if (field.isAnnotationPresent(ImplicitContext::class.java)) {
                 val property = findProperty(bean, field.name)
-                implicitContexts[property.name] = resolveMethod(bean, property)
+                implicitContexts[property.name] = resolveMethod(bean, property, generateImplicitContextId(field))
             }
         }
     }
@@ -48,7 +48,7 @@ private fun findProperty(bean: Any, name: String): KProperty1<Any, *> {
         .first { it.name == name } as KProperty1<Any, *>
 }
 
-private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
+private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>, id: String): Any? {
     val params = property.returnType.javaType as ParameterizedType
     val inputClass = (params.actualTypeArguments[0] as Class<*>)
     val fieldDefinition = property.javaField
@@ -58,7 +58,6 @@ private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
     val myMethod = fieldValue?.javaClass?.getDeclaredMethod("invoke", inputClass)
     myMethod?.isAccessible = true
 
-    val id = generateImplicitContextId(property)
     val values = inputClass.kotlin.primaryConstructor
         ?.parameters
         ?.associate { it to (if (it.name == Context::id.name) id else null) }
@@ -69,13 +68,15 @@ private fun resolveMethod(bean: Any?, property: KProperty1<out Any, *>): Any? {
     return myMethod?.invoke(fieldValue, inputParam)
 }
 
-private fun generateImplicitContextId(property: KProperty1<out Any, *>): String {
-    return property.findAnnotation<ImplicitContext>()?.id?.let {
-        if (it.isEmpty())
-            property.name
-        else
-            it.replace(" ", "")
-    } ?: run {
-        property.name
+private fun generateImplicitContextId(field: Field): String {
+    field.annotations.forEach { annotation ->
+        if (annotation is ImplicitContext)
+            return annotation.id.let {
+                if (it.isEmpty())
+                    field.name
+                else
+                    it.replace(" ", "")
+            }
     }
+    return field.name
 }

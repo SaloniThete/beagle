@@ -27,7 +27,7 @@ import br.com.zup.beagle.widget.form.InputWidget
 @RegisterWidget
 class SampleTextField(
     val placeholder: String,
-    @ImplicitContext
+    @ImplicitContext("test")
     val onChange: ((SampleOnChange) -> List<Action>)? = null)
     : InputWidget()
 
