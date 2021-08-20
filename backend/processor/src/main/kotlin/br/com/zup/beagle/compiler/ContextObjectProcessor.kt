@@ -43,17 +43,28 @@ class ContextObjectProcessor: AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val elements = roundEnv.getElementsAnnotatedWith(ContextObject::class.java)
-//        (it.enclosedElements.filter { it.kind == ElementKind.CONSTRUCTOR })[1]
-        elements
+        val contextObjectElements = roundEnv.getElementsAnnotatedWith(ContextObject::class.java)
+
+        contextObjectElements
             .forEach {
-                if (!isAnnotationValid(it)) {
+                if (isAnnotationValid(it)) {
+                    processAnnotation(it)
+                } else {
                     return true
                 }
-
-                processAnnotation(it)
             }
-        roundEnv.getElementsAnnotatedWith(GlobalContext::class.java).forEach { processAnnotation(it, true) }
+
+        val globalContextElements = roundEnv.getElementsAnnotatedWith(GlobalContext::class.java)
+        if (globalContextElements.count() > 1) {
+            processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Just one class can be annotated with @GlobalContext"
+            )
+            return true
+        }
+
+        globalContextElements.forEach { processAnnotation(it, true) }
+
         return false
     }
 

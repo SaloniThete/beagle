@@ -54,7 +54,6 @@ data class Address(
     constructor(id: String): this(id, "", "", Contact(""))
 }
 
-
 @ContextObject
 data class Contact(
     override val id: String = "",
@@ -69,7 +68,7 @@ internal class AnnotationProcessorTest {
     companion object {
         const val contextId = "contextId"
 
-        private var person = Person(
+        private val person = Person(
             name = "yan",
             age = 23,
             address = Address(

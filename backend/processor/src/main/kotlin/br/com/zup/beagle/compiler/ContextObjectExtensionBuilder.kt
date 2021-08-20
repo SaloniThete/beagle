@@ -50,7 +50,9 @@ class ContextObjectExtensionsFileBuilder(
     private val classTypeName = element.asType().asTypeName()
 
     fun build(): FileSpec {
-        val fields = element.enclosedElements.filter { it.kind == ElementKind.FIELD && it.simpleName.toString() != Context::id.name }
+        val fields = element.enclosedElements.filter {
+            it.kind == ElementKind.FIELD && it.simpleName.toString() != Context::id.name
+        }
 
         fileBuilder.addImport("br.com.zup.beagle.widget.context", "Bind", "expressionOf", "splitContextId")
 
@@ -97,7 +99,7 @@ class ContextObjectExtensionsFileBuilder(
 
     private fun buildNormalizerFun(classFields: List<Element>): FunSpec {
         val contextObjects = getContextObjectsFields(classFields)
-        val normalizingCode = buildNormalizeFuncCodeWith(contextObjects)
+        val normalizingCode = buildNormalizeFunCodeWith(contextObjects)
         val builder = FunSpec.builder("normalize")
             .receiver(classTypeName)
             .addCode(normalizingCode)
@@ -110,7 +112,7 @@ class ContextObjectExtensionsFileBuilder(
         return builder.build()
     }
 
-    private fun buildNormalizeFuncCodeWith(contextObjectsFields: List<Element>): String {
+    private fun buildNormalizeFunCodeWith(contextObjectsFields: List<Element>): String {
         if (contextObjectsFields.isNotEmpty()) {
             val str = contextObjectsFields.fold("") { acc, contextObject ->
                 val name = contextObject.simpleName.toString()
@@ -183,7 +185,6 @@ class ContextObjectExtensionsFileBuilder(
             .receiver(classTypeName)
             .build()
     }
-
 
     private fun buildExpressionPropertyFor(element: Element, elementType: TypeName): PropertySpec {
         val propertyName = element.simpleName.toString()
