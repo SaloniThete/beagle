@@ -53,6 +53,8 @@ import br.com.zup.beagle.serialization.components.makePullToRefreshObject
 import br.com.zup.beagle.serialization.components.makePullToRefreshWithoutExpressionJson
 import br.com.zup.beagle.serialization.components.makePullToRefreshWithoutExpressionObject
 import br.com.zup.beagle.serialization.components.makeScreenComponentJson
+import br.com.zup.beagle.serialization.components.makeScreenWithContextObject
+import br.com.zup.beagle.serialization.components.makeScreenWithContextObjectJson
 import br.com.zup.beagle.serialization.components.makeScrollViewJson
 import br.com.zup.beagle.serialization.components.makeSimpleFormJson
 import br.com.zup.beagle.serialization.components.makeTabBarJson
@@ -75,6 +77,7 @@ internal class DefaultWidgetSerializerTest : DefaultSerializerTest<Widget>() {
         Arguments.of(makeButtonJson(), makeObjectButton()),
         Arguments.of(makeContainerJson(), makeObjectContainer()),
         Arguments.of(makeContainerWithCustomContextJson(), makeObjectContainerWithCustomContext()),
+        Arguments.of(makeScreenWithContextObjectJson(), makeScreenWithContextObject()),
         Arguments.of(makeFormJson(), makeObjectForm()),
         Arguments.of(makeFormSubmitJson(), makeObjectFormSubmit()),
         Arguments.of(makeJsonGridView(), makeObjectGridView()),

@@ -18,6 +18,7 @@ package br.com.zup.beagle.serialization.components
 
 import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.analytics.ScreenEvent
+import br.com.zup.beagle.annotation.ContextObject
 import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.ext.setFlex
 import br.com.zup.beagle.serialization.jackson.ImplicitContextTest
@@ -40,6 +41,7 @@ import br.com.zup.beagle.widget.layout.Container
 import br.com.zup.beagle.widget.layout.NavigationBar
 import br.com.zup.beagle.widget.layout.SafeArea
 import br.com.zup.beagle.widget.layout.Screen
+import br.com.zup.beagle.widget.layout.ScreenBuilder
 import br.com.zup.beagle.widget.layout.ScrollView
 import br.com.zup.beagle.widget.lazy.LazyComponent
 import br.com.zup.beagle.widget.navigation.Touchable
@@ -735,3 +737,43 @@ fun makeImplicitContextJson() =
     """
 
 internal fun makeObjectImplicitContext() = ImplicitContextTest { listOf() }
+
+fun makeScreenWithContextObjectJson() = """
+    {
+        "_beagleComponent_":"beagle:screenComponent",
+        "child":{
+            "_beagleComponent_":"beagle:container",
+            "children":[
+                {
+                "_beagleComponent_":"beagle:text",
+                "text":"@{contextId.dataTest.data}"
+                }
+            ]
+        }
+    }
+"""
+
+fun makeScreenWithContextObject(): ScreenBuilder = ScreenBuilderTest
+
+object ScreenBuilderTest : ScreenBuilder {
+    private var context = ContextTest("contextId")
+    override fun build() = Screen(
+        child = Container(
+            children = listOf(
+                Text(text = context.dataTest.dataExpression)
+            )
+        )
+    )
+}
+
+@ContextObject
+data class ContextTest(
+    override val id: String,
+    val dataTest: DataTest = DataTest("")
+) : Context
+
+@ContextObject
+data class DataTest(
+    override val id: String,
+    val data: String = ""
+) : Context
