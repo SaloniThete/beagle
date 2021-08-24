@@ -34,7 +34,6 @@ internal class BeagleModuleTest {
         assertTrue { BeagleModule::class.property("_serializerModifier") is BeagleSerializerModifier }
 
         assertEquals(ComposeComponentMixin::class.java, mixins[ComposeComponent::class.java])
-        assertEquals(ScreenBuilderMixin::class.java, mixins[ScreenBuilder::class.java])
         assertEquals(BindMixin::class.java, mixins[Bind::class.java])
     }
 
