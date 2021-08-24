@@ -734,4 +734,4 @@ fun makeImplicitContextJson() =
     }
     """
 
-fun makeObjectImplicitContext() = ImplicitContextTest { listOf() }
+internal fun makeObjectImplicitContext() = ImplicitContextTest { listOf() }

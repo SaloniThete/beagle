@@ -24,6 +24,7 @@ test {
 
 dependencies {
     implementation Dependencies.GeneralLibraries.jacksonKotlin
+    implementation project(Dependencies.Modules.commonAnnotation)
     api project(Dependencies.Modules.schemaKotlinCore)
 
     testImplementation Dependencies.TestLibraries.mockk

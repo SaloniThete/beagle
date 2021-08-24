@@ -1,9 +1,12 @@
 package br.com.zup.beagle.sample.pix
 
 import br.com.zup.beagle.annotation.ContextObject
-import br.com.zup.beagle.annotation.GlobalContext
 import br.com.zup.beagle.context.constant
-import br.com.zup.beagle.context.operations.builtin.*
+import br.com.zup.beagle.context.operations.builtin.concat
+import br.com.zup.beagle.context.operations.builtin.condition
+import br.com.zup.beagle.context.operations.builtin.isEmpty
+import br.com.zup.beagle.context.operations.builtin.isNull
+import br.com.zup.beagle.context.operations.builtin.not
 import br.com.zup.beagle.core.Display
 import br.com.zup.beagle.ext.setStyle
 import br.com.zup.beagle.sample.constants.BASE_URL
@@ -37,21 +40,17 @@ data class Person(
     val lastName: String = ""
 ) : Context
 
-@GlobalContext
-data class GlobalContext(
-    val street: String = "",
-    val houseNumber: String = ""
-)
-
 object PixScreenBuilder : ScreenBuilder {
-    private val pixContext = PixContext("").normalize("pix")
-    private val globalContext = GlobalContext("").normalize()
+    private var pixContext = PixContext("pix")
+    private var globalObject = GlobalObject()
     override fun build() = Screen(
         child = ScrollView(
             children = listOf(
                 Container(
                     onInit = listOf(
-                        globalContext.change(GlobalContext("Rua A", "5"))
+                        globalObject.change(
+                            GlobalObject("Rua A", "5",
+                                Person("", "first", "last"))),
                     ),
                     context = pixContext,
                     children = listOf(
@@ -77,6 +76,9 @@ object PixScreenBuilder : ScreenBuilder {
             ).setStyle {
                 margin = EdgeValue.only(top = 10, bottom = 10)
             },
+            Text(
+                text = globalObject.person.firstNameExpression
+            ),
             containerValue(),
         )
     )
@@ -194,11 +196,11 @@ object PixScreenBuilder : ScreenBuilder {
             ).setStyle {
                 margin = EdgeValue.only(bottom = 20, top = 20)
             },
-            Text(text = concat(constant("Rua: "), globalContext.streetExpression)).setStyle {
+            Text(text = concat(constant("Rua: "), globalObject.streetExpression)).setStyle {
                 margin = EdgeValue.only(bottom = 20)
             },
             Text(
-                text = concat(constant("Número da casa: "), globalContext.houseNumberExpression)
+                text = concat(constant("Número da casa: "), globalObject.houseNumberExpression)
             ).setStyle {
                 margin = EdgeValue.only(bottom = 20)
             }

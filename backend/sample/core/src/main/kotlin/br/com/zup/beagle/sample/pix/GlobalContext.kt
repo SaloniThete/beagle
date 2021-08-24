@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.annotation
+package br.com.zup.beagle.sample.pix
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class GlobalContext
+import br.com.zup.beagle.annotation.GlobalObject
+
+@GlobalObject
+data class GlobalObject(
+    val street: String = "",
+    val houseNumber: String = "",
+    val person: Person = Person("")
+)

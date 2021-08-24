@@ -32,23 +32,23 @@ internal class BeagleImplicitContextObjectTest {
     fun findImplicitContexts_with_implicit_context_should_return_list() = run {
         val result = findImplicitContexts(implicitContextTest)
         Assertions.assertEquals(result.isNotEmpty(), true)
-        Assertions.assertEquals(result["implicitContext"], listOf<Any>())
+        Assertions.assertEquals(result[ImplicitContextTest::implicitContext.name], listOf<Any>())
     }
 
     @Test
     fun findImplicitContexts_without_implicit_context_should_return_empty_list() = run {
-        val result = findImplicitContexts(ContextObjectTest(id = "id"))
+        val result = findImplicitContexts(ImplicitContextObjectTest(id = "id"))
         Assertions.assertEquals(result.isEmpty(), true)
     }
 }
 
 @RegisterWidget
-class ImplicitContextTest(
+internal class ImplicitContextTest(
     @ImplicitContext
-    val implicitContext: ((ContextObjectTest) -> List<Any>)? = null)
+    val implicitContext: ((ImplicitContextObjectTest) -> List<Any>)? = null)
     : Widget()
 
-data class ContextObjectTest(
+internal data class ImplicitContextObjectTest(
     val value: String? = null,
     override val id: String)
     : Context

@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class PixService {
-    fun createPixScreen()  = PixScreenBuilder
+    fun createPixScreen() = PixScreenBuilder
 }

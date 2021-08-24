@@ -5,5 +5,5 @@ import javax.inject.Singleton
 
 @Singleton
 class PixService {
-    fun createPixScreen()  = PixScreenBuilder
+    fun createPixScreen() = PixScreenBuilder
 }

@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-package br.com.zup.beagle.sample.widget
+package br.com.zup.beagle.annotation
 
-import br.com.zup.beagle.annotation.ContextObject
-import br.com.zup.beagle.annotation.ImplicitContext
-import br.com.zup.beagle.annotation.RegisterWidget
-import br.com.zup.beagle.widget.action.Action
-import br.com.zup.beagle.widget.context.Context
-import br.com.zup.beagle.widget.form.InputWidget
-
-@RegisterWidget
-class SampleTextField(
-    val placeholder: String,
-    @ImplicitContext
-    val onChange: ((SampleOnChange) -> List<Action>)? = null)
-    : InputWidget()
-
-@ContextObject
-data class SampleOnChange(
-    val value: String? = null,
-    override val id: String)
-    : Context
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class GlobalObject

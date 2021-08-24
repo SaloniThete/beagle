@@ -15,7 +15,7 @@
  */
 
 import br.com.zup.beagle.annotation.ContextObject
-import br.com.zup.beagle.annotation.GlobalContext
+import br.com.zup.beagle.annotation.GlobalObject
 import br.com.zup.beagle.compiler.ContextObjectExtensionsFileBuilder
 import br.com.zup.beagle.widget.context.Context
 import com.google.auto.service.AutoService
@@ -37,7 +37,7 @@ class ContextObjectProcessor: AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(ContextObject::class.java.name, GlobalContext::class.java.name)
+        return mutableSetOf(ContextObject::class.java.name, GlobalObject::class.java.name)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
@@ -53,7 +53,7 @@ class ContextObjectProcessor: AbstractProcessor() {
 
                 processAnnotation(it)
             }
-        roundEnv.getElementsAnnotatedWith(GlobalContext::class.java).forEach { processAnnotation(it, true) }
+        roundEnv.getElementsAnnotatedWith(GlobalObject::class.java).forEach { processAnnotation(it, true) }
         return false
     }
 
