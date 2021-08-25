@@ -50,7 +50,7 @@ object PixScreenBuilder : ScreenBuilder {
                     onInit = listOf(
                         globalObject.change(
                             GlobalObject("Rua A", "5",
-                                Person("", "first", "last"))),
+                                Person("", "first", "last")))
                     ),
                     context = pixContext,
                     children = listOf(

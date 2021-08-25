@@ -16,27 +16,31 @@
 
 package br.com.zup.beagle.serialization.jackson
 
+import br.com.zup.beagle.annotation.GlobalObject
+import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Context
-import br.com.zup.beagle.widget.context.ContextData
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 
-class ContextObjectSerializer : BaseContextObjectSerializer<Context>() {
+class SetContextObjectSerializer : BaseContextObjectSerializer<SetContext>() {
+
     override fun serialize(
-        value: Context,
+        value: SetContext,
         gen: JsonGenerator,
         serializers: SerializerProvider
     ) {
         gen.writeStartObject()
-        gen.writeStringField(Context::id.name, value.id)
-
-        if (value is ContextData) {
-            gen.writeObjectField(ContextData::value.name, value.value)
-        } else {
-            gen.writeFieldName(ContextData::value.name)
-            writeContext(value, gen)
+        gen.writeStringField(ACTION_TYPE, "beagle:setContext")
+        gen.writeStringField(SetContext::contextId.name, value.contextId)
+        if (value.path != null) {
+            gen.writeStringField(SetContext::path.name, value.path)
         }
-
+        if (value.value::class.java.getAnnotation(GlobalObject::class.java) != null || value.value is Context) {
+            gen.writeFieldName(SetContext::value.name)
+            writeContext(value.value, gen)
+        } else {
+            gen.writeObjectField(SetContext::value.name, value.value)
+        }
         gen.writeEndObject()
     }
 }
