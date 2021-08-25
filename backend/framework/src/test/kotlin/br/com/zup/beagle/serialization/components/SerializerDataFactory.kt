@@ -96,7 +96,17 @@ fun makeContainerWithCustomContextJson() = """
     {
        "_beagleComponent_":"beagle:container",
        "children":[],
-       "context": ${makeContextWithCustomContextJson()}
+       "context": ${makeContextWithCustomContextJson()},
+       "onInit": [
+            {
+                "_beagleAction_": "beagle:setContext",
+                "contextId": "test",
+                "path": "a",
+                "value": {
+                    "myValue": true
+                }
+            }
+       ]
     }
 """
 
@@ -242,6 +252,13 @@ fun makeObjectContainerWithCustomContext(): Container {
     ) : Context
 
     return Container(
+        onInit = listOf(
+            SetContext(
+                contextId = "test",
+                path = "a",
+                value = InnerContext("", true)
+            )
+        ),
         children = listOf(),
         context = MyContext(
             id = "contextId",

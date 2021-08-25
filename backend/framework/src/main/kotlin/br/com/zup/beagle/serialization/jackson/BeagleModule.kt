@@ -17,6 +17,7 @@
 package br.com.zup.beagle.serialization.jackson
 
 import br.com.zup.beagle.newanalytics.ActionAnalyticsConfig
+import br.com.zup.beagle.widget.action.SetContext
 import br.com.zup.beagle.widget.context.Bind
 import br.com.zup.beagle.widget.context.Context
 import br.com.zup.beagle.widget.layout.ComposeComponent
@@ -30,6 +31,7 @@ class BeagleModule(
     init {
         this.setSerializerModifier(BeagleSerializerModifier(this.classLoader))
         this.addSerializer(Context::class.java, ContextObjectSerializer())
+        this.addSerializer(SetContext::class.java, SetContextObjectSerializer())
         this.setMixInAnnotation(
             getClass(ComposeComponent::class, this.classLoader),
             ComposeComponentMixin::class.java
