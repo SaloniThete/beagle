@@ -19,6 +19,7 @@ package br.com.zup.beagle.serialization.components
 import br.com.zup.beagle.analytics.ClickEvent
 import br.com.zup.beagle.analytics.ScreenEvent
 import br.com.zup.beagle.annotation.ContextObject
+import br.com.zup.beagle.annotation.GlobalObject
 import br.com.zup.beagle.context.expressionOf
 import br.com.zup.beagle.ext.setFlex
 import br.com.zup.beagle.serialization.jackson.ImplicitContextTest
@@ -783,6 +784,46 @@ object ScreenBuilderTest : ScreenBuilder {
     )
 }
 
+fun makeObjectContainerWithCustomGlobalContext(): Container {
+    var contextTest = ContextTest("")
+    var global = Global()
+    return Container(
+        onInit = listOf(
+            global.contextTest.change(ContextTest("", DataTest("", data = "data")))
+        ),
+        children = listOf(),
+        context = contextTest,
+    )
+}
+
+fun makeContainerWithCustomGlobalContextJson() = """
+    {
+        "_beagleComponent_":"beagle:container",
+        "children":[
+      
+        ],
+        "context":{
+        "id":"",
+        "value":{
+            "dataTest":{
+                "data":""
+            }
+        }
+   },
+   "onInit":[
+      {
+         "_beagleAction_":"beagle:setContext",
+         "contextId":"",
+         "value":{
+            "dataTest":{
+               "data":"data"
+            }
+         }
+      }
+    ]
+    }
+"""
+
 @ContextObject
 data class ContextTest(
     override val id: String,
@@ -794,3 +835,8 @@ data class DataTest(
     override val id: String,
     val data: String = ""
 ) : Context
+
+@GlobalObject
+data class Global(
+    val contextTest: ContextTest = ContextTest("")
+)
